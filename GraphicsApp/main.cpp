@@ -1,12 +1,9 @@
-#define GLFW_INCLUDE_NONE
-#include "glad.h"
-#include "glfw3.h"
-
-//#include <glm.hpp>
+#include "GraphicsHeaders.h"
 
 #include "Colour.h"
 #include "FileLoading.h"
 #include <iostream>
+#include <vector>
 
 int main()
 {
@@ -45,9 +42,6 @@ int main()
 	Colour nextColour = colours[1];
 	int colourIndex = 0;
 	float lerp = 0;
-
-	std::string output = LoadFileAsString("Test.txt");
-	std::cout << output << std::endl;
 
 	float lastFrameTime = (float)glfwGetTime();
 

@@ -7,7 +7,6 @@ std::string LoadFileAsString(std::string fileName)
 	std::string output;
 
 	std::ifstream ifs(fileName);
-	//ifs.open(fileName, std::ifstream::in);
 
 	std::string line;
 
