@@ -64,15 +64,15 @@ int main()
 
 
 	std::vector<Object*> gameObjects;
-	Triangle* t = new Triangle(
-		Vertex({ 0.5f, 0.5f, 0 }, { 0, 0, 0 }),
-		Vertex({ 1, 0.5f, 0 }, { 0, 0, 0 }),
-		Vertex({ 0.5f, 1, 1 }, { 0, 0, 0 }));
-	gameObjects.push_back(t);
+	//Triangle* t = new Triangle(
+	//	Vertex({ 0, 0, 0 }, { 0, 0, 0 }),
+	//	Vertex({ 1, 0, 0 }, { 0, 0, 0 }),
+	//	Vertex({ 0, 1, 0 }, { 0, 0, 0 }));
+	//gameObjects.push_back(t);
 	//Quad* q = new Quad({ -0.5f, 0.5f, 0 }, { 0.5f, 0.5f, 0 }, { -0.5f, -0.5f, 0 }, { 0.5f, -0.5f, 0 });
 	//gameObjects.push_back(q);
-	//Box* b = new Box({ 0, 0, 0 }, { 0.5f, 0.5f, 0.5f });
-	//gameObjects.push_back(b);
+	Box* b = new Box({ 0, 0, 0 }, { 0.5f, 0.5f, 0.5f });
+	gameObjects.push_back(b);
 
 	float lastFrameTime = (float)glfwGetTime();
 
@@ -113,13 +113,14 @@ int main()
 
 		// OBJECT STUFF
 		//==========================================================================
-		glm::mat4 objectSpace = glm::rotate(glm::mat4(1), (float)glfwGetTime(), glm::vec3());
+		glm::mat4 objectSpace = glm::rotate(glm::mat4(1), (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f)); 
+		// ^ Just using glm::rotate for testing
 		glm::mat4 cameraSpace = glm::lookAt(glm::vec3(5, 5, 5), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
 		glm::mat4 projection = glm::perspective(
 			3.14159f / 2.0f, 
-			(float)width / (float)height,	// Aspect ration
-			0.3f,							// Near plane
-			0.5f);							// Far plane
+			(float)width / (float)height,		// Aspect ratio
+			0.3f,								// Near plane
+			0.5f);								// Far plane
 
 		glm::mat4 mvpMat = projection * cameraSpace * objectSpace; 
 		// ^ Actually applied right to left, because of the way they're being multiplied 
