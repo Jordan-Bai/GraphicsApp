@@ -1,7 +1,15 @@
 #include "GraphicsHeaders.h"
 
 #include "Colour.h"
-#include "FileLoading.h"
+#include "Utilities.h"
+#include "ShaderProgram.h"
+#include "ext/matrix_transform.hpp"
+#include "ext/matrix_clip_space.hpp"
+
+#include "Triangle.h"
+#include "Quad.h"
+#include "Box.h"
+
 #include <iostream>
 #include <vector>
 
@@ -10,6 +18,8 @@ int main()
 	// WINDOW SETUP
 	//==========================================================================
 	GLFWwindow* window;
+	int width = 1280;
+	int height = 720;
 
 	if (!glfwInit())
 	{
@@ -17,7 +27,7 @@ int main()
 		return -1;
 	}
 
-	window = glfwCreateWindow(1280, 720, "Test Window", nullptr, nullptr);
+	window = glfwCreateWindow(width, height, "Test Window", nullptr, nullptr);
 	if (!window)
 	{
 		glfwTerminate();
@@ -37,24 +47,45 @@ int main()
 	//==========================================================================
 	
 	const int noOfColours = 3;
-	Colour colours[noOfColours] = { {1, 0, 0, 1}, {0, 0.8f, 0, 1}, {0, 0, 1, 1} };
+	Colour colours[noOfColours] = { {1, 0.3f, 0.3f, 1}, {0.3f, 0.7f, 0.3f, 1}, {0.3f, 0.3f, 1, 1} };
 	Colour currentColour = colours[0];
 	Colour nextColour = colours[1];
 	int colourIndex = 0;
 	float lerp = 0;
+
+
+	glEnableVertexAttribArray(0); // layout location 0 in the vertex shader
+	glEnableVertexAttribArray(1); // layout location 1 in the vertex shader
+	ShaderProgram testShader("vertexShader1", "fragmentShader1");
+	testShader.Use();
+	testShader.SetFloatUniform("aspectRatio", (float)width / (float)height);
+
+	glEnable(GL_DEPTH_TEST); // Enables depth buffer
+
+
+	std::vector<Object*> gameObjects;
+	Triangle* t = new Triangle(
+		Vertex({ 0.5f, 0.5f, 0 }, { 0, 0, 0 }),
+		Vertex({ 1, 0.5f, 0 }, { 0, 0, 0 }),
+		Vertex({ 0.5f, 1, 1 }, { 0, 0, 0 }));
+	gameObjects.push_back(t);
+	//Quad* q = new Quad({ -0.5f, 0.5f, 0 }, { 0.5f, 0.5f, 0 }, { -0.5f, -0.5f, 0 }, { 0.5f, -0.5f, 0 });
+	//gameObjects.push_back(q);
+	//Box* b = new Box({ 0, 0, 0 }, { 0.5f, 0.5f, 0.5f });
+	//gameObjects.push_back(b);
 
 	float lastFrameTime = (float)glfwGetTime();
 
 	while (!glfwWindowShouldClose(window))
 	{
 		// Clears the screen
-		glClear(GL_COLOR_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		float timeBuffer = (float)glfwGetTime();
 		float delta = timeBuffer - lastFrameTime;
 		lastFrameTime = timeBuffer;
 
-		lerp += delta;
+		lerp += delta * 0.2;
 		if (lerp > 0.99f)
 		{
 			lerp = 0;
@@ -80,6 +111,27 @@ int main()
 		// Set background colour
 		glClearColor(lerpedColour.r, lerpedColour.g, lerpedColour.b, lerpedColour.a);
 
+		// OBJECT STUFF
+		//==========================================================================
+		glm::mat4 objectSpace = glm::rotate(glm::mat4(1), (float)glfwGetTime(), glm::vec3());
+		glm::mat4 cameraSpace = glm::lookAt(glm::vec3(5, 5, 5), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
+		glm::mat4 projection = glm::perspective(
+			3.14159f / 2.0f, 
+			(float)width / (float)height,	// Aspect ration
+			0.3f,							// Near plane
+			0.5f);							// Far plane
+
+		glm::mat4 mvpMat = projection * cameraSpace * objectSpace; 
+		// ^ Actually applied right to left, because of the way they're being multiplied 
+		// (either column order or row order, not sure)
+		
+		testShader.SetMatrix4Uniform("mvpMat", mvpMat);
+
+		for (Object* o : gameObjects)
+		{
+			o->Draw();
+		}
+		//==========================================================================
 
 		// END OF FRAME
 		glfwSwapBuffers(window); // Displays buffer we just wrote to 

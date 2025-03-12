@@ -1,5 +1,5 @@
 #include "ShaderProgram.h"
-#include "FileLoading.h"
+#include "Utilities.h"
 #include <iostream>
 
 ShaderProgram::ShaderProgram(std::string vertexFilename, std::string fragmentFilename)
@@ -13,7 +13,6 @@ ShaderProgram::ShaderProgram(std::string vertexFilename, std::string fragmentFil
 
 	std::string vertexSource = LoadFileAsString(vertexFilename);
 	std::string fragmentSource = LoadFileAsString(fragmentFilename);
-
 	if (vertexSource == "" || fragmentSource == "")
 	{
 		std::cout << "Failed to open one or more shader source files.\n";
@@ -104,6 +103,15 @@ void ShaderProgram::Use()
 void ShaderProgram::SetFloatUniform(std::string varName, float value)
 {
 	GLint varLoc = glGetUniformLocation(shaderProgram, varName.c_str());
-
 	glUniform1f(varLoc, value);
+}
+
+void ShaderProgram::SetMatrix4Uniform(std::string varName, glm::mat4 value)
+{
+	GLint varLoc = glGetUniformLocation(shaderProgram, varName.c_str());
+	glUniformMatrix4fv(
+		varLoc,
+		1,
+		GL_FALSE,		// Don't want to transpose
+		&value[0][0]);	// Pointer to first float in mat
 }

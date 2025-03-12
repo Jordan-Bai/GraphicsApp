@@ -2,6 +2,7 @@
 
 #include "GraphicsHeaders.h"
 #include <string>
+#include "glm.hpp"
 
 class ShaderProgram
 {
@@ -24,4 +25,5 @@ public:
 
 
 	void SetFloatUniform(std::string varName, float value);
+	void SetMatrix4Uniform(std::string varName, glm::mat4 value);
 };
