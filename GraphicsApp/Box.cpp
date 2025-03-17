@@ -5,15 +5,95 @@ Box::Box(glm::vec3 center, glm::vec3 size)
 	m_pos = center;
 	glm::vec3 colour(0, 0, 0);
 
-	m_verts.push_back(Vertex(glm::vec3(-size.x, size.y, size.z), colour));
-	m_verts.push_back(Vertex(glm::vec3(size.x, size.y, size.z), colour));
-	m_verts.push_back(Vertex(glm::vec3(-size.x, -size.y, size.z), colour));
-	m_verts.push_back(Vertex(glm::vec3(size.x, -size.y, size.z), colour));
+	// Front face
+	//   -------
+	//  /|    /|
+	// 1-----2 |
+	// | /---|-/
+	// |/    |/
+	// 3-----4
+	m_verts.push_back(Vertex(glm::vec3(-size.x, size.y, size.z), 	{ 1, 0, 0 }));
+	m_verts.push_back(Vertex(glm::vec3(size.x, size.y, size.z),		{ 1, 0, 0 }));
+	m_verts.push_back(Vertex(glm::vec3(-size.x, -size.y, size.z), 	{ 1, 0, 0 }));
 
-	m_verts.push_back(Vertex(glm::vec3(-size.x, size.y, -size.z), colour));
-	m_verts.push_back(Vertex(glm::vec3(size.x, size.y, -size.z), colour));
-	m_verts.push_back(Vertex(glm::vec3(-size.x, -size.y, -size.z), colour));
-	m_verts.push_back(Vertex(glm::vec3(size.x, -size.y, -size.z), colour));
+	m_verts.push_back(Vertex(glm::vec3(size.x, size.y, size.z),		{ 1, 0, 0 }));
+	m_verts.push_back(Vertex(glm::vec3(-size.x, -size.y, size.z),	{ 1, 0, 0 }));
+	m_verts.push_back(Vertex(glm::vec3(size.x, -size.y, size.z),	{ 1, 0, 0 }));
+
+	// Back face
+	//   1-----2
+	//  /|    /|
+	// ------- |
+	// | 3---|-4
+	// |/    |/
+	// -------
+	m_verts.push_back(Vertex(glm::vec3(-size.x, size.y, -size.z),	{ 0, 1, 1 }));
+	m_verts.push_back(Vertex(glm::vec3(size.x, size.y, -size.z),	{ 0, 1, 1 }));
+	m_verts.push_back(Vertex(glm::vec3(-size.x, -size.y, -size.z),	{ 0, 1, 1 }));
+
+	m_verts.push_back(Vertex(glm::vec3(size.x, size.y, -size.z),	{ 0, 1, 1 }));
+	m_verts.push_back(Vertex(glm::vec3(-size.x, -size.y, -size.z),	{ 0, 1, 1 }));
+	m_verts.push_back(Vertex(glm::vec3(size.x, -size.y, -size.z),	{ 0, 1, 1 }));
+
+	// Right face
+	//   ------2
+	//  /|    /|
+	// ------1 |
+	// | /---|-4
+	// |/    |/
+	// ------3
+	m_verts.push_back(Vertex(glm::vec3(size.x, size.y, size.z),		{ 0, 1, 0 }));
+	m_verts.push_back(Vertex(glm::vec3(size.x, size.y, -size.z),	{ 0, 1, 0 }));
+	m_verts.push_back(Vertex(glm::vec3(size.x, -size.y, size.z),	{ 0, 1, 0 }));
+
+	m_verts.push_back(Vertex(glm::vec3(size.x, size.y, -size.z),	{ 0, 1, 0 }));
+	m_verts.push_back(Vertex(glm::vec3(size.x, -size.y, size.z),	{ 0, 1, 0 }));
+	m_verts.push_back(Vertex(glm::vec3(size.x, -size.y, -size.z),	{ 0, 1, 0 }));
+
+	// Left face
+	//   2------
+	//  /|    /|
+	// 1------ |
+	// | 4---|-/
+	// |/    |/
+	// 3------
+	m_verts.push_back(Vertex(glm::vec3(-size.x, size.y, size.z),	{ 1, 0, 1 }));
+	m_verts.push_back(Vertex(glm::vec3(-size.x, size.y, -size.z),	{ 1, 0, 1 }));
+	m_verts.push_back(Vertex(glm::vec3(-size.x, -size.y, size.z),	{ 1, 0, 1 }));
+
+	m_verts.push_back(Vertex(glm::vec3(-size.x, size.y, -size.z),	{ 1, 0, 1 }));
+	m_verts.push_back(Vertex(glm::vec3(-size.x, -size.y, size.z),	{ 1, 0, 1 }));
+	m_verts.push_back(Vertex(glm::vec3(-size.x, -size.y, -size.z),	{ 1, 0, 1 }));
+
+	// Top face
+	//   3-----4
+	//  /|    /|
+	// 1-----2 |
+	// | /---|-/
+	// |/    |/
+	// -------
+	m_verts.push_back(Vertex(glm::vec3(-size.x, size.y, size.z),	{ 0, 0, 1 }));
+	m_verts.push_back(Vertex(glm::vec3(size.x, size.y, size.z),		{ 0, 0, 1 }));
+	m_verts.push_back(Vertex(glm::vec3(-size.x, size.y, -size.z),	{ 0, 0, 1 }));
+
+	m_verts.push_back(Vertex(glm::vec3(size.x, size.y, size.z),		{ 0, 0, 1 }));
+	m_verts.push_back(Vertex(glm::vec3(-size.x, size.y, -size.z),	{ 0, 0, 1 }));
+	m_verts.push_back(Vertex(glm::vec3(size.x, size.y, -size.z),	{ 0, 0, 1 }));
+
+	// Bottom face
+	//   -------
+	//  /|    /|
+	// ------- |
+	// | 3---|-4
+	// |/    |/
+	// 1-----2
+	m_verts.push_back(Vertex(glm::vec3(-size.x, -size.y, size.z),	{ 1, 1, 0 }));
+	m_verts.push_back(Vertex(glm::vec3(size.x, -size.y, size.z),	{ 1, 1, 0 }));
+	m_verts.push_back(Vertex(glm::vec3(-size.x, -size.y, -size.z),	{ 1, 1, 0 }));
+
+	m_verts.push_back(Vertex(glm::vec3(size.x, -size.y, size.z),	{ 1, 1, 0 }));
+	m_verts.push_back(Vertex(glm::vec3(-size.x, -size.y, -size.z),	{ 1, 1, 0 }));
+	m_verts.push_back(Vertex(glm::vec3(size.x, -size.y, -size.z),	{ 1, 1, 0 }));
 
 	InitObject();
 }
@@ -37,23 +117,18 @@ void Box::Draw()
 		(const void*)(3 * sizeof(float)));
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	// Draw front face
-	//   -------
-	//  /|    /|
-	// 0-----1 |
-	// | /---|-/
-	// |/    |/
-	// 2-----3
+	//// Draw front face
+	//glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	//// Draw back face
+	//glDrawArrays(GL_TRIANGLE_STRIP, 4, 4);
+	//// Draw right face
+	//glDrawArrays(GL_TRIANGLE_STRIP, 8, 4);
+	//// Draw left face
+	//glDrawArrays(GL_TRIANGLE_STRIP, 12, 4);
+	//// Draw top face
+	//glDrawArrays(GL_TRIANGLE_STRIP, 16, 4);
+	//// Draw bottom face
+	//glDrawArrays(GL_TRIANGLE_STRIP, 20, 4);
 
-	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-
-	// Draw back face
-	//   4-----5
-	//  /|    /|
-	// ------- |
-	// | 6---|-7
-	// |/    |/
-	// -------
-
-	glDrawArrays(GL_TRIANGLE_STRIP, 4, 4);
+	glDrawArrays(GL_TRIANGLES, 0, m_verts.size());
 }

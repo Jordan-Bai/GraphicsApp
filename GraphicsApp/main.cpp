@@ -58,17 +58,27 @@ int main()
 	glEnableVertexAttribArray(1); // layout location 1 in the vertex shader
 	ShaderProgram testShader("vertexShader1", "fragmentShader1");
 	testShader.Use();
-	testShader.SetFloatUniform("aspectRatio", (float)width / (float)height);
 
 	glEnable(GL_DEPTH_TEST); // Enables depth buffer
 
 
 	std::vector<Object*> gameObjects;
-	//Triangle* t = new Triangle(
+	//Triangle* t1 = new Triangle(
 	//	Vertex({ 0, 0, 0 }, { 0, 0, 0 }),
 	//	Vertex({ 1, 0, 0 }, { 0, 0, 0 }),
 	//	Vertex({ 0, 1, 0 }, { 0, 0, 0 }));
-	//gameObjects.push_back(t);
+	//gameObjects.push_back(t1);
+	//Triangle* t2 = new Triangle(
+	//	Vertex({ 1, 1,  0.5f }, { 1, 1, 1 }),
+	//	Vertex({ -1, 0, 0.5f }, { 1, 1, 1 }),
+	//	Vertex({ 0, -1, 0.5f }, { 1, 1, 1 }));
+	//gameObjects.push_back(t2);
+	//Triangle* t3 = new Triangle(
+	//	Vertex({ 0, 0, 1 }, { 1, 0, 0 }),
+	//	Vertex({ 1, 0, 1 }, { 1, 0, 0 }),
+	//	Vertex({ 0, 1, 1 }, { 1, 0, 0 }));
+	//gameObjects.push_back(t3);
+	
 	//Quad* q = new Quad({ -0.5f, 0.5f, 0 }, { 0.5f, 0.5f, 0 }, { -0.5f, -0.5f, 0 }, { 0.5f, -0.5f, 0 });
 	//gameObjects.push_back(q);
 	Box* b = new Box({ 0, 0, 0 }, { 0.5f, 0.5f, 0.5f });
@@ -85,6 +95,8 @@ int main()
 		float delta = timeBuffer - lastFrameTime;
 		lastFrameTime = timeBuffer;
 
+		// CHANGE BACKGROUND COLOUR
+		//==========================================================================
 		lerp += delta * 0.2;
 		if (lerp > 0.99f)
 		{
@@ -110,19 +122,21 @@ int main()
 
 		// Set background colour
 		glClearColor(lerpedColour.r, lerpedColour.g, lerpedColour.b, lerpedColour.a);
+		//==========================================================================
+
 
 		// OBJECT STUFF
 		//==========================================================================
-		glm::mat4 objectSpace = glm::rotate(glm::mat4(1), (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f)); 
+		glm::mat4 modelSpace = glm::rotate(glm::mat4(1), (float)glfwGetTime(), glm::vec3(0.0f, 1.0f, 0.0f));
 		// ^ Just using glm::rotate for testing
-		glm::mat4 cameraSpace = glm::lookAt(glm::vec3(5, 5, 5), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
+		glm::mat4 view = glm::lookAt(glm::vec3(0.0f, 5.0f, -5.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 		glm::mat4 projection = glm::perspective(
 			3.14159f / 2.0f, 
 			(float)width / (float)height,		// Aspect ratio
 			0.3f,								// Near plane
-			0.5f);								// Far plane
+			1000.0f);							// Far plane
 
-		glm::mat4 mvpMat = projection * cameraSpace * objectSpace; 
+		glm::mat4 mvpMat = projection * view * modelSpace;
 		// ^ Actually applied right to left, because of the way they're being multiplied 
 		// (either column order or row order, not sure)
 		
