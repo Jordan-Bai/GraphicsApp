@@ -2,14 +2,21 @@
 
 layout(location = 0) in vec3 vertPos;
 layout(location = 1) in vec3 vertColour;
+layout(location = 2) in vec3 vertNormal;
 
-uniform mat4 mvpMat;
+uniform mat4 vpMat;
+uniform mat4 modelMat;
 
 out vec3 colour;
+out vec3 normal;
 
 void main()
 {
 	colour = vertColour;
+	vec4 normVec4 = modelMat * vec4(vertNormal, 0.0);
+	normal = vec3(normVec4.x, normVec4.y, normVec4.z);
+	
+	mat4 mvpMat = vpMat * modelMat;
 	vec4 transformedPos = mvpMat * vec4(vertPos, 1.0);
 	gl_Position = vec4(transformedPos);
 }

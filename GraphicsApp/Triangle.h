@@ -1,11 +1,9 @@
 #pragma once
 
-#include "Object.h"
+#include "Mesh.h"
 
-class Triangle : public Object
+class Triangle : public Mesh
 {
 public:
 	Triangle(Vertex vert1, Vertex vert2, Vertex vert3);
-
-	virtual void Draw() override;
 };

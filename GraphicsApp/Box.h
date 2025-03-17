@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Object.h"
+#include "Mesh.h"
 
-class Box : public Object
+class Box : public Mesh
 {
 public:
 	Box(glm::vec3 center, glm::vec3 size);

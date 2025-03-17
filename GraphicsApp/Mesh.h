@@ -4,20 +4,23 @@
 #include "glm.hpp"
 #include "Utilities.h"
 
-class Object
+class Mesh
 {
 protected:
-	GLuint m_objectID;
+	GLuint m_vertBuffer;
 	glm::vec3 m_pos;
 	std::vector<Vertex> m_verts; // Vertices stored in local space
 
 public:
-	Object()
-		: m_pos(), m_objectID(0) // OBJECT ID 0 FOR TESTING
+	Mesh()
+		: m_pos(), m_vertBuffer()
 	{
-
 	}
 
+	void LoadFromFile(std::string fileName);
 	void InitObject();
-	virtual void Draw() = 0;
+
+	glm::mat4 GetObjectSpace();
+
+	virtual void Draw();
 };

@@ -25,5 +25,6 @@ public:
 
 
 	void SetFloatUniform(std::string varName, float value);
+	void SetVector3Uniform(std::string varName, glm::vec3 value);
 	void SetMatrix4Uniform(std::string varName, glm::mat4 value);
 };

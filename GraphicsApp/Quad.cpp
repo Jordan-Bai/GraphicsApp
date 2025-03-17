@@ -12,7 +12,7 @@ Quad::Quad(glm::vec3 corner1, glm::vec3 corner2, glm::vec3 corner3, glm::vec3 co
 
 void Quad::Draw()
 {
-	glBindBuffer(GL_ARRAY_BUFFER, m_objectID);
+	glBindBuffer(GL_ARRAY_BUFFER, m_vertBuffer);
 	glVertexAttribPointer(0,	// Index: ???
 		3,						// Size: number of the following type per vertex: in the case 3, since there are 3 floats per vertex
 		GL_FLOAT,				// Type: type to read the data as

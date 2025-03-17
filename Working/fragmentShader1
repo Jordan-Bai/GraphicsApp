@@ -1,10 +1,14 @@
 #version 460
 
+uniform vec3 sunDirection;
+
 in vec3 colour;
+in vec3 normal;
 
 out vec4 PixelColour;
 
 void main()
 {
-	PixelColour = vec4(colour, 1.0);
+	float light = -dot(sunDirection, normal);
+	PixelColour = vec4(colour + light, 1.0);
 }

@@ -1,0 +1,3 @@
+# ignore these files ONLY for this folder, since the files in this folder are really big
+*.lib
+*.pdb
