@@ -3,6 +3,7 @@
 #include "GraphicsHeaders.h"
 #include <string>
 #include "glm.hpp"
+#include "Texture.h"
 
 class ShaderProgram
 {
@@ -27,4 +28,5 @@ public:
 	void SetFloatUniform(std::string varName, float value);
 	void SetVector3Uniform(std::string varName, glm::vec3 value);
 	void SetMatrix4Uniform(std::string varName, glm::mat4 value);
+	void SetIntUniform(std::string varName, GLuint value); // Also includes setting samplers
 };

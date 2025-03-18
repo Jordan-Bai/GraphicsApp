@@ -1,14 +1,19 @@
 #version 460
 
 uniform vec3 sunDirection;
+uniform sampler2D meshTexture; // The texture of the object
 
 in vec3 colour;
 in vec3 normal;
+in vec2 UVCoord;
 
 out vec4 PixelColour;
 
 void main()
 {
+	vec3 textureColour = texture(meshTexture, UVCoord).rgb;
+	
 	float light = -dot(sunDirection, normal);
-	PixelColour = vec4(colour + light, 1.0);
+	PixelColour = vec4(textureColour, 1.0);
+	//PixelColour = vec4(UVCoord, 0.0, 1.0); // Good for debugging
 }

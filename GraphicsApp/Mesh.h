@@ -16,6 +16,7 @@ public:
 		: m_pos(), m_vertBuffer()
 	{
 	}
+	~Mesh();
 
 	void LoadFromFile(std::string fileName);
 	void InitObject();

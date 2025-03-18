@@ -7,6 +7,11 @@
 
 #include <iostream>
 
+Mesh::~Mesh()
+{
+	glDeleteBuffers(1, &m_vertBuffer);
+}
+
 void Mesh::LoadFromFile(std::string fileName)
 {
 	Assimp::Importer importer;
@@ -14,6 +19,8 @@ void Mesh::LoadFromFile(std::string fileName)
 	const aiScene* fileScene = importer.ReadFile(fileName, aiProcess_Triangulate);
 	// Second parameter is aiPostProcessSteps: determines which post process steps to apply
 	// Using triangulate here, which makes sure every face is a triangle
+	// Others worth noting: aiProcess_JoinIdenticalVertices (don't need right now since we're just duplicating them anyway)
+	// aiProcess_FlipUVs (apparently will be necessary for this mesh later)
 
 	if (fileScene->mNumMeshes > 0)
 	{
@@ -41,6 +48,13 @@ void Mesh::LoadFromFile(std::string fileName)
 				newVertex.normal.x = mesh->mNormals[vertexIndex].x;
 				newVertex.normal.y = mesh->mNormals[vertexIndex].y;
 				newVertex.normal.z = mesh->mNormals[vertexIndex].z;
+
+				if (mesh->HasTextureCoords(0)) // Check if they have texture coords
+				{
+					// COULD MESS STUFF UP IF UV'S ARE NOT IN 1ST UV CHANNEL
+					newVertex.UVcoord.x = mesh->mTextureCoords[0][vertexIndex].x;
+					newVertex.UVcoord.y = mesh->mTextureCoords[0][vertexIndex].y;
+				}
 
 				m_verts.push_back(newVertex);
 			}
@@ -91,6 +105,13 @@ void Mesh::Draw()
 		GL_FALSE,
 		sizeof(Vertex),
 		(const void*)(6 * sizeof(float)));
+	// vertUVcoord
+	glVertexAttribPointer(3,
+		3,
+		GL_FLOAT,
+		GL_FALSE,
+		sizeof(Vertex),
+		(const void*)(9 * sizeof(float)));
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	glDrawArrays(GL_TRIANGLES, 0, m_verts.size());

@@ -121,3 +121,9 @@ void ShaderProgram::SetMatrix4Uniform(std::string varName, glm::mat4 value)
 		GL_FALSE,		// Don't want to transpose
 		&value[0][0]);	// Pointer to first float in mat
 }
+
+void ShaderProgram::SetIntUniform(std::string varName, GLuint value)
+{
+	GLint varLoc = glGetUniformLocation(shaderProgram, varName.c_str());
+	glUniform1i(varLoc, value);
+}

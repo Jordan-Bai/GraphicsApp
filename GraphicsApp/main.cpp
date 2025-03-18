@@ -9,7 +9,7 @@
 #include "Triangle.h"
 #include "Quad.h"
 #include "Box.h"
-//#include "Mesh.h"
+#include "Texture.h"
 
 #include <iostream>
 #include <vector>
@@ -57,6 +57,7 @@ int main()
 	glEnableVertexAttribArray(0); // layout location 0 in the vertex shader
 	glEnableVertexAttribArray(1); // layout location 1 in the vertex shader
 	glEnableVertexAttribArray(2); // layout location 2 in the vertex shader
+	glEnableVertexAttribArray(3); // layout location 2 in the vertex shader
 	ShaderProgram testShader("vertexShader1", "fragmentShader1");
 	testShader.Use();
 
@@ -93,6 +94,10 @@ int main()
 	Mesh* spear = new Mesh();
 	spear->LoadFromFile("soulspear.obj");
 	gameObjects.push_back(spear);
+
+	Texture tex;
+	tex.LoadFileAsTexture("soulspear_diffuse.tga");
+
 
 	float lastFrameTime = (float)glfwGetTime();
 
@@ -137,6 +142,9 @@ int main()
 
 		// OBJECT STUFF
 		//==========================================================================
+		//glActiveTexture(GL_TEXTURE0);
+		//glBindTexture(GL_TEXTURE_2D, tex.m_texture);
+
 		glm::mat4 rotation = glm::rotate(glm::mat4(1), (float)glfwGetTime(), glm::vec3(0.0f, 1.0f, 0.0f));
 		// ^ For testing
 		glm::mat4 view = glm::lookAt(glm::vec3(5.0f, 3.0f, -5.0f), glm::vec3(0.0f, 3.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
@@ -151,13 +159,17 @@ int main()
 		// (openGL uses column-major order for matricies)
 		testShader.SetMatrix4Uniform("vpMat", vpMat);
 
-		for (Mesh* o : gameObjects)
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, tex.m_texture);
+		//testShader.SetIntUniform("meshTexture", 0);
+
+		for (Mesh* m : gameObjects)
 		{
-			glm::mat4 modelSpace = rotation * o->GetObjectSpace();
+			glm::mat4 modelSpace = rotation * m->GetObjectSpace();
 
 			testShader.SetMatrix4Uniform("modelMat", modelSpace);
 
-			o->Draw();
+			m->Draw();
 		}
 		//==========================================================================
 
