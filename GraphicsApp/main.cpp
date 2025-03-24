@@ -4,8 +4,9 @@
 #include "Utilities.h"
 #include "ShaderProgram.h"
 #include "ext/matrix_transform.hpp"
-#include "ext/matrix_clip_space.hpp"
+//#include "ext/matrix_clip_space.hpp"
 
+#include "Application.h"
 #include "Triangle.h"
 #include "Quad.h"
 #include "Box.h"
@@ -19,33 +20,40 @@ int main()
 {
 	// WINDOW SETUP
 	//==========================================================================
-	GLFWwindow* window;
-	int width = 1280;
-	int height = 720;
-
-	if (!glfwInit())
+	Application app;
+	if (app.Initialize() == -1)
 	{
-		std::cout << "GLFW COULD NOT INIT" << std::endl;
+		std::cout << "APPLICATION COULD NOT INITIALIZE" << std::endl;
 		return -1;
 	}
 
-	window = glfwCreateWindow(width, height, "Test Window", nullptr, nullptr);
-	if (!window)
-	{
-		glfwTerminate();
-		std::cout << "WINDOW COULD NOT BE CREATED" << std::endl;
-		return -1;
-	}
-
-	// Make window the current window
-	glfwMakeContextCurrent(window);
-
-	if (!gladLoadGL())
-	{
-		glfwTerminate();
-		std::cout << "GLAD COULD NOT LOAD" << std::endl;
-		return -1;
-	}
+	//GLFWwindow* window;
+	//int width = 1280;
+	//int height = 720;
+	//
+	//if (!glfwInit())
+	//{
+	//	std::cout << "GLFW COULD NOT INIT" << std::endl;
+	//	return -1;
+	//}
+	//
+	//window = glfwCreateWindow(width, height, "Test Window", nullptr, nullptr);
+	//if (!window)
+	//{
+	//	glfwTerminate();
+	//	std::cout << "WINDOW COULD NOT BE CREATED" << std::endl;
+	//	return -1;
+	//}
+	//
+	//// Make window the current window
+	//glfwMakeContextCurrent(window);
+	//
+	//if (!gladLoadGL())
+	//{
+	//	glfwTerminate();
+	//	std::cout << "GLAD COULD NOT LOAD" << std::endl;
+	//	return -1;
+	//}
 	//==========================================================================
 	
 	const int noOfColours = 3;
@@ -66,10 +74,11 @@ int main()
 	testShader.SetVector3Uniform("sunDirection", glm::normalize(sunDirection));
 
 	Camera cam({ 0, 3.0f, 10.0f });
+	cam.Init(&app);
 	//cam.m_yRot = glm::radians(90.0f);
 	//glm::vec3 cameraPos(0, 3.0f, 5.0f);
 	//glm::vec3 lookOffset(0, 0, -5.0f);
-	float speed = 5;
+	//float speed = 5;
 	//testShader.SetVector3Uniform("cameraPos", cameraPos);
 
 	testShader.SetFloatUniform("specPower", 16);
@@ -102,6 +111,7 @@ int main()
 	//gameObjects.push_back(b2);
 
 	Mesh* spear = new Mesh();
+	spear->Init(&app);
 	spear->LoadFromFile("soulspear.obj");
 	gameObjects.push_back(spear);
 
@@ -112,7 +122,7 @@ int main()
 
 	float lastFrameTime = (float)glfwGetTime();
 
-	while (!glfwWindowShouldClose(window))
+	while (!glfwWindowShouldClose(app.GetWindow()))
 	{
 		// Clears the screen
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -120,6 +130,8 @@ int main()
 		float timeBuffer = (float)glfwGetTime();
 		float delta = timeBuffer - lastFrameTime;
 		lastFrameTime = timeBuffer;
+
+		app.Update(delta);
 
 		// CHANGE BACKGROUND COLOUR
 		//==========================================================================
@@ -152,7 +164,7 @@ int main()
 
 		// CONTROLS
 		//==========================================================================
-		cam.Update(window, delta);
+		cam.Update(app.GetWindow(), delta);
 		testShader.SetVector3Uniform("cameraPos", cam.GetPos());
 		//==========================================================================
 
@@ -162,11 +174,12 @@ int main()
 		glm::mat4 rotation = glm::rotate(glm::mat4(1), (float)glfwGetTime() * 0.5f, glm::vec3(0.0f, 1.0f, 0.0f));
 		// ^ For testing
 		glm::mat4 view = cam.GetViewMatrix(); //glm::lookAt(cameraPos, cameraPos + lookOffset, glm::vec3(0.0f, 1.0f, 0.0f));
-		glm::mat4 projection = glm::perspective(
-			3.14159f / 4.0f, 
-			(float)width / (float)height,		// Aspect ratio
-			0.3f,								// Near plane
-			1000.0f);							// Far plane
+		//glm::mat4 projection = glm::perspective(
+		//	3.14159f / 4.0f,					// FOV
+		//	(float)width / (float)height,		// Aspect ratio
+		//	0.3f,								// Near plane
+		//	1000.0f);							// Far plane
+		glm::mat4 projection = app.GetProjection();
 
 		glm::mat4 vpMat = projection * view;
 		// ^ Actually applied right to left, because of the way they're being multiplied 
@@ -192,7 +205,7 @@ int main()
 		//==========================================================================
 
 		// END OF FRAME
-		glfwSwapBuffers(window); // Displays buffer we just wrote to 
+		glfwSwapBuffers(app.GetWindow()); // Displays buffer we just wrote to 
 		glfwPollEvents(); // Check for inputs
 	}
 

@@ -5,7 +5,7 @@
 class Box : public Mesh
 {
 public:
-	Box(glm::vec3 center, glm::vec3 size);
+	//Box(glm::vec3 center, glm::vec3 size);
 
 	virtual void Draw() override;
 };

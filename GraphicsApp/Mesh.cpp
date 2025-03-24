@@ -16,10 +16,11 @@ void Mesh::LoadFromFile(std::string fileName)
 {
 	Assimp::Importer importer;
 
-	const aiScene* fileScene = importer.ReadFile(fileName, aiProcess_Triangulate | aiProcess_FlipUVs);
+	const aiScene* fileScene = importer.ReadFile(fileName, aiProcess_Triangulate | aiProcess_JoinIdenticalVertices | aiProcess_ConvertToLeftHanded);
 	// Second parameter is aiPostProcessSteps: determines which post process steps to apply
-	// Using triangulate here, which makes sure every face is a triangle
-	// Others worth noting: aiProcess_JoinIdenticalVertices (don't need right now since we're just duplicating them anyway)
+	// Triangulate makes sure every face is a triangle
+	// JoinIdenticalVertices good for index buffering
+	// ConvertToLeftHanded makes sure all UVs are the way round we want (better than FlipUVs)
 
 	if (fileScene->mNumMeshes > 0)
 	{
@@ -95,10 +96,10 @@ void Mesh::InitObject()
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-glm::mat4 Mesh::GetObjectSpace()
-{
-	return glm::translate(glm::mat4(1), m_pos);
-}
+//glm::mat4 Mesh::GetObjectSpace()
+//{
+//	return glm::translate(glm::mat4(1), m_pos);
+//}
 
 void Mesh::Draw()
 {
@@ -108,7 +109,7 @@ void Mesh::Draw()
 		3,						// Size: number of the following type per vertex: in the case 3, since there are 3 floats per vertex
 		GL_FLOAT,				// Type: type to read the data as
 		GL_FALSE,				// Normalised: whether values should be maped to [-1, 1] (for signed) or [0, 1] (for unsigned)
-		sizeof(Vertex),			// Stride: ???
+		sizeof(Vertex),			// Stride: The amount to move through the vertex buffer per vertex
 		0);						// Pointer: How far from the pointed to index the start of the data to read is
 	// vertNormal
 	glVertexAttribPointer(1,

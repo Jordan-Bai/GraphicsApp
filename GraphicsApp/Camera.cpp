@@ -2,13 +2,14 @@
 #include "ext/matrix_transform.hpp"
 
 Camera::Camera()
-	: m_pos(), m_xRot(0), m_yRot(0)
+	: m_xRot(0), m_yRot(0)
 {
 }
 
 Camera::Camera(glm::vec3 pos)
-	: m_pos(pos), m_xRot(0), m_yRot(0)
+	: m_xRot(0), m_yRot(0)
 {
+	m_pos = pos;
 }
 
 void Camera::Update(GLFWwindow* window, float delta)
@@ -59,6 +60,9 @@ void Camera::Update(GLFWwindow* window, float delta)
 
 	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_2))
 	{
+		glm::vec2 mouseMove = m_app->GetMouseDelta() * (m_sensitivity / 50000);
+		m_xRot -= mouseMove.x;
+		m_yRot += mouseMove.y;
 		// Need to get mouse pos
 	}
 

@@ -1,13 +1,12 @@
 #pragma once
-#include "GraphicsHeaders.h"
-#include "glm.hpp"
+#include "GameObject.h"
 
-class Camera
+class Camera : public GameObject
 {
 public:
-	glm::vec3 m_pos;
 	float m_moveSpeed = 3;
 	float m_turnSpeed = 0.5f;
+	float m_sensitivity = 50;
 	float m_xRot;
 	float m_yRot;
 

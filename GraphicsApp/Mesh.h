@@ -1,10 +1,9 @@
 #pragma once
-#include <vector>
-#include "GraphicsHeaders.h"
-#include "glm.hpp"
+#include "GameObject.h"
 #include "Utilities.h"
+#include <vector>
 
-class Mesh
+class Mesh : public GameObject
 {
 protected:
 	GLuint m_vertBuffer;
@@ -22,7 +21,7 @@ public:
 	void CalculateTangents();
 	void InitObject();
 
-	glm::mat4 GetObjectSpace();
+	//glm::mat4 GetObjectSpace();
 
 	virtual void Draw();
 };
