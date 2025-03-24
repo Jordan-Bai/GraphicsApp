@@ -7,20 +7,20 @@ std::string LoadFileAsString(std::string fileName);
 struct Vertex
 {
 	Vertex()
-		: pos(), colour(), normal(), UVcoord()
+		: pos(), normal(), tangent(), UVcoord()
 	{
 	}
-	Vertex(glm::vec3 _pos, glm::vec3 _colour)
-		: pos(_pos), colour(_colour), normal(), UVcoord()
+	Vertex(glm::vec3 _pos)
+		: pos(_pos), normal(), tangent(), UVcoord()
 	{
 	}
-	Vertex(glm::vec3 _pos, glm::vec3 _colour, glm::vec3 _normal)
-		: pos(_pos), colour(_colour), normal(_normal), UVcoord()
+	Vertex(glm::vec3 _pos, glm::vec3 _normal, glm::vec3 _tangent)
+		: pos(_pos), normal(_normal), tangent(_tangent), UVcoord()
 	{
 	}
 
 	glm::vec3 pos;
-	glm::vec3 colour;
 	glm::vec3 normal;
+	glm::vec3 tangent;
 	glm::vec2 UVcoord;
 };

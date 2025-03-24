@@ -13,7 +13,6 @@ void Texture::LoadFileAsTexture(std::string fileName)
 {
 	glGenTextures(1, &m_texture); // Generate 1 texture buffer
 
-	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, m_texture);
 
 	int width, height, channels; // Channels stores how many colour channels we have (4 w/ alpha, 3 w/o)
@@ -52,7 +51,7 @@ void Texture::LoadFileAsTexture(std::string fileName)
 			GL_UNSIGNED_BYTE,			// Not sure about this one
 			data);						// The data itself
 
-		//glGenerateMipmap(GL_TEXTURE_2D); // Mip-mapping
+		glGenerateMipmap(GL_TEXTURE_2D); // Mip-mapping
 	}
 	else
 	{

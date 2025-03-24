@@ -5,7 +5,14 @@
 
 class Material
 {
+public:
 	ShaderProgram* m_shader;
 
-	std::vector<Texture> m_textures;
+	Texture* m_albedo;
+	Texture* m_specular;
+	Texture* m_normal;
+
+	Material(ShaderProgram* shader);
+
+	void ApplyMaterial();
 };

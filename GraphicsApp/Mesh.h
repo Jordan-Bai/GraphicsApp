@@ -19,6 +19,7 @@ public:
 	~Mesh();
 
 	void LoadFromFile(std::string fileName);
+	void CalculateTangents();
 	void InitObject();
 
 	glm::mat4 GetObjectSpace();

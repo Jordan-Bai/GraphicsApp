@@ -10,6 +10,7 @@
 #include "Quad.h"
 #include "Box.h"
 #include "Texture.h"
+#include "Camera.h"
 
 #include <iostream>
 #include <vector>
@@ -61,8 +62,17 @@ int main()
 	ShaderProgram testShader("vertexShader1", "fragmentShader1");
 	testShader.Use();
 
-	glm::vec3 sunDirection = { 0.1f, -1, 0.5f };
+	glm::vec3 sunDirection = { 0, -1, -1 };
 	testShader.SetVector3Uniform("sunDirection", glm::normalize(sunDirection));
+
+	Camera cam({ 0, 3.0f, 10.0f });
+	//cam.m_yRot = glm::radians(90.0f);
+	//glm::vec3 cameraPos(0, 3.0f, 5.0f);
+	//glm::vec3 lookOffset(0, 0, -5.0f);
+	float speed = 5;
+	//testShader.SetVector3Uniform("cameraPos", cameraPos);
+
+	testShader.SetFloatUniform("specPower", 16);
 
 	glEnable(GL_DEPTH_TEST); // Enables depth buffer
 
@@ -95,9 +105,10 @@ int main()
 	spear->LoadFromFile("soulspear.obj");
 	gameObjects.push_back(spear);
 
-	Texture tex;
-	tex.LoadFileAsTexture("soulspear_diffuse.tga");
-
+	Texture albedo;
+	albedo.LoadFileAsTexture("soulspear_diffuse.tga");
+	Texture specular;
+	specular.LoadFileAsTexture("soulspear_specular.tga");
 
 	float lastFrameTime = (float)glfwGetTime();
 
@@ -139,17 +150,20 @@ int main()
 		glClearColor(lerpedColour.r, lerpedColour.g, lerpedColour.b, lerpedColour.a);
 		//==========================================================================
 
+		// CONTROLS
+		//==========================================================================
+		cam.Update(window, delta);
+		testShader.SetVector3Uniform("cameraPos", cam.GetPos());
+		//==========================================================================
+
 
 		// OBJECT STUFF
 		//==========================================================================
-		//glActiveTexture(GL_TEXTURE0);
-		//glBindTexture(GL_TEXTURE_2D, tex.m_texture);
-
-		glm::mat4 rotation = glm::rotate(glm::mat4(1), (float)glfwGetTime(), glm::vec3(0.0f, 1.0f, 0.0f));
+		glm::mat4 rotation = glm::rotate(glm::mat4(1), (float)glfwGetTime() * 0.5f, glm::vec3(0.0f, 1.0f, 0.0f));
 		// ^ For testing
-		glm::mat4 view = glm::lookAt(glm::vec3(5.0f, 3.0f, -5.0f), glm::vec3(0.0f, 3.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		glm::mat4 view = cam.GetViewMatrix(); //glm::lookAt(cameraPos, cameraPos + lookOffset, glm::vec3(0.0f, 1.0f, 0.0f));
 		glm::mat4 projection = glm::perspective(
-			3.14159f / 2.0f, 
+			3.14159f / 4.0f, 
 			(float)width / (float)height,		// Aspect ratio
 			0.3f,								// Near plane
 			1000.0f);							// Far plane
@@ -160,8 +174,12 @@ int main()
 		testShader.SetMatrix4Uniform("vpMat", vpMat);
 
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, tex.m_texture);
-		//testShader.SetIntUniform("meshTexture", 0);
+		glBindTexture(GL_TEXTURE_2D, albedo.m_texture);
+		//testShader.SetIntUniform("albedoMap", 0);
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, specular.m_texture);
+		testShader.SetIntUniform("albedoMap", 0);
+		testShader.SetIntUniform("specularMap", 1);
 
 		for (Mesh* m : gameObjects)
 		{

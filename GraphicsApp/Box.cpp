@@ -12,13 +12,13 @@ Box::Box(glm::vec3 center, glm::vec3 size)
 	// | /---|-/
 	// |/    |/
 	// 3-----4
-	m_verts.push_back(Vertex(glm::vec3(-size.x, size.y, size.z), 	{ 1, 0, 0 }));
-	m_verts.push_back(Vertex(glm::vec3(size.x, size.y, size.z),		{ 1, 0, 0 }));
-	m_verts.push_back(Vertex(glm::vec3(-size.x, -size.y, size.z), 	{ 1, 0, 0 }));
+	m_verts.push_back(Vertex(glm::vec3(-size.x, size.y, size.z)));
+	m_verts.push_back(Vertex(glm::vec3(size.x, size.y, size.z)));
+	m_verts.push_back(Vertex(glm::vec3(-size.x, -size.y, size.z)));
 
-	m_verts.push_back(Vertex(glm::vec3(size.x, size.y, size.z),		{ 1, 0, 0 }));
-	m_verts.push_back(Vertex(glm::vec3(-size.x, -size.y, size.z),	{ 1, 0, 0 }));
-	m_verts.push_back(Vertex(glm::vec3(size.x, -size.y, size.z),	{ 1, 0, 0 }));
+	m_verts.push_back(Vertex(glm::vec3(size.x, size.y, size.z)));
+	m_verts.push_back(Vertex(glm::vec3(-size.x, -size.y, size.z)));
+	m_verts.push_back(Vertex(glm::vec3(size.x, -size.y, size.z)));
 
 	// Back face
 	//   1-----2
@@ -27,13 +27,13 @@ Box::Box(glm::vec3 center, glm::vec3 size)
 	// | 3---|-4
 	// |/    |/
 	// -------
-	m_verts.push_back(Vertex(glm::vec3(-size.x, size.y, -size.z),	{ 0, 1, 1 }));
-	m_verts.push_back(Vertex(glm::vec3(size.x, size.y, -size.z),	{ 0, 1, 1 }));
-	m_verts.push_back(Vertex(glm::vec3(-size.x, -size.y, -size.z),	{ 0, 1, 1 }));
+	m_verts.push_back(Vertex(glm::vec3(-size.x, size.y, -size.z)));
+	m_verts.push_back(Vertex(glm::vec3(size.x, size.y, -size.z)));
+	m_verts.push_back(Vertex(glm::vec3(-size.x, -size.y, -size.z)));
 
-	m_verts.push_back(Vertex(glm::vec3(size.x, size.y, -size.z),	{ 0, 1, 1 }));
-	m_verts.push_back(Vertex(glm::vec3(-size.x, -size.y, -size.z),	{ 0, 1, 1 }));
-	m_verts.push_back(Vertex(glm::vec3(size.x, -size.y, -size.z),	{ 0, 1, 1 }));
+	m_verts.push_back(Vertex(glm::vec3(size.x, size.y, -size.z)));
+	m_verts.push_back(Vertex(glm::vec3(-size.x, -size.y, -size.z)));
+	m_verts.push_back(Vertex(glm::vec3(size.x, -size.y, -size.z)));
 
 	// Right face
 	//   ------2
@@ -42,13 +42,13 @@ Box::Box(glm::vec3 center, glm::vec3 size)
 	// | /---|-4
 	// |/    |/
 	// ------3
-	m_verts.push_back(Vertex(glm::vec3(size.x, size.y, size.z),		{ 0, 1, 0 }));
-	m_verts.push_back(Vertex(glm::vec3(size.x, size.y, -size.z),	{ 0, 1, 0 }));
-	m_verts.push_back(Vertex(glm::vec3(size.x, -size.y, size.z),	{ 0, 1, 0 }));
+	m_verts.push_back(Vertex(glm::vec3(size.x, size.y, size.z)));
+	m_verts.push_back(Vertex(glm::vec3(size.x, size.y, -size.z)));
+	m_verts.push_back(Vertex(glm::vec3(size.x, -size.y, size.z)));
 
-	m_verts.push_back(Vertex(glm::vec3(size.x, size.y, -size.z),	{ 0, 1, 0 }));
-	m_verts.push_back(Vertex(glm::vec3(size.x, -size.y, size.z),	{ 0, 1, 0 }));
-	m_verts.push_back(Vertex(glm::vec3(size.x, -size.y, -size.z),	{ 0, 1, 0 }));
+	m_verts.push_back(Vertex(glm::vec3(size.x, size.y, -size.z)));
+	m_verts.push_back(Vertex(glm::vec3(size.x, -size.y, size.z)));
+	m_verts.push_back(Vertex(glm::vec3(size.x, -size.y, -size.z)));
 
 	// Left face
 	//   2------
@@ -57,13 +57,13 @@ Box::Box(glm::vec3 center, glm::vec3 size)
 	// | 4---|-/
 	// |/    |/
 	// 3------
-	m_verts.push_back(Vertex(glm::vec3(-size.x, size.y, size.z),	{ 1, 0, 1 }));
-	m_verts.push_back(Vertex(glm::vec3(-size.x, size.y, -size.z),	{ 1, 0, 1 }));
-	m_verts.push_back(Vertex(glm::vec3(-size.x, -size.y, size.z),	{ 1, 0, 1 }));
+	m_verts.push_back(Vertex(glm::vec3(-size.x, size.y, size.z)));
+	m_verts.push_back(Vertex(glm::vec3(-size.x, size.y, -size.z)));
+	m_verts.push_back(Vertex(glm::vec3(-size.x, -size.y, size.z)));
 
-	m_verts.push_back(Vertex(glm::vec3(-size.x, size.y, -size.z),	{ 1, 0, 1 }));
-	m_verts.push_back(Vertex(glm::vec3(-size.x, -size.y, size.z),	{ 1, 0, 1 }));
-	m_verts.push_back(Vertex(glm::vec3(-size.x, -size.y, -size.z),	{ 1, 0, 1 }));
+	m_verts.push_back(Vertex(glm::vec3(-size.x, size.y, -size.z)));
+	m_verts.push_back(Vertex(glm::vec3(-size.x, -size.y, size.z)));
+	m_verts.push_back(Vertex(glm::vec3(-size.x, -size.y, -size.z)));
 
 	// Top face
 	//   3-----4
@@ -72,13 +72,13 @@ Box::Box(glm::vec3 center, glm::vec3 size)
 	// | /---|-/
 	// |/    |/
 	// -------
-	m_verts.push_back(Vertex(glm::vec3(-size.x, size.y, size.z),	{ 0, 0, 1 }));
-	m_verts.push_back(Vertex(glm::vec3(size.x, size.y, size.z),		{ 0, 0, 1 }));
-	m_verts.push_back(Vertex(glm::vec3(-size.x, size.y, -size.z),	{ 0, 0, 1 }));
+	m_verts.push_back(Vertex(glm::vec3(-size.x, size.y, size.z)));
+	m_verts.push_back(Vertex(glm::vec3(size.x, size.y, size.z)));
+	m_verts.push_back(Vertex(glm::vec3(-size.x, size.y, -size.z)));
 
-	m_verts.push_back(Vertex(glm::vec3(size.x, size.y, size.z),		{ 0, 0, 1 }));
-	m_verts.push_back(Vertex(glm::vec3(-size.x, size.y, -size.z),	{ 0, 0, 1 }));
-	m_verts.push_back(Vertex(glm::vec3(size.x, size.y, -size.z),	{ 0, 0, 1 }));
+	m_verts.push_back(Vertex(glm::vec3(size.x, size.y, size.z)));
+	m_verts.push_back(Vertex(glm::vec3(-size.x, size.y, -size.z)));
+	m_verts.push_back(Vertex(glm::vec3(size.x, size.y, -size.z)));
 
 	// Bottom face
 	//   -------
@@ -87,13 +87,14 @@ Box::Box(glm::vec3 center, glm::vec3 size)
 	// | 3---|-4
 	// |/    |/
 	// 1-----2
-	m_verts.push_back(Vertex(glm::vec3(-size.x, -size.y, size.z),	{ 1, 1, 0 }));
-	m_verts.push_back(Vertex(glm::vec3(size.x, -size.y, size.z),	{ 1, 1, 0 }));
-	m_verts.push_back(Vertex(glm::vec3(-size.x, -size.y, -size.z),	{ 1, 1, 0 }));
+	m_verts.push_back(Vertex(glm::vec3(-size.x, -size.y, size.z)));
+	m_verts.push_back(Vertex(glm::vec3(size.x, -size.y, size.z)));
+	m_verts.push_back(Vertex(glm::vec3(-size.x, -size.y, -size.z)));
 
-	m_verts.push_back(Vertex(glm::vec3(size.x, -size.y, size.z),	{ 1, 1, 0 }));
-	m_verts.push_back(Vertex(glm::vec3(-size.x, -size.y, -size.z),	{ 1, 1, 0 }));
-	m_verts.push_back(Vertex(glm::vec3(size.x, -size.y, -size.z),	{ 1, 1, 0 }));
+	m_verts.push_back(Vertex(glm::vec3(size.x, -size.y, size.z)));
+	m_verts.push_back(Vertex(glm::vec3(-size.x, -size.y, -size.z)));
+	m_verts.push_back(Vertex(glm::vec3(size.x, -size.y, -size.z)));
+
 
 	InitObject();
 }
