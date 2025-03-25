@@ -1,6 +1,10 @@
 #pragma once
 #include "GraphicsHeaders.h"
 #include "glm.hpp"
+#include <vector>
+
+class GameObject;
+class Camera;
 
 class Application
 {
@@ -12,16 +16,27 @@ class Application
 	float m_width = 1280;
 	float m_height = 720;
 
+
+	std::vector<GameObject*> m_gameObjects;
+	Camera* m_currentCamera;
+
 public:
 	~Application();
 
 	int Initialize();
-
+	std::vector<GameObject*> GetObjects();
+	void AddObject(GameObject* object);
+	Camera* GetCurrentCamera();
+	void SetCurrentCamera(Camera* camera);
 	GLFWwindow* GetWindow();
+
 	glm::vec2 GetMousePos();
 	glm::vec2 GetMouseDelta();
+	bool GetKeyDown(int key);
+	bool GetMouseButtonDown(int button);
 
-	glm::mat4 GetProjection();
+	glm::mat4 GetVPMatrix();
 
 	void Update(float delta);
+	void Draw(glm::vec3 lightDir, float specPower);
 };

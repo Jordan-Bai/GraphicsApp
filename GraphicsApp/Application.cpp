@@ -1,9 +1,15 @@
 #include "Application.h"
+#include "Camera.h"
 #include <iostream>
 #include "ext/matrix_clip_space.hpp"
 
 Application::~Application()
 {
+	for (GameObject* o : m_gameObjects)
+	{
+		delete o;
+	}
+
 	glfwTerminate();
 }
 
@@ -36,10 +42,33 @@ int Application::Initialize()
 	}
 }
 
+std::vector<GameObject*> Application::GetObjects()
+{
+	return m_gameObjects;
+}
+
+
+void Application::AddObject(GameObject* object)
+{
+	m_gameObjects.push_back(object);
+	object->Init(this);
+}
+
+Camera* Application::GetCurrentCamera()
+{
+	return m_currentCamera;
+}
+
+void Application::SetCurrentCamera(Camera* camera)
+{
+	m_currentCamera = camera;
+}
+
 GLFWwindow* Application::GetWindow()
 {
     return m_window;
 }
+
 
 glm::vec2 Application::GetMousePos()
 {
@@ -51,14 +80,36 @@ glm::vec2 Application::GetMouseDelta()
     return m_mousePos - m_lastMousePos;
 }
 
-glm::mat4 Application::GetProjection()
+bool Application::GetKeyDown(int key)
 {
-	return glm::perspective(
+	return glfwGetKey(m_window, key) == GLFW_PRESS;
+}
+
+bool Application::GetMouseButtonDown(int button)
+{
+	return glfwGetMouseButton(m_window, button) == GLFW_PRESS;
+}
+
+glm::mat4 Application::GetVPMatrix()
+{
+	if (m_currentCamera == nullptr)
+	{
+		std::cout << "ERROR: No valid camera set" << std::endl;
+		return glm::mat4(1);
+	}
+
+	glm::mat4 view = m_currentCamera->GetViewMatrix();
+	glm::mat4 projection = glm::perspective(
 		3.14159f / 4.0f,					// FOV
 		(float)m_width / (float)m_height,	// Aspect ratio
 		0.3f,								// Near plane
 		1000.0f);							// Far plane
+
+	return projection * view;
+	// ^ Actually applied right to left, because of the way they're being multiplied 
+	// (openGL uses column-major order for matricies)
 }
+
 
 void Application::Update(float delta)
 {
@@ -67,4 +118,20 @@ void Application::Update(float delta)
     double yPos;
     glfwGetCursorPos(m_window, &xPos, &yPos);
     m_mousePos = {xPos, yPos};
+
+	for (GameObject* o : m_gameObjects)
+	{
+		o->Update(delta);
+	}
+}
+
+void Application::Draw(glm::vec3 lightDir, float specPower)
+{
+	glm::mat4 vpMat = GetVPMatrix();
+	for (GameObject* o : m_gameObjects)
+	{
+		//o->m_mat->m_shader->SetVector3Uniform("sunDirection", lightDir);
+		//o->m_mat->m_shader->SetFloatUniform("specPower", specPower);
+		o->Draw(lightDir, specPower, vpMat, m_currentCamera->GetPos());
+	}
 }

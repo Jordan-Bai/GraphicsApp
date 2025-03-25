@@ -13,6 +13,9 @@ public:
 	Texture* m_normal;
 
 	Material(ShaderProgram* shader);
+	Material(ShaderProgram* shader, Texture* albedo, Texture* specular, Texture* normal);
 
 	void ApplyMaterial();
+
+	//void SetVPMat();
 };

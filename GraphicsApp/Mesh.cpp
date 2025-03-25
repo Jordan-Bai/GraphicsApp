@@ -16,7 +16,8 @@ void Mesh::LoadFromFile(std::string fileName)
 {
 	Assimp::Importer importer;
 
-	const aiScene* fileScene = importer.ReadFile(fileName, aiProcess_Triangulate | aiProcess_JoinIdenticalVertices | aiProcess_ConvertToLeftHanded);
+	unsigned int flags = aiProcess_Triangulate | aiProcess_JoinIdenticalVertices | aiProcess_ConvertToLeftHanded | aiProcess_CalcTangentSpace;
+	const aiScene* fileScene = importer.ReadFile(fileName, flags);
 	// Second parameter is aiPostProcessSteps: determines which post process steps to apply
 	// Triangulate makes sure every face is a triangle
 	// JoinIdenticalVertices good for index buffering
@@ -65,26 +66,15 @@ void Mesh::LoadFromFile(std::string fileName)
 		std::cout << "Verts: " << m_verts.size() << std::endl;
 		std::cout << "Faces: " << mesh->mNumFaces << std::endl;
 
-		// If the mesh doesn't have tangents & bitangents, calculate them all at the end
+		// If the mesh doesn't have tangents & bitangents, output an error at the end (so we're no doing it for every face)
 		if (!mesh->HasTangentsAndBitangents())
 		{
-			CalculateTangents();
+			std::cout << "TANGENTS COULD NOT BE LOADED" << std::endl;
 		}
 
 	}
 
 	InitObject();
-}
-
-void Mesh::CalculateTangents()
-{
-	std::cout << "CALCULATING TANGENTS" << std::endl;
-
-	// IF I DO INDEX BUFFER I'LL NEED TO REDO THIS
-	for (int i = 0; i < m_verts.size(); i += 3)
-	{
-
-	}
 }
 
 void Mesh::InitObject()

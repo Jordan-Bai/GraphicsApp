@@ -10,11 +10,13 @@ public:
 	float m_xRot;
 	float m_yRot;
 
+	//float zoom = 10;
+
 public:
 	Camera();
 	Camera(glm::vec3 pos);
 
-	void Update(GLFWwindow* window, float delta);
+	virtual void Update(float delta) override;
 	glm::vec3 GetPos();
 	glm::vec3 GetForward();
 	glm::vec3 GetRight();

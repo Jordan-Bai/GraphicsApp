@@ -10,8 +10,11 @@ class ShaderProgram
 private:
 	GLuint shaderProgram = 0;
 
-	GLuint fragmentShader = 0;
 	GLuint vertexShader = 0;
+	GLuint fragmentShader = 0;
+
+	std::string m_vertexFileName;
+	std::string m_fragmentFileName;
 
 public:
 	ShaderProgram() {}
@@ -23,7 +26,7 @@ public:
 	ShaderProgram& operator=(const ShaderProgram& other) = delete;
 
 	void Use();
-
+	void ReloadShader();
 
 	void SetFloatUniform(std::string varName, float value);
 	void SetVector3Uniform(std::string varName, glm::vec3 value);

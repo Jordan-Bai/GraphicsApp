@@ -44,7 +44,7 @@ void Texture::LoadFileAsTexture(std::string fileName)
 	{
 		glTexImage2D(GL_TEXTURE_2D,		// The type of texture to generate
 			0,							// The 'mipmap level' (0 being the highest one)
-			GL_RGB,					// External format (what channel format is being uploaded)
+			GL_RGB,						// External format (what channel format is being uploaded)
 			width, height,				// The image specifications
 			0,							// Always 0 for legacy reasons apparently
 			GL_RGB,						// Format (what channel format is actually used internally)
