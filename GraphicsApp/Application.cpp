@@ -9,6 +9,11 @@ Application::~Application()
 	{
 		delete o;
 	}
+	//std::multimap<ShaderProgram*, GameObject*>::iterator it;
+	//for (it = m_renderedObjects.begin(); it != m_renderedObjects.end(); it++)
+	//{
+	//	delete (*it).second;
+	//}
 
 	glfwTerminate();
 }
@@ -52,6 +57,10 @@ void Application::AddObject(GameObject* object)
 {
 	m_gameObjects.push_back(object);
 	object->Init(this);
+	if (object->m_mat != nullptr)
+	{
+		m_renderedObjects.insert(std::pair<ShaderProgram*, GameObject*>(object->m_mat->m_shader, object));
+	}
 }
 
 Camera* Application::GetCurrentCamera()
@@ -123,15 +132,33 @@ void Application::Update(float delta)
 	{
 		o->Update(delta);
 	}
+	//std::multimap<ShaderProgram*, GameObject*>::iterator it;
+	//for (it = m_renderedObjects.begin(); it != m_renderedObjects.end(); it++)
+	//{
+	//	(*it).second->Update(delta);
+	//}
 }
 
 void Application::Draw(glm::vec3 lightDir, float specPower)
 {
 	glm::mat4 vpMat = GetVPMatrix();
-	for (GameObject* o : m_gameObjects)
+	//for (GameObject* o : m_gameObjects)
+	//{
+	//	o->Draw(lightDir, specPower, vpMat, m_currentCamera->GetPos());
+	//}
+	std::multimap<ShaderProgram*, GameObject*>::iterator it;
+	ShaderProgram* currentShader = nullptr;
+	for (it = m_renderedObjects.begin(); it != m_renderedObjects.end(); it++)
 	{
-		//o->m_mat->m_shader->SetVector3Uniform("sunDirection", lightDir);
-		//o->m_mat->m_shader->SetFloatUniform("specPower", specPower);
-		o->Draw(lightDir, specPower, vpMat, m_currentCamera->GetPos());
+		if ((*it).first != currentShader)
+		{
+			currentShader = (*it).first;
+			currentShader->Use();
+			currentShader->SetVector3Uniform("sunDirection", lightDir);
+			currentShader->SetFloatUniform("specPower", specPower);
+			currentShader->SetMatrix4Uniform("vpMat", vpMat);
+			currentShader->SetVector3Uniform("cameraPos", m_currentCamera->GetPos());
+		}
+		(*it).second->Draw();
 	}
 }

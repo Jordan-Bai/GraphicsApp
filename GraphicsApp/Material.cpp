@@ -19,8 +19,6 @@ void Material::ApplyMaterial()
 		return;
 	}
 
-	m_shader->Use();
-
 	glActiveTexture(GL_TEXTURE0);
 	if (m_albedo)
 	{

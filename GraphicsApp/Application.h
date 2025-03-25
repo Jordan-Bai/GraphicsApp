@@ -1,7 +1,7 @@
 #pragma once
-#include "GraphicsHeaders.h"
-#include "glm.hpp"
+#include "ShaderProgram.h"
 #include <vector>
+#include <map>
 
 class GameObject;
 class Camera;
@@ -16,8 +16,9 @@ class Application
 	float m_width = 1280;
 	float m_height = 720;
 
-
+	//std::map<ShaderProgram*, std::vector<GameObject*>> m_gameObjects;
 	std::vector<GameObject*> m_gameObjects;
+	std::multimap<ShaderProgram*, GameObject*> m_renderedObjects;
 	Camera* m_currentCamera;
 
 public:

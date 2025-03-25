@@ -25,8 +25,14 @@ void GameObject::Draw()
 {
 	if (m_mesh)
 	{
-		m_mat->ApplyMaterial();
+		if (!m_mat)
+		{
+			std::cout << "MESH DOES NOT HAVE MATERIAL" << std::endl;
+			return;
+		}
+
 		m_mat->m_shader->SetMatrix4Uniform("modelMat", GetObjectSpace());
+		m_mat->ApplyMaterial();
 
 		m_mesh->Draw();
 	}
@@ -42,12 +48,13 @@ void GameObject::Draw(glm::vec3 lightDir, float specPower, glm::mat4 vpMat, glm:
 			return;
 		}
 
-		m_mat->ApplyMaterial();
+		m_mat->m_shader->Use();
 		m_mat->m_shader->SetVector3Uniform("sunDirection", lightDir);
 		m_mat->m_shader->SetFloatUniform("specPower", specPower);
 		m_mat->m_shader->SetMatrix4Uniform("vpMat", vpMat);
 		m_mat->m_shader->SetVector3Uniform("cameraPos", camPos);
 		m_mat->m_shader->SetMatrix4Uniform("modelMat", GetObjectSpace());
+		m_mat->ApplyMaterial();
 
 		m_mesh->Draw();
 	}

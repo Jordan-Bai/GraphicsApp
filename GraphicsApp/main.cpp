@@ -52,7 +52,7 @@ int main()
 	//shader2.SetFloatUniform("specPower", 2);
 
 	Camera* cam = new Camera({ 0, 3.0f, 10.0f });
-	//cam.Init(&app);
+	//cam->Init(&app);
 	app.AddObject(cam);
 	app.SetCurrentCamera(cam);
 	//cam.m_yRot = glm::radians(90.0f);
@@ -94,70 +94,32 @@ int main()
 
 	while (!glfwWindowShouldClose(app.GetWindow()))
 	{
-		// Clears the screen
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
 		float timeBuffer = (float)glfwGetTime();
 		float delta = timeBuffer - lastFrameTime;
 		lastFrameTime = timeBuffer;
 
-		// CHANGE BACKGROUND COLOUR
+		// CLEAR SCREEN
 		//==========================================================================
+		// Clears the screen
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		// Set background colour
 		glClearColor(0.5f, 0.5f, 0.5f, 0.5f);
 		//==========================================================================
-
-		// UPDATE
-		//==========================================================================
 		app.Update(delta);
+		//cam->Update(delta);
 		if (app.GetKeyDown(GLFW_KEY_X))
 		{
 			shader1.ReloadShader();
-			shader1.Use();
-			shader1.SetVector3Uniform("sunDirection", glm::normalize(sunDirection));
-			shader1.SetFloatUniform("specPower", 2);
+			shader2.ReloadShader();
 		}
-		//cam.Update(delta);
-		//shader1.SetVector3Uniform("cameraPos", cam->GetPos());
-		//shader2.SetVector3Uniform("cameraPos", cam->GetPos());
-		//==========================================================================
-
-
-		// OBJECT STUFF
-		//==========================================================================
-		glm::mat4 rotation = glm::rotate(glm::mat4(1), (float)glfwGetTime() * 0.5f, glm::vec3(0.0f, 1.0f, 0.0f));
-		// ^ For testing
-
-		glm::mat4 vpMat = app.GetVPMatrix();
-		//shader1.SetMatrix4Uniform("vpMat", vpMat);
-		//shader2.SetMatrix4Uniform("vpMat", vpMat);
-
-		//glActiveTexture(GL_TEXTURE0);
-		//glBindTexture(GL_TEXTURE_2D, albedo.m_texture);
-		//glActiveTexture(GL_TEXTURE1);
-		//glBindTexture(GL_TEXTURE_2D, specular.m_texture);
-		//glActiveTexture(GL_TEXTURE2);
-		//glBindTexture(GL_TEXTURE_2D, normal.m_texture);
-		//testShader.SetIntUniform("albedoMap", 0); // 0 for texture unit 0
-		//testShader.SetIntUniform("specularMap", 1);
-		//testShader.SetIntUniform("normalMap", 2);
-
-		//std::vector<GameObject*> objects = app.GetObjects();
-		//for (GameObject* o : objects)
-		//{
-		//	//glm::mat4 modelSpace = o->GetObjectSpace() * rotation;
-		//
-		//	//shader1.SetMatrix4Uniform("modelMat", modelSpace);
-		//
-		//	o->Draw(sunDirection, 2, vpMat, cam->GetPos());
-		//}
 
 		app.Draw(sunDirection, 2);
-		//==========================================================================
 
 		// END OF FRAME
+		//==========================================================================
 		glfwSwapBuffers(app.GetWindow()); // Displays buffer we just wrote to 
 		glfwPollEvents(); // Check for inputs
+		//==========================================================================
 	}
 
 	glfwTerminate();
