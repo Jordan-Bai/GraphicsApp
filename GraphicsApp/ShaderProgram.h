@@ -1,9 +1,11 @@
 #pragma once
 
 #include "GraphicsHeaders.h"
-#include <string>
 #include "glm.hpp"
 #include "Texture.h"
+#include <string>
+#include <map>
+#include <vector>
 
 class ShaderProgram
 {
@@ -17,6 +19,12 @@ private:
 	std::string m_fragmentFileName;
 
 public:
+	std::map<std::string, float> m_uniformFloats;
+	std::map<std::string, glm::vec3> m_uniformVec3s;
+	std::map<std::string, std::vector<glm::vec3>> m_uniformVec3Arrays;
+	std::map<std::string, glm::mat4> m_uniformMat4s;
+	std::map<std::string, int> m_uniformInts;
+
 	ShaderProgram() {}
 	ShaderProgram(std::string vertexFilename, std::string fragmentFilename);
 
@@ -30,6 +38,9 @@ public:
 
 	void SetFloatUniform(std::string varName, float value);
 	void SetVector3Uniform(std::string varName, glm::vec3 value);
+	void SetVector3ArrayUniform(std::string varName, int count, glm::vec3* valueArray);
 	void SetMatrix4Uniform(std::string varName, glm::mat4 value);
 	void SetIntUniform(std::string varName, GLuint value); // Also includes setting samplers
+
+	void ApplyUniforms();
 };

@@ -12,6 +12,7 @@
 #include "Box.h"
 #include "Material.h"
 #include "Camera.h"
+#include "PointLight.h"
 
 #include <iostream>
 #include <vector>
@@ -27,13 +28,6 @@ int main()
 		return -1;
 	}
 	//==========================================================================
-	
-	//const int noOfColours = 3;
-	//Colour colours[noOfColours] = { {1, 0.3f, 0.3f, 1}, {0.3f, 0.7f, 0.3f, 1}, {0.3f, 0.3f, 1, 1} };
-	//Colour currentColour = colours[0];
-	//Colour nextColour = colours[1];
-	//int colourIndex = 0;
-	//float lerp = 0;
 
 	glm::vec3 sunDirection = { 0, -1, -1 };
 
@@ -41,15 +35,14 @@ int main()
 	glEnableVertexAttribArray(1); // layout location 1 in the vertex shader
 	glEnableVertexAttribArray(2); // layout location 2 in the vertex shader
 	glEnableVertexAttribArray(3); // layout location 2 in the vertex shader
-	ShaderProgram shader1("vertexShader1", "fragmentShader1");
-	//shader1.Use();
-	//shader1.SetVector3Uniform("sunDirection", glm::normalize(sunDirection));
-	//shader1.SetFloatUniform("specPower", 2);
-
-	ShaderProgram shader2("vertexShader2", "fragmentShader2");
-	//shader2.Use();
-	//shader2.SetVector3Uniform("sunDirection", glm::normalize(sunDirection));
-	//shader2.SetFloatUniform("specPower", 2);
+	ShaderProgram shader1("shader1Vert", "shader1Frag");
+	ShaderProgram shader2("shader1Vert", "shaderUnlitFrag");
+	ShaderProgram shader3("shader1Vert", "shader2Frag");
+	shader1.m_uniformFloats["specPower"] = 2;
+	shader1.m_uniformVec3s["sunDirection"] = sunDirection;
+	shader3.m_uniformFloats["specPower"] = 2;
+	shader3.m_uniformVec3s["sunDirection"] = sunDirection;
+	shader3.m_uniformVec3s["sunColour"] = { 1, 1, 1 };
 
 	Camera* cam = new Camera({ 0, 3.0f, 10.0f });
 	//cam->Init(&app);
@@ -70,25 +63,50 @@ int main()
 	normal.LoadFileAsTexture("soulspear_normal.tga");
 
 	Material mat1(&shader1, &albedo, &specular, &normal);
-	Material mat2(&shader1, &normal, &normal, &normal);
-	Material mat3(&shader2, &albedo, &specular, &normal);
+	Material mat2(&shader2, &albedo, &specular, &normal);
+	Material mat3(&shader1, &normal, &normal, &normal);
+	Material mat4(&shader3, &albedo, &specular, &normal);
 
 	GameObject* spear1 = new GameObject();
 	spear1->m_mesh = &spearMesh;
 	spear1->m_mat = &mat1;
+	spear1->m_pos = { -1.5f, 0, 0 };
 	app.AddObject(spear1);
 
 	GameObject* spear2 = new GameObject();
 	spear2->m_mesh = &spearMesh;
 	spear2->m_mat = &mat2;
-	spear2->m_pos = {3, 0, 0};
+	spear2->m_pos = { 4.5f, 0, 0 };
 	app.AddObject(spear2);
 
 	GameObject* spear3 = new GameObject();
 	spear3->m_mesh = &spearMesh;
 	spear3->m_mat = &mat3;
-	spear3->m_pos = { -3, 0, 0 };
+	spear3->m_pos = { -4.5f, 0, 0 };
 	app.AddObject(spear3);
+
+	GameObject* spear4 = new GameObject();
+	spear4->m_mesh = &spearMesh;
+	spear4->m_mat = &mat4;
+	spear4->m_pos = { 1.5f, 0, 0 };
+	app.AddObject(spear4);
+
+	std::vector<PointLight> lights;
+	PointLight light1({0.5f, 0.5f, 0.5f}, {1, 0, 0});
+	lights.push_back(light1);
+
+	std::vector<glm::vec3> lightPositions;
+	std::vector<glm::vec3> lightColours;
+	for (int i = 0; i < lights.size(); i++)
+	{
+		lightPositions.push_back(lights[i].pos);
+		lightColours.push_back(lights[i].col);
+	}
+
+	shader3.m_uniformInts["lightCount"] = lights.size();
+	shader3.m_uniformVec3Arrays["pointLightPos"] = lightPositions;
+	shader3.m_uniformVec3Arrays["pointLightCol"] = lightColours;
+
 
 	float lastFrameTime = (float)glfwGetTime();
 
@@ -111,7 +129,18 @@ int main()
 		{
 			shader1.ReloadShader();
 			shader2.ReloadShader();
+			shader3.ReloadShader();
 		}
+
+		glm::mat4 vpMat = app.GetVPMatrix();
+		glm::vec3 camPos = app.GetCurrentCamera()->GetPos();
+
+		shader1.m_uniformVec3s["cameraPos"] = camPos;
+		shader1.m_uniformMat4s["vpMat"] = vpMat;
+		shader2.m_uniformVec3s["cameraPos"] = camPos;
+		shader2.m_uniformMat4s["vpMat"] = vpMat;
+		shader3.m_uniformVec3s["cameraPos"] = camPos;
+		shader3.m_uniformMat4s["vpMat"] = vpMat;
 
 		app.Draw(sunDirection, 2);
 

@@ -206,6 +206,12 @@ void ShaderProgram::SetVector3Uniform(std::string varName, glm::vec3 value)
 	glUniform3f(varLoc, value.x, value.y, value.z);
 }
 
+void ShaderProgram::SetVector3ArrayUniform(std::string varName, int count, glm::vec3* valueArray)
+{
+	GLint varLoc = glGetUniformLocation(shaderProgram, varName.c_str());
+	glUniform3fv(varLoc, count, (float*)valueArray);
+}
+
 void ShaderProgram::SetMatrix4Uniform(std::string varName, glm::mat4 value)
 {
 	GLint varLoc = glGetUniformLocation(shaderProgram, varName.c_str());
@@ -220,4 +226,32 @@ void ShaderProgram::SetIntUniform(std::string varName, GLuint value)
 {
 	GLint varLoc = glGetUniformLocation(shaderProgram, varName.c_str());
 	glUniform1i(varLoc, value);
+}
+
+
+void ShaderProgram::ApplyUniforms()
+{
+	std::map<std::string, float>::iterator floatIt;
+	for (floatIt = m_uniformFloats.begin(); floatIt != m_uniformFloats.end(); floatIt++)
+	{
+		SetFloatUniform((*floatIt).first, (*floatIt).second);
+	}
+
+	std::map<std::string, glm::vec3>::iterator vec3It;
+	for (vec3It = m_uniformVec3s.begin(); vec3It != m_uniformVec3s.end(); vec3It++)
+	{
+		SetVector3Uniform((*vec3It).first, (*vec3It).second);
+	}
+
+	std::map<std::string, glm::mat4>::iterator mat4It;
+	for (mat4It = m_uniformMat4s.begin(); mat4It != m_uniformMat4s.end(); mat4It++)
+	{
+		SetMatrix4Uniform((*mat4It).first, (*mat4It).second);
+	}
+
+	std::map<std::string, int>::iterator intIt;
+	for (intIt = m_uniformInts.begin(); intIt != m_uniformInts.end(); intIt++)
+	{
+		SetIntUniform((*intIt).first, (*intIt).second);
+	}
 }

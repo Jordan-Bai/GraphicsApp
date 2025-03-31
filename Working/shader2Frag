@@ -1,0 +1,74 @@
+#version 460
+
+uniform vec3 sunDirection;
+uniform vec3 sunColour;
+
+const int MaxLights = 4;
+uniform int lightCount;
+uniform vec3 pointLightPos[MaxLights];
+uniform vec3 pointLightCol[MaxLights];
+
+uniform vec3 cameraPos;
+uniform float specPower;
+
+uniform sampler2D albedoMap; // The base colour texture of the object
+uniform sampler2D specularMap; // The specular highlight map of the object
+uniform sampler2D normalMap;
+
+in vec3 pos;
+in vec3 normal;
+in vec3 tangent;
+in vec3 biTangent;
+in vec2 UVCoord;
+
+out vec4 PixelColour;
+
+vec3 GetDiffuseLight(vec3 lightDir, vec3 normal, vec3 lightColour)
+{
+	return lightColour * max(0, -dot(lightDir, normal));
+}
+
+vec3 GetSpecularLight(vec3 viewDir, vec3 lightDir, vec3 normal, vec3 lightColour)
+{
+	vec3 reflectedRay = reflect(lightDir, normal);
+	
+	float inLine = -dot(viewDir, reflectedRay);
+	return lightColour * pow( max(0, inLine), specPower);
+}
+
+void main()
+{
+	vec3 albedoColour = texture(albedoMap, UVCoord).rgb;
+	vec3 specularColour = texture(specularMap, UVCoord).rgb;
+	vec3 normalColour = texture(normalMap, UVCoord).rgb;
+	normalColour = (normalColour * 2) - 1; // Remap to -1 to 1
+	
+	// Need to normalize these in the fragment shader
+	vec3 t = normalize(tangent);
+	vec3 b = normalize(biTangent);
+	vec3 n = normalize(normal);
+	mat3 TBNmat = mat3(t, b, n);
+	vec3 relativeNormal = TBNmat * normalColour;
+	
+	// Diffuse lighting
+	//==========================================================================
+	vec3 dLight = GetDiffuseLight(sunDirection, relativeNormal, sunColour);
+	for (int i = 0; i < lightCount; i++)
+	{
+		dLight += GetDiffuseLight(sunDirection, relativeNormal, sunColour);
+	}
+	vec3 diffuse = albedoColour * dLight;
+	//==========================================================================
+	
+	// Specular lighting
+	//==========================================================================
+	vec3 viewDir = normalize(pos - cameraPos); // Vector from camera to pixel pos
+	vec3 sLight = GetSpecularLight(viewDir, sunDirection, relativeNormal, sunColour);
+	vec3 specular = specularColour * sLight;
+	//==========================================================================
+	
+	PixelColour = vec4(diffuse + specular, 1.0);
+	//PixelColour = vec4(dLight + sLight, dLight + sLight, dLight + sLight, 1.0);
+	//PixelColour = vec4(UVCoord, 0.0, 1.0); // Good for debugging
+	//PixelColour = vec4(relativeNormal, 1.0);
+}

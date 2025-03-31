@@ -154,10 +154,7 @@ void Application::Draw(glm::vec3 lightDir, float specPower)
 		{
 			currentShader = (*it).first;
 			currentShader->Use();
-			currentShader->SetVector3Uniform("sunDirection", lightDir);
-			currentShader->SetFloatUniform("specPower", specPower);
-			currentShader->SetMatrix4Uniform("vpMat", vpMat);
-			currentShader->SetVector3Uniform("cameraPos", m_currentCamera->GetPos());
+			currentShader->ApplyUniforms();
 		}
 		(*it).second->Draw();
 	}

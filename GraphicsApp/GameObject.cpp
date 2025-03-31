@@ -14,7 +14,13 @@ void GameObject::Init(Application* app)
 
 glm::mat4 GameObject::GetObjectSpace()
 {
-	return glm::translate(glm::mat4(1), m_pos);
+	glm::mat4 translation = glm::translate(glm::mat4(1), m_pos);
+	glm::mat4 rotation = glm::rotate(glm::mat4(1), 0.0f, glm::vec3(0.0f, 1.0f, 0.0f)); // FOR TESTING
+	glm::mat4 scale = glm::scale(glm::mat4(1), glm::vec3(1, 1, 1)); // FOR TESTING
+	return translation * scale * rotation;
+	// ^ Actually applied right to left, because of the way they're being multiplied 
+	// (openGL uses column-major order for matricies)
+	// So rotation is applied first, then scale, then translation
 }
 
 void GameObject::Update(float delta)

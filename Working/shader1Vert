@@ -16,16 +16,14 @@ out vec2 UVCoord;
 
 void main()
 {
-	vec4 normVec4 = modelMat * vec4(vertNormal, 0.0);
-	normal = vec3(normVec4.x, normVec4.y, normVec4.z);
-	tangent = vertTangent;
+	normal = (modelMat * vec4(vertNormal, 0.0)).xyz;
+	tangent = (modelMat * vec4(vertTangent, 0.0)).xyz;
+	biTangent = cross(normal, tangent);
 	UVCoord = vertUVCoord;
 	
 	mat4 mvpMat = vpMat * modelMat;
 	vec4 transformedPos = mvpMat * vec4(vertPos, 1.0);
 	pos = transformedPos.xyz;
-	tangent = (mvpMat * vec4(vertTangent, 1.0)).xyz;
-	biTangent = cross(normal, tangent);
 	
 	gl_Position = transformedPos;
 }
