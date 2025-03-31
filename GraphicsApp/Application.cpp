@@ -99,6 +99,15 @@ bool Application::GetMouseButtonDown(int button)
 	return glfwGetMouseButton(m_window, button) == GLFW_PRESS;
 }
 
+glm::mat4 Application::GetProjectionMatrix()
+{
+	return glm::perspective(
+		3.14159f / 4.0f,					// FOV
+		(float)m_width / (float)m_height,	// Aspect ratio
+		0.3f,								// Near plane
+		1000.0f);							// Far plane;
+}
+
 glm::mat4 Application::GetVPMatrix()
 {
 	if (m_currentCamera == nullptr)
@@ -108,13 +117,8 @@ glm::mat4 Application::GetVPMatrix()
 	}
 
 	glm::mat4 view = m_currentCamera->GetViewMatrix();
-	glm::mat4 projection = glm::perspective(
-		3.14159f / 4.0f,					// FOV
-		(float)m_width / (float)m_height,	// Aspect ratio
-		0.3f,								// Near plane
-		1000.0f);							// Far plane
 
-	return projection * view;
+	return GetProjectionMatrix() * view;
 	// ^ Actually applied right to left, because of the way they're being multiplied 
 	// (openGL uses column-major order for matricies)
 }

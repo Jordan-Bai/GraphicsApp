@@ -1,5 +1,6 @@
 #include "Texture.h"
 #include <iostream>
+#include <vector>
 
 #define STB_IMAGE_IMPLEMENTATION // Stops it from including unecessary files?
 #include "stb_image.h"
@@ -59,5 +60,25 @@ void Texture::LoadFileAsTexture(std::string fileName)
 	}
 
 	stbi_image_free(data); // Free the data, good practice for not causing memory leaks
+	glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+void Texture::CreateColourTexture(glm::vec3 colour)
+{
+	std::vector<glm::vec3> test1 = {colour, colour, colour, colour};
+	glm::vec3* test2 = &colour;
+	glGenTextures(1, &m_texture); // Generate 1 texture buffer
+
+	glBindTexture(GL_TEXTURE_2D, m_texture);
+	glTexImage2D(GL_TEXTURE_2D,		// The type of texture to generate
+		0,							// The 'mipmap level' (0 being the highest one)
+		GL_RGB,						// External format (what channel format is being uploaded)
+		2, 2,						// The image specifications
+		0,							// Always 0 for legacy reasons apparently
+		GL_RGB,						// Format (what channel format is actually used internally)
+		GL_FLOAT,					// Not sure about this one
+		(char*)test1.data());				// The data itself
+
+	glGenerateMipmap(GL_TEXTURE_2D); // Mip-mapping
 	glBindTexture(GL_TEXTURE_2D, 0);
 }

@@ -1,5 +1,6 @@
 #pragma once
 #include "GraphicsHeaders.h"
+#include "glm.hpp"
 #include <string>
 
 struct Texture
@@ -8,4 +9,5 @@ struct Texture
 
 	~Texture();
 	void LoadFileAsTexture(std::string fileName);
+	void CreateColourTexture(glm::vec3 colour);
 };

@@ -36,6 +36,7 @@ public:
 	bool GetKeyDown(int key);
 	bool GetMouseButtonDown(int button);
 
+	glm::mat4 GetProjectionMatrix();
 	glm::mat4 GetVPMatrix();
 
 	void Update(float delta);

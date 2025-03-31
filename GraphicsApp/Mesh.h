@@ -10,9 +10,7 @@ protected:
 	GLuint m_vertArray; // Sometimes called VAO (Vertex Array Object)
 	GLuint m_vertBuffer; // Sometimes called VBO (Vertex Buffer Object)
 	GLuint m_indexBuffer; // Sometimes called IBO (Index Buffer Object)
-	//glm::vec3 m_pos;
-	//std::vector<Vertex> m_verts; // Vertices stored in local space
-	//std::vector<int> m_indicies;
+
 	int m_vertCount;
 	int m_triCount;
 
@@ -23,7 +21,7 @@ public:
 	}
 	~Mesh();
 
-	void CreateTestMesh();
+	void CreateCubeMesh();
 	void LoadFromFile(std::string fileName);
 	//void InitObject();
 	void InitObject(std::vector<Vertex>& verts, std::vector<int>& indicies);

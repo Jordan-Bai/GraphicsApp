@@ -99,7 +99,10 @@ glm::vec3 Camera::GetUp()
 glm::mat4 Camera::GetViewMatrix()
 {
 	//glm::vec3 forward(sin(m_xRot) * cos(m_yRot), sin(m_yRot), cos(m_xRot) * cos(m_yRot));
+
 	return glm::lookAt(m_pos, m_pos + GetForward(), glm::vec3(0.0f, 1.0f, 0.0f));
 	//return glm::lookAt(m_pos - (GetForward() * zoom), m_pos, glm::vec3(0.0f, 1.0f, 0.0f));
 	// If you want the camera pos to be the point it's focused on
+
+	//return glm::translate(glm::mat4(1), -m_pos);
 }

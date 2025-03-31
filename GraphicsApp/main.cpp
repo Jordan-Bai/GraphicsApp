@@ -35,6 +35,7 @@ int main()
 	ShaderProgram shader1("shader1Vert", "shader1Frag");
 	ShaderProgram shader2("shader1Vert", "shaderUnlitFrag");
 	ShaderProgram shader3("shader1Vert", "shader2Frag");
+	//ShaderProgram shader4("shader1Vert", "shader2Frag");
 	shader1.m_uniformFloats["specPower"] = 2;
 	shader1.m_uniformVec3s["sunDirection"] = sunDirection;
 	shader3.m_uniformFloats["specPower"] = 2;
@@ -51,6 +52,13 @@ int main()
 
 	Mesh spearMesh;
 	spearMesh.LoadFromFile("soulspear.obj");
+	Mesh cubeMesh;
+	cubeMesh.CreateCubeMesh();
+
+	Texture blank;
+	blank.CreateColourTexture({0.7f, 0.7f, 0.7f});
+	Texture blankNormal;
+	blankNormal.CreateColourTexture({ 0.5f, 0.5f, 1.0f });
 
 	Texture albedo;
 	albedo.LoadFileAsTexture("soulspear_diffuse.tga");
@@ -59,10 +67,13 @@ int main()
 	Texture normal;
 	normal.LoadFileAsTexture("soulspear_normal.tga");
 
+	Material defaultMat(&shader1, &blank, &blank, &blankNormal);
+
 	Material mat1(&shader1, &albedo, &specular, &normal);
 	Material mat2(&shader2, &albedo, &specular, &normal);
 	Material mat3(&shader1, &normal, &normal, &normal);
 	Material mat4(&shader3, &albedo, &specular, &normal);
+	//Material lightMat(&shader3, nullptr, nullptr, nullptr);
 
 	GameObject* spear1 = new GameObject();
 	spear1->m_mesh = &spearMesh;
@@ -87,6 +98,12 @@ int main()
 	spear4->m_mat = &mat4;
 	spear4->m_pos = { 1.5f, 0, 0 };
 	app.AddObject(spear4);
+
+	GameObject* cube = new GameObject();
+	cube->m_mesh = &cubeMesh;
+	cube->m_mat = &defaultMat;
+	cube->m_pos = { 0, 0, 0 };
+	app.AddObject(cube);
 
 	std::vector<PointLight> lights;
 	PointLight light1({0.0f, 0.0f, 0.0f}, {1, 0, 0}, 10);
@@ -129,6 +146,9 @@ int main()
 			shader2.ReloadShader();
 			shader3.ReloadShader();
 		}
+
+		// Factors in camera position, but not rotation
+		//glm::mat4 test = app.GetProjectionMatrix() * glm::translate(glm::mat4(1), -app.GetCurrentCamera()->GetPos());
 
 		glm::mat4 vpMat = app.GetVPMatrix();
 		glm::vec3 camPos = app.GetCurrentCamera()->GetPos();

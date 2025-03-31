@@ -13,26 +13,24 @@ Mesh::~Mesh()
 	glDeleteBuffers(1, &m_indexBuffer);
 }
 
-void Mesh::CreateTestMesh()
+void Mesh::CreateCubeMesh()
 {
-	glm::vec3 norm(0, 1, 0);
-	glm::vec3 tan(0, 0, 1);
-	glm::vec2 uv(0, 1);
-
-	//   4-----5
+	// Front face
+	//   -------
 	//  /|    /|
 	// 0-----1 |
-	// | 6---|-7
+	// | ----|-/
 	// |/    |/
 	// 2-----3
-	Vertex c0({ -1, 1, 1 }, norm, tan, uv);
-	Vertex c1({ 1, 1, 1 }, norm, tan, uv);
-	Vertex c2({ -1, -1, 1 }, norm, tan, uv);
-	Vertex c3({ 1, -1, 1 }, norm, tan, uv);
-	Vertex c4({ -1, 1, -1 }, norm, tan, uv);
-	Vertex c5({ 1, 1, -1 }, norm, tan, uv);
-	Vertex c6({ -1, -1, -1 }, norm, tan, uv);
-	Vertex c7({ 1, -1, -1 }, norm, tan, uv);
+	Vertex c0({ -1, 1, 1 },		{},	{}, {});
+	Vertex c1({ 1, 1, 1 },		{},	{}, {});
+	Vertex c2({ -1, -1, 1 },	{},	{}, {});
+	Vertex c3({ 1, -1, 1 },		{},	{}, {});
+
+	Vertex c4({ -1, 1, -1 },	{},	{}, {});
+	Vertex c5({ 1, 1, -1 },		{},	{}, {});
+	Vertex c6({ -1, -1, -1 },	{},	{}, {});
+	Vertex c7({ 1, -1, -1 },	{},	{}, {});
 
 	std::vector<Vertex> verts;
 	std::vector<int> indicies;
