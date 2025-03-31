@@ -51,21 +51,27 @@ void main()
 	vec3 relativeNormal = TBNmat * normalColour;
 	
 	// Diffuse lighting
-	//==========================================================================
 	vec3 dLight = GetDiffuseLight(sunDirection, relativeNormal, sunColour);
-	for (int i = 0; i < lightCount; i++)
-	{
-		dLight += GetDiffuseLight(sunDirection, relativeNormal, sunColour);
-	}
-	vec3 diffuse = albedoColour * dLight;
-	//==========================================================================
 	
 	// Specular lighting
-	//==========================================================================
 	vec3 viewDir = normalize(pos - cameraPos); // Vector from camera to pixel pos
 	vec3 sLight = GetSpecularLight(viewDir, sunDirection, relativeNormal, sunColour);
-	vec3 specular = specularColour * sLight;
+	
+	// Point lights
 	//==========================================================================
+	for (int i = 0; i < lightCount; i++)
+	{
+		// Diffuse lighting
+		vec3 lightDir = pos - pointLightPos[i];
+		float distance = length(lightDir);
+		lightDir /= distance;
+		float intensity = 1/(distance * distance);
+		dLight += GetDiffuseLight(lightDir, relativeNormal, pointLightCol[i]) * intensity;
+		sLight += GetSpecularLight(viewDir, lightDir, relativeNormal, pointLightCol[i]) * intensity;
+	}
+	//==========================================================================
+	vec3 diffuse = albedoColour * dLight;
+	vec3 specular = specularColour * sLight;
 	
 	PixelColour = vec4(diffuse + specular, 1.0);
 	//PixelColour = vec4(dLight + sLight, dLight + sLight, dLight + sLight, 1.0);

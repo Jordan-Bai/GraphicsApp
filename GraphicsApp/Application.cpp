@@ -139,7 +139,7 @@ void Application::Update(float delta)
 	//}
 }
 
-void Application::Draw(glm::vec3 lightDir, float specPower)
+void Application::Draw()
 {
 	glm::mat4 vpMat = GetVPMatrix();
 	//for (GameObject* o : m_gameObjects)

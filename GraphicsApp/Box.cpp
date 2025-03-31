@@ -138,5 +138,5 @@ void Box::Draw()
 	//// Draw bottom face
 	//glDrawArrays(GL_TRIANGLE_STRIP, 20, 4);
 
-	glDrawArrays(GL_TRIANGLES, 0, m_verts.size());
+	glDrawArrays(GL_TRIANGLES, 0, m_vertCount);
 }

@@ -243,6 +243,12 @@ void ShaderProgram::ApplyUniforms()
 		SetVector3Uniform((*vec3It).first, (*vec3It).second);
 	}
 
+	std::map<std::string, std::vector<glm::vec3>>::iterator vec3ArrayIt;
+	for (vec3ArrayIt = m_uniformVec3Arrays.begin(); vec3ArrayIt != m_uniformVec3Arrays.end(); vec3ArrayIt++)
+	{
+		SetVector3ArrayUniform((*vec3ArrayIt).first, (*vec3ArrayIt).second.size(), (*vec3ArrayIt).second.data());
+	}
+
 	std::map<std::string, glm::mat4>::iterator mat4It;
 	for (mat4It = m_uniformMat4s.begin(); mat4It != m_uniformMat4s.end(); mat4It++)
 	{

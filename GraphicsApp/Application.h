@@ -39,5 +39,5 @@ public:
 	glm::mat4 GetVPMatrix();
 
 	void Update(float delta);
-	void Draw(glm::vec3 lightDir, float specPower);
+	void Draw();
 };

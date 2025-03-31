@@ -11,8 +11,8 @@ struct PointLight
 		: pos(), col()
 	{
 	}
-	PointLight(glm::vec3 position, glm::vec3 colour)
-		: pos(position), col(colour)
+	PointLight(glm::vec3 position, glm::vec3 colour, float intensity)
+		: pos(position), col(colour * intensity)
 	{
 	}
 };

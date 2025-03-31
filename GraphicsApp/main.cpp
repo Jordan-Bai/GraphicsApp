@@ -7,9 +7,6 @@
 //#include "ext/matrix_clip_space.hpp"
 
 #include "Application.h"
-#include "Triangle.h"
-#include "Quad.h"
-#include "Box.h"
 #include "Material.h"
 #include "Camera.h"
 #include "PointLight.h"
@@ -31,10 +28,10 @@ int main()
 
 	glm::vec3 sunDirection = { 0, -1, -1 };
 
-	glEnableVertexAttribArray(0); // layout location 0 in the vertex shader
-	glEnableVertexAttribArray(1); // layout location 1 in the vertex shader
-	glEnableVertexAttribArray(2); // layout location 2 in the vertex shader
-	glEnableVertexAttribArray(3); // layout location 2 in the vertex shader
+	//glEnableVertexAttribArray(0); // layout location 0 in the vertex shader
+	//glEnableVertexAttribArray(1); // layout location 1 in the vertex shader
+	//glEnableVertexAttribArray(2); // layout location 2 in the vertex shader
+	//glEnableVertexAttribArray(3); // layout location 2 in the vertex shader
 	ShaderProgram shader1("shader1Vert", "shader1Frag");
 	ShaderProgram shader2("shader1Vert", "shaderUnlitFrag");
 	ShaderProgram shader3("shader1Vert", "shader2Frag");
@@ -92,8 +89,9 @@ int main()
 	app.AddObject(spear4);
 
 	std::vector<PointLight> lights;
-	PointLight light1({0.5f, 0.5f, 0.5f}, {1, 0, 0});
+	PointLight light1({0.0f, 0.0f, 0.0f}, {1, 0, 0}, 10);
 	lights.push_back(light1);
+	//lights.push_back(light1);
 
 	std::vector<glm::vec3> lightPositions;
 	std::vector<glm::vec3> lightColours;
@@ -142,7 +140,20 @@ int main()
 		shader3.m_uniformVec3s["cameraPos"] = camPos;
 		shader3.m_uniformMat4s["vpMat"] = vpMat;
 
-		app.Draw(sunDirection, 2);
+		for (int i = 0; i < lights.size(); i++)
+		{
+			glm::vec4 transformedPos = { lights[i].pos.x, lights[i].pos.y, lights[i].pos.z, 1 };
+			transformedPos = vpMat * transformedPos;
+			lightPositions[i] = { transformedPos.x, transformedPos.y, transformedPos.z };
+		
+			//glm::vec4 test = { spear4->m_pos.x, spear4->m_pos.y, spear4->m_pos.z, 1 };
+			//test = vpMat * test;
+			//std::cout << "LIGHT: " << transformedPos.x << ", " << transformedPos.y << ", " << transformedPos.z << std::endl;
+			//std::cout << "SPEAR: " << test.x << ", " << test.y << ", " << test.z << std::endl;
+		}
+		shader3.m_uniformVec3Arrays["pointLightPos"] = lightPositions;
+
+		app.Draw();
 
 		// END OF FRAME
 		//==========================================================================

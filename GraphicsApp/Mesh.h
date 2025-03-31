@@ -7,19 +7,26 @@
 class Mesh
 {
 protected:
-	GLuint m_vertBuffer;
+	GLuint m_vertArray; // Sometimes called VAO (Vertex Array Object)
+	GLuint m_vertBuffer; // Sometimes called VBO (Vertex Buffer Object)
+	GLuint m_indexBuffer; // Sometimes called IBO (Index Buffer Object)
 	//glm::vec3 m_pos;
-	std::vector<Vertex> m_verts; // Vertices stored in local space
+	//std::vector<Vertex> m_verts; // Vertices stored in local space
+	//std::vector<int> m_indicies;
+	int m_vertCount;
+	int m_triCount;
 
 public:
 	Mesh()
-		: m_vertBuffer()
+		: m_vertArray(), m_vertBuffer(), m_indexBuffer()
 	{
 	}
 	~Mesh();
 
+	void CreateTestMesh();
 	void LoadFromFile(std::string fileName);
-	void InitObject();
+	//void InitObject();
+	void InitObject(std::vector<Vertex>& verts, std::vector<int>& indicies);
 
 	//glm::mat4 GetObjectSpace();
 

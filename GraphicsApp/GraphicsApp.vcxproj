@@ -150,10 +150,8 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="Mesh.cpp" />
-    <ClCompile Include="Quad.cpp" />
     <ClCompile Include="ShaderProgram.cpp" />
     <ClCompile Include="Texture.cpp" />
-    <ClCompile Include="Triangle.cpp" />
     <ClCompile Include="Utilities.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -166,9 +164,7 @@
     <ClInclude Include="khrplatform.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="PointLight.h" />
-    <ClInclude Include="Quad.h" />
     <ClInclude Include="Texture.h" />
-    <ClInclude Include="Triangle.h" />
     <ClInclude Include="Utilities.h" />
     <ClInclude Include="GraphicsHeaders.h" />
     <ClInclude Include="Mesh.h" />

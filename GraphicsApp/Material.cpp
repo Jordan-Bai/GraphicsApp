@@ -30,7 +30,7 @@ void Material::ApplyMaterial()
 		glBindTexture(GL_TEXTURE_2D, m_specular->m_texture);
 	}
 	glActiveTexture(GL_TEXTURE2);
-	if (m_specular)
+	if (m_normal)
 	{
 		glBindTexture(GL_TEXTURE_2D, m_normal->m_texture);
 	}
