@@ -35,7 +35,8 @@ void Material::ApplyMaterial()
 		glBindTexture(GL_TEXTURE_2D, m_normal->m_texture);
 	}
 
-	m_shader->SetIntUniform("albedoMap", 0);
-	m_shader->SetIntUniform("specularMap", 1);
-	m_shader->SetIntUniform("normalMap", 2);
+	m_shader->BindUniform("albedoMap", 0);
+	m_shader->BindUniform("specularMap", 1);
+	m_shader->BindUniform("normalMap", 2);
+	m_shader->BindUniform("specPower", m_specPower);
 }

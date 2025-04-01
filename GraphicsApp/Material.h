@@ -12,6 +12,8 @@ public:
 	Texture* m_specular;
 	Texture* m_normal;
 
+	float m_specPower = 1;
+
 	Material(ShaderProgram* shader);
 	Material(ShaderProgram* shader, Texture* albedo, Texture* specular, Texture* normal);
 

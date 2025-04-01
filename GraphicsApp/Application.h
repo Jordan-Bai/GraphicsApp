@@ -2,6 +2,7 @@
 #include "ShaderProgram.h"
 #include <vector>
 #include <map>
+#include <type_traits>
 
 class GameObject;
 class Camera;
@@ -18,6 +19,7 @@ class Application
 
 	//std::map<ShaderProgram*, std::vector<GameObject*>> m_gameObjects;
 	std::vector<GameObject*> m_gameObjects;
+	std::vector<ShaderProgram*> m_shaders;
 	std::multimap<ShaderProgram*, GameObject*> m_renderedObjects;
 	Camera* m_currentCamera;
 
@@ -31,6 +33,20 @@ public:
 	void SetCurrentCamera(Camera* camera);
 	GLFWwindow* GetWindow();
 
+	void ReloadShaders();
+	void SetUniformInAllShaders(std::string uniformName, float value);
+	void SetUniformInAllShaders(std::string uniformName, glm::vec3 value);
+	void SetUniformInAllShaders(std::string uniformName, glm::mat4 value);
+	void SetUniformInAllShaders(std::string uniformName, int value); // Also includes setting samplers
+	//template <typename T, typename = typename std::enable_if < std::is_same < glm::vec3, T >::type> >
+	//void SetUniformInAllShaders(std::string uniformName, T const& t)
+	//{
+	//	for (ShaderProgram* s : m_shaders)
+	//	{
+	//		s->BindUniform(uniformName, t);
+	//	}
+	//}
+
 	glm::vec2 GetMousePos();
 	glm::vec2 GetMouseDelta();
 	bool GetKeyDown(int key);
@@ -42,3 +58,8 @@ public:
 	void Update(float delta);
 	void Draw();
 };
+
+//template<typename T, type>
+//inline void Application::SetUniformInAllShaders(std::string uniformName, T const& t)
+//{
+//}

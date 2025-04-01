@@ -10,12 +10,15 @@ protected:
 
 public:
 	glm::vec3 m_pos;
+	glm::vec3 m_rot;
+	glm::vec3 m_scale;
 	Mesh* m_mesh = nullptr;
 	Material* m_mat = nullptr;
 
 	GameObject();
 	void Init(Application* app);
 
+	glm::mat4 GetRotation();
 	glm::mat4 GetObjectSpace();
 
 	virtual void Update(float delta);

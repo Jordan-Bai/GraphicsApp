@@ -59,6 +59,17 @@ void Application::AddObject(GameObject* object)
 	object->Init(this);
 	if (object->m_mat != nullptr)
 	{
+		if (object->m_mat->m_shader == nullptr)
+		{
+			std::cout << "MATERIAL DOES NOT CONTAIN SHADER" << std::endl;
+			return;
+		}
+
+		std::multimap<ShaderProgram*, GameObject*>::iterator it = m_renderedObjects.find(object->m_mat->m_shader);
+		if (it == m_renderedObjects.end()) // If the shader isn't already registered, add it to the list
+		{
+			m_shaders.push_back(object->m_mat->m_shader);
+		}
 		m_renderedObjects.insert(std::pair<ShaderProgram*, GameObject*>(object->m_mat->m_shader, object));
 	}
 }
@@ -77,6 +88,56 @@ GLFWwindow* Application::GetWindow()
 {
     return m_window;
 }
+
+
+void Application::ReloadShaders()
+{
+	for (ShaderProgram* s : m_shaders)
+	{
+		s->ReloadShader();
+	}
+}
+
+void Application::SetUniformInAllShaders(std::string uniformName, float value)
+{
+	for (ShaderProgram* s : m_shaders)
+	{
+		s->SetUniform(uniformName, value);
+	}
+}
+
+void Application::SetUniformInAllShaders(std::string uniformName, glm::vec3 value)
+{
+	for (ShaderProgram* s : m_shaders)
+	{
+		s->SetUniform(uniformName, value);
+	}
+}
+
+void Application::SetUniformInAllShaders(std::string uniformName, glm::mat4 value)
+{
+	for (ShaderProgram* s : m_shaders)
+	{
+		s->SetUniform(uniformName, value);
+	}
+}
+
+void Application::SetUniformInAllShaders(std::string uniformName, int value)
+{
+	for (ShaderProgram* s : m_shaders)
+	{
+		s->SetUniform(uniformName, value);
+	}
+}
+
+//template <typename T, typename = typename std::enable_if < std::is_same < glm::vec3, T >::type> >
+//inline void Application::SetUniformInAllShaders(std::string uniformName, T const& t)
+//{
+//	for (ShaderProgram* s : m_shaders)
+//	{
+//		s->BindUniform(uniformName, t);
+//	}
+//}
 
 
 glm::vec2 Application::GetMousePos()
@@ -146,12 +207,9 @@ void Application::Update(float delta)
 void Application::Draw()
 {
 	glm::mat4 vpMat = GetVPMatrix();
-	//for (GameObject* o : m_gameObjects)
-	//{
-	//	o->Draw(lightDir, specPower, vpMat, m_currentCamera->GetPos());
-	//}
 	std::multimap<ShaderProgram*, GameObject*>::iterator it;
 	ShaderProgram* currentShader = nullptr;
+
 	for (it = m_renderedObjects.begin(); it != m_renderedObjects.end(); it++)
 	{
 		if ((*it).first != currentShader)

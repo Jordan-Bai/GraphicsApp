@@ -32,13 +32,19 @@ int main()
 	//glEnableVertexAttribArray(1); // layout location 1 in the vertex shader
 	//glEnableVertexAttribArray(2); // layout location 2 in the vertex shader
 	//glEnableVertexAttribArray(3); // layout location 2 in the vertex shader
-	ShaderProgram shader1("shader1Vert", "shader1Frag");
-	ShaderProgram shader2("shader1Vert", "shaderUnlitFrag");
-	ShaderProgram shader3("shader1Vert", "shader2Frag");
-	//ShaderProgram shader4("shader1Vert", "shader2Frag");
-	shader1.m_uniformFloats["specPower"] = 2;
+	Shader vertShader1("shader1Vert", GL_VERTEX_SHADER);
+	Shader fragShader1("shader1Frag", GL_FRAGMENT_SHADER);
+	Shader fragShader2("shader2Frag", GL_FRAGMENT_SHADER);
+	Shader fragShaderUnlit("shaderUnlitFrag", GL_FRAGMENT_SHADER);
+	Shader fragShaderTest("shaderTestFrag", GL_FRAGMENT_SHADER);
+
+	ShaderProgram shader1(&vertShader1, &fragShader1);
+	ShaderProgram shader2(&vertShader1, &fragShaderUnlit);
+	ShaderProgram shader3(&vertShader1, &fragShader2);
+	ShaderProgram shaderNormal(&vertShader1, &fragShaderTest);
+	//shader1.m_uniformFloats["specPower"] = 2;
 	shader1.m_uniformVec3s["sunDirection"] = sunDirection;
-	shader3.m_uniformFloats["specPower"] = 2;
+	//shader3.m_uniformFloats["specPower"] = 2;
 	shader3.m_uniformVec3s["sunDirection"] = sunDirection;
 	shader3.m_uniformVec3s["sunColour"] = { 1, 1, 1 };
 
@@ -68,12 +74,15 @@ int main()
 	normal.LoadFileAsTexture("soulspear_normal.tga");
 
 	Material defaultMat(&shader1, &blank, &blank, &blankNormal);
+	defaultMat.m_specPower = 0.5f;
 
 	Material mat1(&shader1, &albedo, &specular, &normal);
 	Material mat2(&shader2, &albedo, &specular, &normal);
 	Material mat3(&shader1, &normal, &normal, &normal);
 	Material mat4(&shader3, &albedo, &specular, &normal);
-	//Material lightMat(&shader3, nullptr, nullptr, nullptr);
+	mat1.m_specPower = 5;
+	mat3.m_specPower = 5;
+	mat4.m_specPower = 5;
 
 	GameObject* spear1 = new GameObject();
 	spear1->m_mesh = &spearMesh;
@@ -99,16 +108,24 @@ int main()
 	spear4->m_pos = { 1.5f, 0, 0 };
 	app.AddObject(spear4);
 
-	GameObject* cube = new GameObject();
-	cube->m_mesh = &cubeMesh;
-	cube->m_mat = &defaultMat;
-	cube->m_pos = { 0, 0, 0 };
-	app.AddObject(cube);
+	GameObject* cube1 = new GameObject();
+	cube1->m_mesh = &cubeMesh;
+	cube1->m_mat = &defaultMat;
+	cube1->m_pos = { 0, 0, 0 };
+	//cube1->m_scale = { 0.1f, 0.1f, 0.1f};
+	app.AddObject(cube1);
 
 	std::vector<PointLight> lights;
-	PointLight light1({0.0f, 0.0f, 0.0f}, {1, 0, 0}, 10);
+	PointLight light1({ 0.0f, 0.0f, 0.0f }, { 1, 0, 0 }, 10);
+	PointLight light2({ 2.0f, 0.0f, 1.0f }, { 1, 0, 0 }, 10);
+	PointLight light3({ 3.0f, 0.5f, -0.5f }, { 1, 0, 0 }, 10);
+	PointLight light4({ 0.0f, 1.0f, 1.0f }, { 1, 0, 0 }, 10);
+	PointLight light5({ -2.0f, 0.0f, 1.0f }, { 0, 0, 1 }, 10);
 	lights.push_back(light1);
-	//lights.push_back(light1);
+	lights.push_back(light2);
+	lights.push_back(light3);
+	lights.push_back(light4);
+	lights.push_back(light5);
 
 	std::vector<glm::vec3> lightPositions;
 	std::vector<glm::vec3> lightColours;
@@ -139,13 +156,12 @@ int main()
 		glClearColor(0.5f, 0.5f, 0.5f, 0.5f);
 		//==========================================================================
 		app.Update(delta);
-		//cam->Update(delta);
 		if (app.GetKeyDown(GLFW_KEY_X))
 		{
-			shader1.ReloadShader();
-			shader2.ReloadShader();
-			shader3.ReloadShader();
+			app.ReloadShaders();
 		}
+
+		//spear1->m_rot = {0, glfwGetTime(), 0};
 
 		// Factors in camera position, but not rotation
 		//glm::mat4 test = app.GetProjectionMatrix() * glm::translate(glm::mat4(1), -app.GetCurrentCamera()->GetPos());
@@ -153,12 +169,8 @@ int main()
 		glm::mat4 vpMat = app.GetVPMatrix();
 		glm::vec3 camPos = app.GetCurrentCamera()->GetPos();
 
-		shader1.m_uniformVec3s["cameraPos"] = camPos;
-		shader1.m_uniformMat4s["vpMat"] = vpMat;
-		shader2.m_uniformVec3s["cameraPos"] = camPos;
-		shader2.m_uniformMat4s["vpMat"] = vpMat;
-		shader3.m_uniformVec3s["cameraPos"] = camPos;
-		shader3.m_uniformMat4s["vpMat"] = vpMat;
+		app.SetUniformInAllShaders("cameraPos", camPos);
+		app.SetUniformInAllShaders("vpMat", vpMat);
 
 		for (int i = 0; i < lights.size(); i++)
 		{
