@@ -10,6 +10,10 @@ uniform vec3 pointLightCol[MaxLights];
 
 uniform vec3 cameraPos;
 uniform float specPower;
+// Material properties
+uniform float matAmbient;
+uniform float matDiffuse;
+uniform float matSpecular;
 
 uniform sampler2D albedoMap; // The base colour texture of the object
 uniform sampler2D specularMap; // The specular highlight map of the object
@@ -70,10 +74,12 @@ void main()
 		sLight += GetSpecularLight(viewDir, lightDir, relativeNormal, pointLightCol[i]) * intensity;
 	}
 	//==========================================================================
-	vec3 diffuse = albedoColour * dLight;
-	vec3 specular = specularColour * sLight;
 	
-	PixelColour = vec4(diffuse + specular, 1.0);
+	vec3 ambient = albedoColour * matAmbient;
+	vec3 diffuse = albedoColour * dLight * matDiffuse;
+	vec3 specular = specularColour * sLight * matSpecular;
+	
+	PixelColour = vec4(ambient + diffuse + specular, 1.0);
 	//PixelColour = vec4(dLight + sLight, dLight + sLight, dLight + sLight, 1.0);
 	//PixelColour = vec4(UVCoord, 0.0, 1.0); // Good for debugging
 	//PixelColour = vec4(relativeNormal, 1.0);

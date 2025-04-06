@@ -3,17 +3,20 @@
 #include <iostream>
 #include "ext/matrix_clip_space.hpp"
 
+#include <imgui.h>
+#include "imgui_impl_glfw.h"
+#include "imgui_impl_opengl3.h"
+
 Application::~Application()
 {
 	for (GameObject* o : m_gameObjects)
 	{
 		delete o;
 	}
-	//std::multimap<ShaderProgram*, GameObject*>::iterator it;
-	//for (it = m_renderedObjects.begin(); it != m_renderedObjects.end(); it++)
-	//{
-	//	delete (*it).second;
-	//}
+	
+	ImGui_ImplOpenGL3_Shutdown();
+	ImGui_ImplGlfw_Shutdown();
+	ImGui::DestroyContext();
 
 	glfwTerminate();
 }
@@ -45,6 +48,12 @@ int Application::Initialize()
 		std::cout << "GLAD COULD NOT LOAD" << std::endl;
 		return -1;
 	}
+
+	// IMGUI SETUP
+	ImGui::CreateContext();
+
+	ImGui_ImplGlfw_InitForOpenGL(m_window, true);
+	ImGui_ImplOpenGL3_Init();
 }
 
 std::vector<GameObject*> Application::GetObjects()
@@ -193,15 +202,16 @@ void Application::Update(float delta)
     glfwGetCursorPos(m_window, &xPos, &yPos);
     m_mousePos = {xPos, yPos};
 
+	ImGui_ImplGlfw_NewFrame();
+	ImGui_ImplOpenGL3_NewFrame();
+	ImGui::NewFrame();
+
 	for (GameObject* o : m_gameObjects)
 	{
 		o->Update(delta);
 	}
-	//std::multimap<ShaderProgram*, GameObject*>::iterator it;
-	//for (it = m_renderedObjects.begin(); it != m_renderedObjects.end(); it++)
-	//{
-	//	(*it).second->Update(delta);
-	//}
+
+	//ImGui::Render(); // Doesn't actually draw stuff, just prepares info to be drawn
 }
 
 void Application::Draw()
@@ -219,5 +229,12 @@ void Application::Draw()
 			currentShader->ApplyUniforms();
 		}
 		(*it).second->Draw();
+	}
+
+	// ImGui
+	ImDrawData* drawData = ImGui::GetDrawData();
+	if (drawData != nullptr)
+	{
+		ImGui_ImplOpenGL3_RenderDrawData(drawData);
 	}
 }
