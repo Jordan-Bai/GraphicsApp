@@ -34,18 +34,17 @@ public:
 	GLFWwindow* GetWindow();
 
 	void ReloadShaders();
+	void ApplyAllUniforms();
+
 	void SetUniformInAllShaders(std::string uniformName, float value);
 	void SetUniformInAllShaders(std::string uniformName, glm::vec3 value);
 	void SetUniformInAllShaders(std::string uniformName, glm::mat4 value);
 	void SetUniformInAllShaders(std::string uniformName, int value); // Also includes setting samplers
-	//template <typename T, typename = typename std::enable_if < std::is_same < glm::vec3, T >::type> >
-	//void SetUniformInAllShaders(std::string uniformName, T const& t)
-	//{
-	//	for (ShaderProgram* s : m_shaders)
-	//	{
-	//		s->BindUniform(uniformName, t);
-	//	}
-	//}
+
+	void BindUniformInAllShaders(std::string uniformName, float value);
+	void BindUniformInAllShaders(std::string uniformName, glm::vec3 value);
+	void BindUniformInAllShaders(std::string uniformName, glm::mat4 value);
+	void BindUniformInAllShaders(std::string uniformName, int value); // Also includes binding samplers
 
 	glm::vec2 GetMousePos();
 	glm::vec2 GetMouseDelta();

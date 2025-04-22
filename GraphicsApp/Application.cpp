@@ -107,6 +107,15 @@ void Application::ReloadShaders()
 	}
 }
 
+void Application::ApplyAllUniforms()
+{
+	for (ShaderProgram* s : m_shaders)
+	{
+		s->ApplyUniforms();
+	}
+}
+
+
 void Application::SetUniformInAllShaders(std::string uniformName, float value)
 {
 	for (ShaderProgram* s : m_shaders)
@@ -139,14 +148,42 @@ void Application::SetUniformInAllShaders(std::string uniformName, int value)
 	}
 }
 
-//template <typename T, typename = typename std::enable_if < std::is_same < glm::vec3, T >::type> >
-//inline void Application::SetUniformInAllShaders(std::string uniformName, T const& t)
-//{
-//	for (ShaderProgram* s : m_shaders)
-//	{
-//		s->BindUniform(uniformName, t);
-//	}
-//}
+
+void Application::BindUniformInAllShaders(std::string uniformName, float value)
+{
+	for (ShaderProgram* s : m_shaders)
+	{
+		s->Use();
+		s->BindUniform(uniformName, value);
+	}
+}
+
+void Application::BindUniformInAllShaders(std::string uniformName, glm::vec3 value)
+{
+	for (ShaderProgram* s : m_shaders)
+	{
+		s->Use();
+		s->BindUniform(uniformName, value);
+	}
+}
+
+void Application::BindUniformInAllShaders(std::string uniformName, glm::mat4 value)
+{
+	for (ShaderProgram* s : m_shaders)
+	{
+		s->Use();
+		s->BindUniform(uniformName, value);
+	}
+}
+
+void Application::BindUniformInAllShaders(std::string uniformName, int value)
+{
+	for (ShaderProgram* s : m_shaders)
+	{
+		s->Use();
+		s->BindUniform(uniformName, value);
+	}
+}
 
 
 glm::vec2 Application::GetMousePos()
@@ -226,7 +263,7 @@ void Application::Draw()
 		{
 			currentShader = (*it).first;
 			currentShader->Use();
-			currentShader->ApplyUniforms();
+			//currentShader->ApplyUniforms();
 		}
 		(*it).second->Draw();
 	}

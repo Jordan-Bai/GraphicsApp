@@ -45,16 +45,14 @@ public:
 	void SetUniform(std::string varName, glm::vec3 value);
 	void SetUniform(std::string varName, glm::mat4 value);
 	void SetUniform(std::string varName, int value); // Also includes setting samplers
-
 	void SetArrayUniform(std::string varName, int count, std::vector<glm::vec3> valueArray);
-
 
 	void BindUniform(std::string varName, float value);
 	void BindUniform(std::string varName, glm::vec3 value);
 	void BindUniform(std::string varName, glm::mat4 value);
-	void BindUniform(std::string varName, int value); // Also includes setting samplers
-
+	void BindUniform(std::string varName, int value); // Also includes binding samplers
 	void BindArrayUniform(std::string varName, int count, glm::vec3* valueArray);
+	void BindArrayUniform(std::string varName, std::vector<glm::vec3> value);
 
 	void ApplyUniforms();
 };

@@ -149,6 +149,8 @@ void ShaderProgram::ReloadShader()
 		glDeleteProgram(shaderProgram);
 		shaderProgram = 0;
 	}
+
+	ApplyUniforms(); // Reapply uniforms
 }
 
 
@@ -214,9 +216,17 @@ void ShaderProgram::BindArrayUniform(std::string varName, int count, glm::vec3* 
 	glUniform3fv(varLoc, count, (float*)valueArray);
 }
 
+void ShaderProgram::BindArrayUniform(std::string varName, std::vector<glm::vec3> value)
+{
+	GLint varLoc = glGetUniformLocation(shaderProgram, varName.c_str());
+	glUniform3fv(varLoc, value.size(), (float*)value.data());
+}
+
 
 void ShaderProgram::ApplyUniforms()
 {
+	Use();
+
 	std::map<std::string, float>::iterator floatIt;
 	for (floatIt = m_uniformFloats.begin(); floatIt != m_uniformFloats.end(); floatIt++)
 	{

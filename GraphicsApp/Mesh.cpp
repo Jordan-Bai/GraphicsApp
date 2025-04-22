@@ -11,6 +11,7 @@ Mesh::~Mesh()
 {
 	glDeleteBuffers(1, &m_vertBuffer);
 	glDeleteBuffers(1, &m_indexBuffer);
+	glDeleteVertexArrays(1, &m_vertArray);
 }
 
 void Mesh::CreateCubeMesh()
@@ -282,45 +283,27 @@ void Mesh::LoadFromFile(std::string fileName)
 	InitObject(verts, indicies);
 }
 
-void Mesh::InitObject(std::vector<Vertex>& verts, std::vector<int>& indicies)
+void Mesh::InitObject(std::vector<Vertex>& verts, std::vector<int>& indices)
 {
-	glGenBuffers(1, &m_vertArray);
+	glGenVertexArrays(1, &m_vertArray);
 	glGenBuffers(1, &m_vertBuffer);
 	glGenBuffers(1, &m_indexBuffer);
 
-	// Bind vertex array
+	// Bind VAO & VBO (Order doesn't matter)
+	//==========================================================================
 	glBindVertexArray(m_vertArray);
 
-	// Bind vertex buffer
 	glBindBuffer(GL_ARRAY_BUFFER, m_vertBuffer);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * verts.size(), verts.data(), GL_STATIC_DRAW);
+
+	// Set vertex data
+	//==========================================================================
+	// Vertex data needs to be linked to the VAO *and* the VBO, so this must happen after both are bound
 	glEnableVertexAttribArray(0); // layout location 0 in the vertex shader
 	glEnableVertexAttribArray(1); // layout location 1 in the vertex shader
 	glEnableVertexAttribArray(2); // layout location 2 in the vertex shader
 	glEnableVertexAttribArray(3); // layout location 2 in the vertex shader
 
-	// Bind index buffer
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_indexBuffer);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(int) * indicies.size(), indicies.data(), GL_STATIC_DRAW);
-
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-	glBindVertexArray(0);
-
-	m_triCount = indicies.size() / 3;
-}
-
-//glm::mat4 Mesh::GetObjectSpace()
-//{
-//	return glm::translate(glm::mat4(1), m_pos);
-//}
-
-void Mesh::Draw()
-{
-	glBindVertexArray(m_vertArray);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_indexBuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, m_vertBuffer);
-	
 	// vertPos
 	glVertexAttribPointer(0,	// Index: Corresponds to layout(location = _) in the vertex shader
 		3,						// Size: number of the following type per vertex: in the case 3, since there are 3 floats per vertex
@@ -350,11 +333,59 @@ void Mesh::Draw()
 		sizeof(Vertex),
 		(const void*)(9 * sizeof(float)));
 
+	//glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	// Bind IBO
+	//==========================================================================
+	// Needs to happen AFTER the VAO is bound, as otherwise they won't link up
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_indexBuffer);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(int) * indices.size(), indices.data(), GL_STATIC_DRAW);
+
+	// Unbind VAO
+	//==========================================================================
+	// Don't need to unbind the VBO and IBO, as unbinding the VAO will automatically unbind them
+	glBindVertexArray(0);
+
+	m_triCount = indices.size() / 3;
+}
+
+void Mesh::Draw()
+{
+	// Bind VAO
+	glBindVertexArray(m_vertArray);
+	
+	//// vertPos
+	//glVertexAttribPointer(0,	// Index: Corresponds to layout(location = _) in the vertex shader
+	//	3,						// Size: number of the following type per vertex: in the case 3, since there are 3 floats per vertex
+	//	GL_FLOAT,				// Type: type to read the data as
+	//	GL_FALSE,				// Normalised: whether values should be maped to [-1, 1] (for signed) or [0, 1] (for unsigned)
+	//	sizeof(Vertex),			// Stride: The amount to move through the vertex buffer per vertex
+	//	0);						// Pointer: How far from the pointed to index the start of the data to read is
+	//// vertNormal
+	//glVertexAttribPointer(1,
+	//	3,
+	//	GL_FLOAT,
+	//	GL_FALSE,
+	//	sizeof(Vertex),
+	//	(const void*)(3 * sizeof(float)));
+	//// vertTangent
+	//glVertexAttribPointer(2,
+	//	3,
+	//	GL_FLOAT,
+	//	GL_FALSE,
+	//	sizeof(Vertex),
+	//	(const void*)(6 * sizeof(float)));
+	//// vertUVcoord
+	//glVertexAttribPointer(3,
+	//	2,						// Only 2 cuz it's a vector 2
+	//	GL_FLOAT,
+	//	GL_FALSE,
+	//	sizeof(Vertex),
+	//	(const void*)(9 * sizeof(float)));
+
 	//glDrawArrays(GL_TRIANGLES, 0, m_verts.size()); // FOR DRAWING WITHout INDEX BUFFERS
 	glDrawElements(GL_TRIANGLES, m_triCount * 3, GL_UNSIGNED_INT, 0); // FOR DRAWING WITH INDEX BUFFERS
 
-	// Unbind arrays
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	// Unbind VAO
 	glBindVertexArray(0);
 }

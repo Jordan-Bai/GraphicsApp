@@ -11,7 +11,6 @@ protected:
 	GLuint m_vertBuffer; // Sometimes called VBO (Vertex Buffer Object)
 	GLuint m_indexBuffer; // Sometimes called IBO (Index Buffer Object)
 
-	int m_vertCount;
 	int m_triCount;
 
 public:
