@@ -230,6 +230,11 @@ glm::mat4 Application::GetVPMatrix()
 	// (openGL uses column-major order for matricies)
 }
 
+float Application::GetAspectRatio()
+{
+	return (float)m_width / (float)m_height;
+}
+
 
 void Application::Update(float delta)
 {

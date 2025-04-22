@@ -14,6 +14,33 @@ Mesh::~Mesh()
 	glDeleteVertexArrays(1, &m_vertArray);
 }
 
+void Mesh::CreatePlaneMesh()
+{
+	std::vector<Vertex> verts;
+	std::vector<int> indicies;
+
+	// 0-----1
+	// |     |
+	// |     |
+	// 2-----3
+	Vertex a0({ -1, 1, 0 }, { 0, 0, 1 }, { 1, 0, 0 }, { 0, 0 });
+	Vertex a1({ 1, 1, 0 }, { 0, 0, 1 }, { 1, 0, 0 }, { 0, 1 });
+	Vertex a2({ -1, -1, 0 }, { 0, 0, 1 }, { 1, 0, 0 }, { 1, 0 });
+	Vertex a3({ 1, -1, 0 }, { 0, 0, 1 }, { 1, 0, 0 }, { 1, 1 });
+	verts.push_back(a0);
+	verts.push_back(a1);
+	verts.push_back(a2);
+	verts.push_back(a3);
+	indicies.push_back(0);
+	indicies.push_back(1);
+	indicies.push_back(2);
+	indicies.push_back(1);
+	indicies.push_back(2);
+	indicies.push_back(3);
+
+	InitObject(verts, indicies);
+}
+
 void Mesh::CreateCubeMesh()
 {
 	std::vector<Vertex> verts;

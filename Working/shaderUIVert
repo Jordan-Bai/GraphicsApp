@@ -1,0 +1,32 @@
+#version 460
+
+layout(location = 0) in vec3 vertPos;
+layout(location = 1) in vec3 vertNormal;
+layout(location = 2) in vec3 vertTangent;
+layout(location = 3) in vec2 vertUVCoord;
+
+//uniform mat4 viewMat;
+uniform mat4 vpMat;
+uniform mat4 modelMat;
+
+uniform float aspectRatio;
+
+//out vec3 pos;
+//out vec2 UVCoord;
+
+void main()
+{
+	//UVCoord = vertUVCoord;
+	
+	//mat4 mvpMat = vpMat * modelMat;
+	//vec4 transformedPos = mvpMat * vec4(vertPos, 1.0);
+	mat4 mvpMat = vpMat * modelMat;
+	vec4 transformedPos = mvpMat * vec4(0.0, 0.0, 0.0, 1.0);
+	//transformedPos.z = 0.0;
+	//pos = transformedPos.xyz;
+	vec2 offset = vertUVCoord - (0.5, 0.5);
+	offset.x /= aspectRatio;
+	
+	gl_Position = transformedPos + vec4(offset, 0.0, 0.0);
+	//gl_Position = vec4(offset, 0.0, 0.0);
+}

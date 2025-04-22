@@ -20,11 +20,12 @@ public:
 	}
 	~Mesh();
 
+	void CreatePlaneMesh();
 	void CreateCubeMesh();
 	void CreateSmoothCubeMesh();
 	void LoadFromFile(std::string fileName);
 	//void InitObject();
-	void InitObject(std::vector<Vertex>& verts, std::vector<int>& indicies);
+	virtual void InitObject(std::vector<Vertex>& verts, std::vector<int>& indicies);
 
 	//glm::mat4 GetObjectSpace();
 

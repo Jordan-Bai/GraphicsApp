@@ -41,35 +41,27 @@ int main()
 	glEnableVertexAttribArray(3); // layout location 2 in the vertex shader
 
 	Shader vertShader1("shader1Vert", GL_VERTEX_SHADER);
+	Shader vertShaderUI("shaderUIVert", GL_VERTEX_SHADER);
 	Shader fragShader1("shader1Frag", GL_FRAGMENT_SHADER);
 	Shader fragShader2("shader2Frag", GL_FRAGMENT_SHADER);
 	Shader fragShaderUnlit("shaderUnlitFrag", GL_FRAGMENT_SHADER);
+	Shader fragShaderUI("shaderUIFrag", GL_FRAGMENT_SHADER);
 	Shader fragShaderTest("shaderTestFrag", GL_FRAGMENT_SHADER);
 
 	ShaderProgram shader1(&vertShader1, &fragShader1);
 	ShaderProgram shader2(&vertShader1, &fragShaderUnlit);
 	ShaderProgram shader3(&vertShader1, &fragShader2);
 	ShaderProgram shaderNormal(&vertShader1, &fragShaderTest);
-	// Since spec power, sun direction & sun colour are constant, they can be bound once at the start 
-	// and don't need to be rebound
-	//shader1.Use();
-	//shader1.BindUniform("specPower", 2.0f);
-	//shader1.BindUniform("sunDirection", sunDirection);
-	//shader3.Use();
-	//shader3.BindUniform("specPower", 2.0f);
-	//shader3.BindUniform("sunDirection", sunDirection);
-	//shader3.BindUniform("sunColour", { 1, 1, 1 });
+	ShaderProgram shaderUI(&vertShaderUI, &fragShaderUI);
 
 	shader1.m_uniformFloats["specPower"] = 2;
 	shader1.m_uniformVec3s["sunDirection"] = sunDirection;
-	//shader1.ApplyUniforms();
 	shader3.m_uniformFloats["specPower"] = 2;
 	shader3.m_uniformVec3s["sunDirection"] = sunDirection;
 	shader3.m_uniformVec3s["sunColour"] = { 1, 1, 1 };
-	//shader3.ApplyUniforms();
+	shaderUI.m_uniformFloats["aspectRatio"] = app.GetAspectRatio();
 
 	Camera* cam = new Camera({ 0, 3.0f, 10.0f });
-	//cam->Init(&app);
 	app.AddObject(cam);
 	app.SetCurrentCamera(cam);
 	//cam.m_yRot = glm::radians(90.0f);
@@ -80,6 +72,8 @@ int main()
 	spearMesh.LoadFromFile("soulspear.obj");
 	Mesh cubeMesh;
 	cubeMesh.CreateCubeMesh();
+	Mesh planeMesh;
+	planeMesh.CreatePlaneMesh();
 
 	Texture blank;
 	blank.CreateColourTexture({0.7f, 0.7f, 0.7f});
@@ -95,6 +89,7 @@ int main()
 
 	Material defaultMat(&shader3, &blank, &blank, &blankNormal);
 	defaultMat.m_specular = 0.1f;
+	Material uiMat(&shaderUI, &blank, &blank, &blankNormal);
 
 	Material mat1(&shader1, &albedo, &specular, &normal);
 	Material mat2(&shader2, &albedo, &specular, &normal);
@@ -135,17 +130,32 @@ int main()
 	//cube1->m_scale = { 0.1f, 0.1f, 0.1f};
 	app.AddObject(cube1);
 
+	GameObject* plane1 = new GameObject();
+	plane1->m_mesh = &planeMesh;
+	plane1->m_mat = &uiMat;
+	app.AddObject(plane1);
+
+	GameObject* plane2 = new GameObject();
+	plane2->m_mesh = &planeMesh;
+	plane2->m_mat = &uiMat;
+	app.AddObject(plane2);
+
+	GameObject* plane3 = new GameObject();
+	plane3->m_mesh = &planeMesh;
+	plane3->m_mat = &uiMat;
+	app.AddObject(plane3);
+
 	std::vector<PointLight*> lights;
-	PointLight light1({ 0.0f, 0.0f, 0.0f }, { 1, 0, 0 }, 10);
-	PointLight light2({ 2.0f, 0.0f, 1.0f }, { 1, 0, 0 }, 10);
-	PointLight light3({ 3.0f, 0.5f, -0.5f }, { 1, 0, 0 }, 10);
+	PointLight light1({ -2.0f, 0.0f, 0.0f }, { 1, 0, 0 }, 10);
+	PointLight light2({ 2.0f, 0.0f, 1.0f }, { 0, 1, 0 }, 10);
+	PointLight light3({ 3.0f, 0.5f, -0.5f }, { 0, 0, 1 }, 10);
 	PointLight light4({ 0.0f, 1.0f, 1.0f }, { 1, 0, 0 }, 10);
 	PointLight light5({ -2.0f, 0.0f, 1.0f }, { 0, 0, 1 }, 10);
 	lights.push_back(&light1);
-	//lights.push_back(light2);
-	//lights.push_back(light3);
-	//lights.push_back(light4);
-	//lights.push_back(light5);
+	lights.push_back(&light2);
+	lights.push_back(&light3);
+	//lights.push_back(&light4);
+	//lights.push_back(&light5);
 
 	std::vector<glm::vec3> lightPositions;
 	std::vector<glm::vec3> lightColours;
@@ -154,14 +164,9 @@ int main()
 		lightPositions.push_back(lights[i]->pos);
 		lightColours.push_back(lights[i]->GetColour());
 	}
-	shader3.Use();
 	shader3.m_uniformInts["lightCount"] = lights.size();
-	//shader3.m_uniformVec3Arrays["pointLightPos"] = lightPositions;
-	//shader3.m_uniformVec3Arrays["pointLightCol"] = lightColours;
-	//shader3.ApplyUniforms();
-	//shader3.BindUniform("lightCount", (int)lights.size());
-	//shader3.BindArrayUniform("pointLightPos", (int)lights.size(), lightPositions.data());
-	//shader3.BindArrayUniform("pointLightCol", (int)lights.size(), lightColours.data());
+
+	int selectedLight = 0;
 
 	app.ApplyAllUniforms();
 	float lastFrameTime = (float)glfwGetTime();
@@ -182,13 +187,14 @@ int main()
 
 		app.Update(delta);
 
+		plane1->m_pos = light1.pos;
+		plane2->m_pos = light2.pos;
+		plane3->m_pos = light3.pos;
+
 		if (app.GetKeyDown(GLFW_KEY_X))
 		{
 			app.ReloadShaders();
 		}
-
-		// Factors in camera position, but not rotation
-		//glm::mat4 test = app.GetProjectionMatrix() * glm::translate(glm::mat4(1), -app.GetCurrentCamera()->GetPos());
 
 		glm::mat4 vpMat = app.GetVPMatrix();
 		glm::vec3 camPos = app.GetCurrentCamera()->GetPos();
@@ -206,8 +212,6 @@ int main()
 
 			lightColours[i] = lights[i]->GetColour();
 		}
-		//shader3.m_uniformVec3Arrays["pointLightPos"] = lightPositions;
-		//shader3.m_uniformVec3Arrays["pointLightCol"] = lightColours;
 		shader3.Use();
 		shader3.BindArrayUniform("pointLightPos", lightPositions);
 		shader3.BindArrayUniform("pointLightCol", lightColours);
@@ -217,8 +221,27 @@ int main()
 		// Must be before app.Draw(), as the info needs to be stored using ImGui::Render() before its actually drawn
 		ImGui::Begin("DEBUG MENU");
 
-		ImGui::ColorEdit3("Point light 1 colour", glm::value_ptr(light1.col));
-		ImGui::SliderFloat3("Point light 1 pos", glm::value_ptr(light1.pos), -10.0f, 10.0f);
+		//ImGui::BeginTabBar("Tab bar");
+		//
+		//if (ImGui::BeginTabItem("Tab item"))
+		//{
+		//	ImGui::Text("Test1");
+		//	ImGui::EndTabItem();
+		//}
+		//
+		//if (ImGui::BeginTabItem("Tab item2"))
+		//{
+		//	ImGui::Text("Test2");
+		//	ImGui::EndTabItem();
+		//}
+		//
+		//ImGui::EndTabBar();
+
+		ImGui::SliderInt("Selected Light", &selectedLight, 0, lights.size() - 1);
+
+		ImGui::ColorEdit3("Colour", glm::value_ptr(lights[selectedLight]->col));
+		ImGui::SliderFloat("Brightness", &lights[selectedLight]->bright, 0, 100.0f);
+		ImGui::SliderFloat3("Position", glm::value_ptr(lights[selectedLight]->pos), -10.0f, 10.0f);
 
 		ImGui::End();
 

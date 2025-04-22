@@ -53,6 +53,7 @@ public:
 
 	glm::mat4 GetProjectionMatrix();
 	glm::mat4 GetVPMatrix();
+	float GetAspectRatio();
 
 	void Update(float delta);
 	void Draw();
