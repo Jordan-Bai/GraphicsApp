@@ -17,14 +17,17 @@ class Application
 	float m_width = 1280;
 	float m_height = 720;
 
-	//std::map<ShaderProgram*, std::vector<GameObject*>> m_gameObjects;
 	std::vector<GameObject*> m_gameObjects;
-	std::vector<ShaderProgram*> m_shaders;
 	std::multimap<ShaderProgram*, GameObject*> m_renderedObjects;
+	std::vector<ShaderProgram*> m_shaders;
 	Camera* m_currentCamera;
 
 public:
+	Application();
 	~Application();
+
+	Application(const Application& other) = delete;
+	Application& operator=(const Application& other) = delete;
 
 	int Initialize();
 	std::vector<GameObject*> GetObjects();
@@ -33,18 +36,18 @@ public:
 	void SetCurrentCamera(Camera* camera);
 	GLFWwindow* GetWindow();
 
-	void ReloadShaders();
-	void ApplyAllUniforms();
-
-	void SetUniformInAllShaders(std::string uniformName, float value);
-	void SetUniformInAllShaders(std::string uniformName, glm::vec3 value);
-	void SetUniformInAllShaders(std::string uniformName, glm::mat4 value);
-	void SetUniformInAllShaders(std::string uniformName, int value); // Also includes setting samplers
-
+	void BindUniformInAllShaders(std::string uniformName, int value); // Also includes binding samplers
 	void BindUniformInAllShaders(std::string uniformName, float value);
 	void BindUniformInAllShaders(std::string uniformName, glm::vec3 value);
 	void BindUniformInAllShaders(std::string uniformName, glm::mat4 value);
-	void BindUniformInAllShaders(std::string uniformName, int value); // Also includes binding samplers
+
+	void SetUniformInAllShaders(std::string uniformName, int value); // Also includes setting samplers
+	void SetUniformInAllShaders(std::string uniformName, float value);
+	void SetUniformInAllShaders(std::string uniformName, glm::vec3 value);
+	void SetUniformInAllShaders(std::string uniformName, glm::mat4 value);
+
+	void ReloadShaders();
+	void ApplyAllUniforms();
 
 	glm::vec2 GetMousePos();
 	glm::vec2 GetMouseDelta();

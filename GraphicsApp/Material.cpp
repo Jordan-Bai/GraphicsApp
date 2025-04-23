@@ -2,13 +2,20 @@
 #include <iostream>
 
 Material::Material(ShaderProgram* shader)
-	: m_shader(shader)
+	: m_shader(shader), m_albedoMap(nullptr), m_specularMap(nullptr), m_normalMap(nullptr)
 {
 }
 
 Material::Material(ShaderProgram* shader, Texture* albedo, Texture* specular, Texture* normal)
 	: m_shader(shader), m_albedoMap(albedo), m_specularMap(specular), m_normalMap(normal)
 {
+}
+
+void Material::SetLightProperties(float ambient, float diffuse, float specular)
+{
+	m_uniforms.SetUniform("matAmbient", ambient);
+	m_uniforms.SetUniform("matDiffuse", diffuse);
+	m_uniforms.SetUniform("matSpecular", specular);
 }
 
 void Material::ApplyMaterial()
@@ -39,7 +46,9 @@ void Material::ApplyMaterial()
 	m_shader->BindUniform("specularMap", 1);
 	m_shader->BindUniform("normalMap", 2);
 
-	m_shader->BindUniform("matAmbient", m_ambient);
-	m_shader->BindUniform("matDiffuse", m_diffuse);
-	m_shader->BindUniform("matSpecular", m_specular);
+	//m_shader->BindUniform("matAmbient", m_ambient);
+	//m_shader->BindUniform("matDiffuse", m_diffuse);
+	//m_shader->BindUniform("matSpecular", m_specular);
+
+	m_uniforms.ApplyAll(*m_shader);
 }

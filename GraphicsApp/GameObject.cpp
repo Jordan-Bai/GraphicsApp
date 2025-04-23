@@ -3,7 +3,12 @@
 #include <iostream>
 
 GameObject::GameObject()
-	: m_app(), m_pos(), m_rot(), m_scale({1, 1, 1})
+	: m_mesh(nullptr), m_mat(nullptr), m_pos(), m_rot(), m_scale({1, 1, 1})
+{
+}
+
+GameObject::GameObject(Mesh* mesh, Material* material)
+	: m_mesh(mesh), m_mat(material), m_pos(), m_rot(), m_scale({ 1, 1, 1 })
 {
 }
 

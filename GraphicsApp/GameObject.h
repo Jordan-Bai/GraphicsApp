@@ -6,16 +6,17 @@
 class GameObject
 {
 protected:
-	Application* m_app;
+	Application* m_app = nullptr;
 
 public:
 	glm::vec3 m_pos;
 	glm::vec3 m_rot;
 	glm::vec3 m_scale;
-	Mesh* m_mesh = nullptr;
-	Material* m_mat = nullptr;
+	Mesh* m_mesh;
+	Material* m_mat;
 
 	GameObject();
+	GameObject(Mesh* mesh, Material* material);
 	void Init(Application* app);
 
 	glm::mat4 GetRotation();

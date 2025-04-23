@@ -9,7 +9,7 @@ struct PointLight
 	float bright;
 
 	PointLight()
-		: pos(), col()
+		: pos(), col(), bright()
 	{
 	}
 	PointLight(glm::vec3 position, glm::vec3 colour, float brightness)

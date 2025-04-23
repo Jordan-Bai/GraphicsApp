@@ -7,12 +7,17 @@
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 
+Application::Application()
+	: m_window(nullptr), m_currentCamera(nullptr)
+{
+}
+
 Application::~Application()
 {
-	for (GameObject* o : m_gameObjects)
-	{
-		delete o;
-	}
+	//for (GameObject* o : m_gameObjects)
+	//{
+	//	delete o;
+	//}
 	
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplGlfw_Shutdown();
@@ -20,6 +25,7 @@ Application::~Application()
 
 	glfwTerminate();
 }
+
 
 int Application::Initialize()
 {
@@ -99,55 +105,14 @@ GLFWwindow* Application::GetWindow()
 }
 
 
-void Application::ReloadShaders()
+void Application::BindUniformInAllShaders(std::string uniformName, int value)
 {
 	for (ShaderProgram* s : m_shaders)
 	{
-		s->ReloadShader();
+		s->Use();
+		s->BindUniform(uniformName, value);
 	}
 }
-
-void Application::ApplyAllUniforms()
-{
-	for (ShaderProgram* s : m_shaders)
-	{
-		s->ApplyUniforms();
-	}
-}
-
-
-void Application::SetUniformInAllShaders(std::string uniformName, float value)
-{
-	for (ShaderProgram* s : m_shaders)
-	{
-		s->SetUniform(uniformName, value);
-	}
-}
-
-void Application::SetUniformInAllShaders(std::string uniformName, glm::vec3 value)
-{
-	for (ShaderProgram* s : m_shaders)
-	{
-		s->SetUniform(uniformName, value);
-	}
-}
-
-void Application::SetUniformInAllShaders(std::string uniformName, glm::mat4 value)
-{
-	for (ShaderProgram* s : m_shaders)
-	{
-		s->SetUniform(uniformName, value);
-	}
-}
-
-void Application::SetUniformInAllShaders(std::string uniformName, int value)
-{
-	for (ShaderProgram* s : m_shaders)
-	{
-		s->SetUniform(uniformName, value);
-	}
-}
-
 
 void Application::BindUniformInAllShaders(std::string uniformName, float value)
 {
@@ -176,12 +141,53 @@ void Application::BindUniformInAllShaders(std::string uniformName, glm::mat4 val
 	}
 }
 
-void Application::BindUniformInAllShaders(std::string uniformName, int value)
+
+void Application::SetUniformInAllShaders(std::string uniformName, int value)
 {
 	for (ShaderProgram* s : m_shaders)
 	{
-		s->Use();
-		s->BindUniform(uniformName, value);
+		s->m_uniforms.SetUniform(uniformName, value);
+	}
+}
+
+void Application::SetUniformInAllShaders(std::string uniformName, float value)
+{
+	for (ShaderProgram* s : m_shaders)
+	{
+		s->m_uniforms.SetUniform(uniformName, value);
+	}
+}
+
+void Application::SetUniformInAllShaders(std::string uniformName, glm::vec3 value)
+{
+	for (ShaderProgram* s : m_shaders)
+	{
+		s->m_uniforms.SetUniform(uniformName, value);
+	}
+}
+
+void Application::SetUniformInAllShaders(std::string uniformName, glm::mat4 value)
+{
+	for (ShaderProgram* s : m_shaders)
+	{
+		s->m_uniforms.SetUniform(uniformName, value);
+	}
+}
+
+
+void Application::ReloadShaders()
+{
+	for (ShaderProgram* s : m_shaders)
+	{
+		s->ReloadShader();
+	}
+}
+
+void Application::ApplyAllUniforms()
+{
+	for (ShaderProgram* s : m_shaders)
+	{
+		s->ApplyUniforms();
 	}
 }
 

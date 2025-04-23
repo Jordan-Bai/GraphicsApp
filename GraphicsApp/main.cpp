@@ -54,16 +54,16 @@ int main()
 	ShaderProgram shaderNormal(&vertShader1, &fragShaderTest);
 	ShaderProgram shaderUI(&vertShaderUI, &fragShaderUI);
 
-	shader1.m_uniformFloats["specPower"] = 2;
-	shader1.m_uniformVec3s["sunDirection"] = sunDirection;
-	shader3.m_uniformFloats["specPower"] = 2;
-	shader3.m_uniformVec3s["sunDirection"] = sunDirection;
-	shader3.m_uniformVec3s["sunColour"] = { 1, 1, 1 };
-	shaderUI.m_uniformFloats["aspectRatio"] = app.GetAspectRatio();
+	shader1.m_uniforms.SetUniform("specPower", 2.0f);
+	shader1.m_uniforms.SetUniform("sunDirection", sunDirection);
+	shader3.m_uniforms.SetUniform("specPower", 2.0f);
+	shader3.m_uniforms.SetUniform("sunDirection", sunDirection);
+	shader3.m_uniforms.SetUniform("sunColour", { 1, 1, 1 });
+	shaderUI.m_uniforms.SetUniform("aspectRatio", app.GetAspectRatio());
 
-	Camera* cam = new Camera({ 0, 3.0f, 10.0f });
-	app.AddObject(cam);
-	app.SetCurrentCamera(cam);
+	Camera cam({ 0, 3.0f, 10.0f });
+	app.AddObject(&cam);
+	app.SetCurrentCamera(&cam);
 	//cam.m_yRot = glm::radians(90.0f);
 
 	glEnable(GL_DEPTH_TEST); // Enables depth buffer
@@ -88,62 +88,48 @@ int main()
 	normal.LoadFileAsTexture("soulspear_normal.tga");
 
 	Material defaultMat(&shader3, &blank, &blank, &blankNormal);
-	defaultMat.m_specular = 0.1f;
-	Material uiMat(&shaderUI, &blank, &blank, &blankNormal);
+	defaultMat.SetLightProperties(0.1f, 1.0f, 0.1f);
 
 	Material mat1(&shader1, &albedo, &specular, &normal);
 	Material mat2(&shader2, &albedo, &specular, &normal);
 	Material mat3(&shader1, &normal, &normal, &normal);
 	Material mat4(&shader3, &albedo, &specular, &normal);
-	mat1.m_specular = 1.0f;
-	mat3.m_specular = 1.0f;
-	mat4.m_specular = 1.0f;
+	mat4.SetLightProperties(0.1f, 1.0f, 1.0f);
 
-	GameObject* spear1 = new GameObject();
-	spear1->m_mesh = &spearMesh;
-	spear1->m_mat = &mat1;
-	spear1->m_pos = { -1.5f, 0, 0 };
-	app.AddObject(spear1);
+	Material lightMat1(&shaderUI);
+	Material lightMat2(&shaderUI);
+	Material lightMat3(&shaderUI);
 
-	GameObject* spear2 = new GameObject();
-	spear2->m_mesh = &spearMesh;
-	spear2->m_mat = &mat2;
-	spear2->m_pos = { 4.5f, 0, 0 };
-	app.AddObject(spear2);
+	GameObject spear1(&spearMesh, &mat1);
+	spear1.m_pos = { -1.5f, 0, 0 };
+	app.AddObject(&spear1);
 
-	GameObject* spear3 = new GameObject();
-	spear3->m_mesh = &spearMesh;
-	spear3->m_mat = &mat3;
-	spear3->m_pos = { -4.5f, 0, 0 };
-	app.AddObject(spear3);
+	GameObject spear2(&spearMesh, &mat2);
+	spear2.m_pos = { 4.5f, 0, 0 };
+	app.AddObject(&spear2);
 
-	GameObject* spear4 = new GameObject();
-	spear4->m_mesh = &spearMesh;
-	spear4->m_mat = &mat4;
-	spear4->m_pos = { 1.5f, 0, 0 };
-	app.AddObject(spear4);
+	GameObject spear3(&spearMesh, &mat3);
+	spear3.m_pos = { -4.5f, 0, 0 };
+	app.AddObject(&spear3);
 
-	GameObject* cube1 = new GameObject();
-	cube1->m_mesh = &cubeMesh;
-	cube1->m_mat = &defaultMat;
-	cube1->m_pos = { 0, 0, 0 };
+	GameObject spear4(&spearMesh, &mat4);
+	spear4.m_pos = { 1.5f, 0, 0 };
+	app.AddObject(&spear4);
+
+	GameObject cube1(&cubeMesh, &defaultMat);
+	cube1.m_pos = { 0, 0, 0 };
 	//cube1->m_scale = { 0.1f, 0.1f, 0.1f};
-	app.AddObject(cube1);
+	app.AddObject(&cube1);
 
-	GameObject* plane1 = new GameObject();
-	plane1->m_mesh = &planeMesh;
-	plane1->m_mat = &uiMat;
-	app.AddObject(plane1);
 
-	GameObject* plane2 = new GameObject();
-	plane2->m_mesh = &planeMesh;
-	plane2->m_mat = &uiMat;
-	app.AddObject(plane2);
+	GameObject plane1(&planeMesh, &lightMat1);
+	app.AddObject(&plane1);
 
-	GameObject* plane3 = new GameObject();
-	plane3->m_mesh = &planeMesh;
-	plane3->m_mat = &uiMat;
-	app.AddObject(plane3);
+	GameObject plane2(&planeMesh, &lightMat2);
+	app.AddObject(&plane2);
+
+	GameObject plane3(&planeMesh, &lightMat3);
+	app.AddObject(&plane3);
 
 	std::vector<PointLight*> lights;
 	PointLight light1({ -2.0f, 0.0f, 0.0f }, { 1, 0, 0 }, 10);
@@ -164,7 +150,7 @@ int main()
 		lightPositions.push_back(lights[i]->pos);
 		lightColours.push_back(lights[i]->GetColour());
 	}
-	shader3.m_uniformInts["lightCount"] = lights.size();
+	shader3.m_uniforms.SetUniform("lightCount", (int)lights.size());
 
 	int selectedLight = 0;
 
@@ -187,9 +173,13 @@ int main()
 
 		app.Update(delta);
 
-		plane1->m_pos = light1.pos;
-		plane2->m_pos = light2.pos;
-		plane3->m_pos = light3.pos;
+		plane1.m_pos = light1.pos;
+		plane2.m_pos = light2.pos;
+		plane3.m_pos = light3.pos;
+
+		lightMat1.m_uniforms.SetUniform("colour", light1.col);
+		lightMat2.m_uniforms.SetUniform("colour", light2.col);
+		lightMat3.m_uniforms.SetUniform("colour", light3.col);
 
 		if (app.GetKeyDown(GLFW_KEY_X))
 		{
@@ -199,8 +189,6 @@ int main()
 		glm::mat4 vpMat = app.GetVPMatrix();
 		glm::vec3 camPos = app.GetCurrentCamera()->GetPos();
 
-		//app.SetUniformInAllShaders("cameraPos", camPos);
-		//app.SetUniformInAllShaders("vpMat", vpMat);
 		app.BindUniformInAllShaders("cameraPos", camPos);
 		app.BindUniformInAllShaders("vpMat", vpMat);
 

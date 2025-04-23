@@ -1,10 +1,11 @@
 #version 460
 
-//uniform vec3 col;
+uniform vec3 colour;
 
 out vec4 PixelColour;
 
 void main()
 {
-	PixelColour = vec4(1.0, 1.0, 1.0, 1.0);
+	//PixelColour = vec4(1.0, 1.0, 1.0, 1.0);
+	PixelColour = vec4(colour, 1.0);
 }

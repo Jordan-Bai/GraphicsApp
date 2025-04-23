@@ -1,5 +1,7 @@
 #pragma once
 #include <string>
+#include <map>
+#include <vector>
 #include "glm.hpp"
 
 std::string LoadFileAsString(std::string fileName);
@@ -27,4 +29,30 @@ struct Vertex
 	glm::vec3 normal;
 	glm::vec3 tangent;
 	glm::vec2 UVcoord;
+};
+
+class ShaderProgram;
+
+struct UniformStorage
+{
+	std::map<std::string, int> m_ints;
+	std::map<std::string, float> m_floats;
+	std::map<std::string, glm::vec3> m_vec3s;
+	std::map<std::string, glm::mat4> m_mat4s;
+	std::map<std::string, std::vector<int>> m_intArrays;
+	std::map<std::string, std::vector<float>> m_floatArrays;
+	std::map<std::string, std::vector<glm::vec3>> m_vec3Arrays;
+	std::map<std::string, std::vector<glm::mat4>> m_mat4Arrays;
+
+	// Makes things a bit easier since you don't need to type out the correct variable name
+	void SetUniform(std::string varName, int value); // Also includes setting samplers
+	void SetUniform(std::string varName, float value);
+	void SetUniform(std::string varName, glm::vec3 value);
+	void SetUniform(std::string varName, glm::mat4 value);
+	void SetArrayUniform(std::string varName, std::vector<int> value);
+	void SetArrayUniform(std::string varName, std::vector<float> value);
+	void SetArrayUniform(std::string varName, std::vector<glm::vec3> value);
+	void SetArrayUniform(std::string varName, std::vector<glm::mat4> value);
+
+	void ApplyAll(ShaderProgram& shader);
 };
