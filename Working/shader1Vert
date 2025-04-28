@@ -23,7 +23,9 @@ void main()
 	
 	mat4 mvpMat = vpMat * modelMat;
 	vec4 transformedPos = mvpMat * vec4(vertPos, 1.0);
-	pos = transformedPos.xyz;
+	//pos = transformedPos.xyz;
+	//pos = vertPos;
+	pos = (modelMat * vec4(vertPos, 1.0)).xyz;
 	
 	gl_Position = transformedPos;
 }

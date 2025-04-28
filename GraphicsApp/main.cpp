@@ -30,12 +30,8 @@ int main()
 	}
 	//==========================================================================
 
-	glm::vec3 sunDirection = { 0, -1, -1 };
-
-	//glEnableVertexAttribArray(0); // layout location 0 in the vertex shader
-	//glEnableVertexAttribArray(1); // layout location 1 in the vertex shader
-	//glEnableVertexAttribArray(2); // layout location 2 in the vertex shader
-	//glEnableVertexAttribArray(3); // layout location 2 in the vertex shader
+	glm::vec3 sunDirection = { 0, -1, -0.75 };
+	glm::vec3 sunColour = { 1, 1, 1 };
 
 	Shader vertShader1("shader1Vert", GL_VERTEX_SHADER);
 	Shader vertShaderUI("shaderUIVert", GL_VERTEX_SHADER);
@@ -51,18 +47,16 @@ int main()
 	ShaderProgram shaderNormal(&vertShader1, &fragShaderTest);
 	ShaderProgram shaderUI(&vertShaderUI, &fragShaderUI);
 
-	shader1.m_uniforms.SetUniform("specPower", 2.0f);
-	shader1.m_uniforms.SetUniform("sunDirection", sunDirection);
-	shader3.m_uniforms.SetUniform("specPower", 2.0f);
-	shader3.m_uniforms.SetUniform("sunDirection", sunDirection);
-	shader3.m_uniforms.SetUniform("sunColour", { 1, 1, 1 });
+	shader1.m_uniforms.SetUniform("specPower", 10.0f);
+	shader1.m_uniforms.SetUniform("sunDirection", glm::normalize(sunDirection));
+	shader3.m_uniforms.SetUniform("specPower", 10.0f);
+	shader3.m_uniforms.SetUniform("sunDirection", glm::normalize(sunDirection));
+	shader3.m_uniforms.SetUniform("sunColour", sunColour);
 	shaderUI.m_uniforms.SetUniform("aspectRatio", app->GetAspectRatio());
 
 	Camera cam({ 0, 3.0f, 10.0f });
 	app->AddObject(&cam);
 	app->SetCurrentCamera(&cam);
-
-	//glEnable(GL_DEPTH_TEST); // Enables depth buffer
 
 	Mesh spearMesh;
 	spearMesh.LoadFromFile("soulspear.obj");
@@ -84,32 +78,31 @@ int main()
 
 	Material defaultMat(&shader3, &blank, &blank, &blankNormal);
 	defaultMat.SetLightProperties(0.1f, 1.0f, 0.1f);
+	Material unlitMat(&shader2, &albedo, &specular, &normal);
+	//Material normalMat(&shader3, &normal, &normal, &normal);
 	Material mat1(&shader1, &albedo, &specular, &normal);
-	Material mat2(&shader2, &albedo, &specular, &normal);
-	Material mat3(&shader1, &normal, &normal, &normal);
-	Material mat4(&shader3, &albedo, &specular, &normal);
-	mat4.SetLightProperties(0.1f, 1.0f, 1.0f);
+	Material mat2(&shader3, &albedo, &specular, &normal);
+	mat2.SetLightProperties(0.1f, 1.0f, 1.0f);
 
 	Material lightMat1(&shaderUI);
 	Material lightMat2(&shaderUI);
 	Material lightMat3(&shaderUI);
 
 	GameObject spear1(&spearMesh, &mat1);
-	spear1.m_pos = { -1.5f, 0, 0 };
+	spear1.m_pos = { -4.5f, 0, 0 };
 	app->AddObject(&spear1);
 	GameObject spear2(&spearMesh, &mat2);
-	spear2.m_pos = { 4.5f, 0, 0 };
+	spear2.m_pos = { -1.5f, 0, 0 };
 	app->AddObject(&spear2);
-	GameObject spear3(&spearMesh, &mat3);
-	spear3.m_pos = { -4.5f, 0, 0 };
+	GameObject spear3(&spearMesh, &mat2);
+	spear3.m_pos = { 1.5f, 0, 0 };
 	app->AddObject(&spear3);
-	GameObject spear4(&spearMesh, &mat4);
-	spear4.m_pos = { 1.5f, 0, 0 };
+	GameObject spear4(&spearMesh, &unlitMat);
+	spear4.m_pos = { 4.5f, 0, 0 };
 	app->AddObject(&spear4);
 
 	GameObject cube1(&cubeMesh, &defaultMat);
 	app->AddObject(&cube1);
-
 
 	GameObject plane1(&planeMesh, &lightMat1);
 	app->AddObject(&plane1);
@@ -151,7 +144,7 @@ int main()
 		// Clears the screen
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		// Set background colour
-		glClearColor(0.5f, 0.5f, 0.5f, 0.5f);
+		glClearColor(0.5f, 0.5f, 0.7f, 0.5f);
 		//==========================================================================
 
 		app->Update(delta);
@@ -171,16 +164,19 @@ int main()
 
 		glm::mat4 vpMat = app->GetVPMatrix();
 		glm::vec3 camPos = app->GetCurrentCamera()->GetPos();
-
+		
 		app->BindUniformInAllShaders("cameraPos", camPos);
 		app->BindUniformInAllShaders("vpMat", vpMat);
+		app->BindUniformInAllShaders("sunDirection", glm::normalize(sunDirection));
+		app->BindUniformInAllShaders("sunColour", sunColour);
 
 		for (int i = 0; i < lights.size(); i++)
 		{
-			glm::vec4 transformedPos = { lights[i]->pos.x, lights[i]->pos.y, lights[i]->pos.z, 1 };
-			transformedPos = vpMat * transformedPos;
-			lightPositions[i] = { transformedPos.x, transformedPos.y, transformedPos.z };
+			//glm::vec4 transformedPos = { lights[i]->pos.x, lights[i]->pos.y, lights[i]->pos.z, 1 };
+			////transformedPos = vpMat * transformedPos;
+			//lightPositions[i] = { transformedPos.x, transformedPos.y, transformedPos.z };
 
+			lightPositions[i] = lights[i]->pos;
 			lightColours[i] = lights[i]->GetColour();
 		}
 		shader3.Use();
@@ -191,13 +187,26 @@ int main()
 		//==========================================================================
 		// Must be before app.Draw(), as the info needs to be stored using ImGui::Render() before its actually drawn
 		ImGui::Begin("DEBUG MENU");
+		ImGui::BeginTabBar("Lights");
 
-		ImGui::SliderInt("Selected Light", &selectedLight, 0, lights.size() - 1);
-		ImGui::Dummy({ 0, 15 });
-		ImGui::ColorEdit3("Colour", glm::value_ptr(lights[selectedLight]->col));
-		ImGui::SliderFloat("Brightness", &lights[selectedLight]->bright, 0, 100.0f);
-		ImGui::SliderFloat3("Position", glm::value_ptr(lights[selectedLight]->pos), -10.0f, 10.0f);
-
+		if (ImGui::BeginTabItem("Light controls"))
+		{
+			ImGui::SliderInt("Selected Light", &selectedLight, 0, lights.size() - 1);
+			ImGui::Dummy({ 0, 15 });
+			ImGui::ColorEdit3("Colour", glm::value_ptr(lights[selectedLight]->col));
+			ImGui::SliderFloat("Brightness", &lights[selectedLight]->bright, 0, 50.0f);
+			ImGui::SliderFloat3("Position", glm::value_ptr(lights[selectedLight]->pos), -10.0f, 10.0f);
+			ImGui::EndTabItem();
+		}
+		
+		if (ImGui::BeginTabItem("Sun controls"))
+		{
+			ImGui::SliderFloat3("Direction", glm::value_ptr(sunDirection), -1.0f, 1.0f);
+			ImGui::ColorEdit3("Colour", glm::value_ptr(sunColour));
+			ImGui::EndTabItem();
+		}
+		
+		ImGui::EndTabBar();
 		ImGui::End();
 
 		ImGui::Render();

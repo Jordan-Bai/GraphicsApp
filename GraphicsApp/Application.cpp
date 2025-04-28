@@ -218,6 +218,7 @@ bool Application::GetMouseButtonDown(int button)
 	return glfwGetMouseButton(m_window, button) == GLFW_PRESS;
 }
 
+
 glm::mat4 Application::GetProjectionMatrix()
 {
 	return glm::perspective(
@@ -265,7 +266,8 @@ void Application::Update(float delta)
 		o->Update(delta);
 	}
 
-	//ImGui::Render(); // Doesn't actually draw stuff, just prepares info to be drawn
+	//BindUniformInAllShaders("cameraPos", m_currentCamera->GetPos());
+	//BindUniformInAllShaders("vpMat", GetVPMatrix());
 }
 
 void Application::Draw()
@@ -280,7 +282,6 @@ void Application::Draw()
 		{
 			currentShader = (*it).first;
 			currentShader->Use();
-			//currentShader->ApplyUniforms();
 		}
 		(*it).second->Draw();
 	}

@@ -72,7 +72,7 @@ void Camera::Update(float delta)
 		movement /= magnitude;
 	}
 	//movement = glm::normalize(movement);
-	glm::vec3 translatedMovement = (GetForward() * movement.z) + (GetRight() * movement.x) + (GetUp() * movement.y);
+	glm::vec3 translatedMovement = (GetForward() * movement.z) + (GetRight() * movement.x) + glm::vec3{0, movement.y, 0};
 	m_pos += translatedMovement * delta * m_moveSpeed;
 }
 

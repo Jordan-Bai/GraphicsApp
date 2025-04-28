@@ -82,5 +82,5 @@ void main()
 	PixelColour = vec4(ambient + diffuse + specular, 1.0);
 	//PixelColour = vec4(dLight + sLight, dLight + sLight, dLight + sLight, 1.0);
 	//PixelColour = vec4(UVCoord, 0.0, 1.0); // Good for debugging
-	//PixelColour = vec4(relativeNormal, 1.0);
+	//PixelColour = vec4(pos, 1.0);
 }
