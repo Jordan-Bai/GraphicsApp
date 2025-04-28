@@ -4,9 +4,7 @@
 #include "Utilities.h"
 #include "ShaderProgram.h"
 #include "ext/matrix_transform.hpp"
-//#include "ext/matrix_clip_space.hpp"
 #include <ext.hpp>
-//#include <glm.hpp>
 
 #include "Application.h"
 #include "Material.h"
@@ -16,7 +14,6 @@
 #include <imgui.h>
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
-//#include <stdio.h>
 
 #include <iostream>
 #include <vector>
@@ -25,8 +22,8 @@ int main()
 {
 	// WINDOW SETUP
 	//==========================================================================
-	Application app;
-	if (app.Initialize() == -1)
+	Application* app = Application::Get();
+	if (app->Initialize() == -1)
 	{
 		std::cout << "APPLICATION COULD NOT INITIALIZE" << std::endl;
 		return -1;
@@ -35,10 +32,10 @@ int main()
 
 	glm::vec3 sunDirection = { 0, -1, -1 };
 
-	glEnableVertexAttribArray(0); // layout location 0 in the vertex shader
-	glEnableVertexAttribArray(1); // layout location 1 in the vertex shader
-	glEnableVertexAttribArray(2); // layout location 2 in the vertex shader
-	glEnableVertexAttribArray(3); // layout location 2 in the vertex shader
+	//glEnableVertexAttribArray(0); // layout location 0 in the vertex shader
+	//glEnableVertexAttribArray(1); // layout location 1 in the vertex shader
+	//glEnableVertexAttribArray(2); // layout location 2 in the vertex shader
+	//glEnableVertexAttribArray(3); // layout location 2 in the vertex shader
 
 	Shader vertShader1("shader1Vert", GL_VERTEX_SHADER);
 	Shader vertShaderUI("shaderUIVert", GL_VERTEX_SHADER);
@@ -59,14 +56,13 @@ int main()
 	shader3.m_uniforms.SetUniform("specPower", 2.0f);
 	shader3.m_uniforms.SetUniform("sunDirection", sunDirection);
 	shader3.m_uniforms.SetUniform("sunColour", { 1, 1, 1 });
-	shaderUI.m_uniforms.SetUniform("aspectRatio", app.GetAspectRatio());
+	shaderUI.m_uniforms.SetUniform("aspectRatio", app->GetAspectRatio());
 
 	Camera cam({ 0, 3.0f, 10.0f });
-	app.AddObject(&cam);
-	app.SetCurrentCamera(&cam);
-	//cam.m_yRot = glm::radians(90.0f);
+	app->AddObject(&cam);
+	app->SetCurrentCamera(&cam);
 
-	glEnable(GL_DEPTH_TEST); // Enables depth buffer
+	//glEnable(GL_DEPTH_TEST); // Enables depth buffer
 
 	Mesh spearMesh;
 	spearMesh.LoadFromFile("soulspear.obj");
@@ -79,7 +75,6 @@ int main()
 	blank.CreateColourTexture({0.7f, 0.7f, 0.7f});
 	Texture blankNormal;
 	blankNormal.CreateColourTexture({ 0.5f, 0.5f, 1.0f });
-
 	Texture albedo;
 	albedo.LoadFileAsTexture("soulspear_diffuse.tga");
 	Texture specular;
@@ -89,7 +84,6 @@ int main()
 
 	Material defaultMat(&shader3, &blank, &blank, &blankNormal);
 	defaultMat.SetLightProperties(0.1f, 1.0f, 0.1f);
-
 	Material mat1(&shader1, &albedo, &specular, &normal);
 	Material mat2(&shader2, &albedo, &specular, &normal);
 	Material mat3(&shader1, &normal, &normal, &normal);
@@ -102,46 +96,35 @@ int main()
 
 	GameObject spear1(&spearMesh, &mat1);
 	spear1.m_pos = { -1.5f, 0, 0 };
-	app.AddObject(&spear1);
-
+	app->AddObject(&spear1);
 	GameObject spear2(&spearMesh, &mat2);
 	spear2.m_pos = { 4.5f, 0, 0 };
-	app.AddObject(&spear2);
-
+	app->AddObject(&spear2);
 	GameObject spear3(&spearMesh, &mat3);
 	spear3.m_pos = { -4.5f, 0, 0 };
-	app.AddObject(&spear3);
-
+	app->AddObject(&spear3);
 	GameObject spear4(&spearMesh, &mat4);
 	spear4.m_pos = { 1.5f, 0, 0 };
-	app.AddObject(&spear4);
+	app->AddObject(&spear4);
 
 	GameObject cube1(&cubeMesh, &defaultMat);
-	cube1.m_pos = { 0, 0, 0 };
-	//cube1->m_scale = { 0.1f, 0.1f, 0.1f};
-	app.AddObject(&cube1);
+	app->AddObject(&cube1);
 
 
 	GameObject plane1(&planeMesh, &lightMat1);
-	app.AddObject(&plane1);
-
+	app->AddObject(&plane1);
 	GameObject plane2(&planeMesh, &lightMat2);
-	app.AddObject(&plane2);
-
+	app->AddObject(&plane2);
 	GameObject plane3(&planeMesh, &lightMat3);
-	app.AddObject(&plane3);
+	app->AddObject(&plane3);
 
 	std::vector<PointLight*> lights;
 	PointLight light1({ -2.0f, 0.0f, 0.0f }, { 1, 0, 0 }, 10);
 	PointLight light2({ 2.0f, 0.0f, 1.0f }, { 0, 1, 0 }, 10);
 	PointLight light3({ 3.0f, 0.5f, -0.5f }, { 0, 0, 1 }, 10);
-	PointLight light4({ 0.0f, 1.0f, 1.0f }, { 1, 0, 0 }, 10);
-	PointLight light5({ -2.0f, 0.0f, 1.0f }, { 0, 0, 1 }, 10);
 	lights.push_back(&light1);
 	lights.push_back(&light2);
 	lights.push_back(&light3);
-	//lights.push_back(&light4);
-	//lights.push_back(&light5);
 
 	std::vector<glm::vec3> lightPositions;
 	std::vector<glm::vec3> lightColours;
@@ -154,10 +137,10 @@ int main()
 
 	int selectedLight = 0;
 
-	app.ApplyAllUniforms();
+	app->ApplyAllUniforms();
 	float lastFrameTime = (float)glfwGetTime();
 
-	while (!glfwWindowShouldClose(app.GetWindow()))
+	while (!glfwWindowShouldClose(app->GetWindow()))
 	{
 		float timeBuffer = (float)glfwGetTime();
 		float delta = timeBuffer - lastFrameTime;
@@ -171,7 +154,7 @@ int main()
 		glClearColor(0.5f, 0.5f, 0.5f, 0.5f);
 		//==========================================================================
 
-		app.Update(delta);
+		app->Update(delta);
 
 		plane1.m_pos = light1.pos;
 		plane2.m_pos = light2.pos;
@@ -181,16 +164,16 @@ int main()
 		lightMat2.m_uniforms.SetUniform("colour", light2.col);
 		lightMat3.m_uniforms.SetUniform("colour", light3.col);
 
-		if (app.GetKeyDown(GLFW_KEY_X))
+		if (app->GetKeyDown(GLFW_KEY_X))
 		{
-			app.ReloadShaders();
+			app->ReloadShaders();
 		}
 
-		glm::mat4 vpMat = app.GetVPMatrix();
-		glm::vec3 camPos = app.GetCurrentCamera()->GetPos();
+		glm::mat4 vpMat = app->GetVPMatrix();
+		glm::vec3 camPos = app->GetCurrentCamera()->GetPos();
 
-		app.BindUniformInAllShaders("cameraPos", camPos);
-		app.BindUniformInAllShaders("vpMat", vpMat);
+		app->BindUniformInAllShaders("cameraPos", camPos);
+		app->BindUniformInAllShaders("vpMat", vpMat);
 
 		for (int i = 0; i < lights.size(); i++)
 		{
@@ -209,24 +192,8 @@ int main()
 		// Must be before app.Draw(), as the info needs to be stored using ImGui::Render() before its actually drawn
 		ImGui::Begin("DEBUG MENU");
 
-		//ImGui::BeginTabBar("Tab bar");
-		//
-		//if (ImGui::BeginTabItem("Tab item"))
-		//{
-		//	ImGui::Text("Test1");
-		//	ImGui::EndTabItem();
-		//}
-		//
-		//if (ImGui::BeginTabItem("Tab item2"))
-		//{
-		//	ImGui::Text("Test2");
-		//	ImGui::EndTabItem();
-		//}
-		//
-		//ImGui::EndTabBar();
-
 		ImGui::SliderInt("Selected Light", &selectedLight, 0, lights.size() - 1);
-
+		ImGui::Dummy({ 0, 15 });
 		ImGui::ColorEdit3("Colour", glm::value_ptr(lights[selectedLight]->col));
 		ImGui::SliderFloat("Brightness", &lights[selectedLight]->bright, 0, 100.0f);
 		ImGui::SliderFloat3("Position", glm::value_ptr(lights[selectedLight]->pos), -10.0f, 10.0f);
@@ -236,11 +203,11 @@ int main()
 		ImGui::Render();
 		//==========================================================================
 
-		app.Draw();
+		app->Draw();
 
 		// END OF FRAME
 		//==========================================================================
-		glfwSwapBuffers(app.GetWindow()); // Displays buffer we just wrote to 
+		glfwSwapBuffers(app->GetWindow()); // Displays buffer we just wrote to 
 		glfwPollEvents(); // Check for inputs
 		//==========================================================================
 	}

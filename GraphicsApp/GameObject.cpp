@@ -12,10 +12,10 @@ GameObject::GameObject(Mesh* mesh, Material* material)
 {
 }
 
-void GameObject::Init(Application* app)
-{
-	m_app = app;
-}
+//void GameObject::Init(Application* app)
+//{
+//	m_app = app;
+//}
 
 glm::mat4 GameObject::GetRotation()
 {

@@ -16,51 +16,51 @@ void Camera::Update(float delta)
 {
 	glm::vec3 movement(0, 0, 0);
 
-	if (glfwGetKey(m_app->GetWindow(), GLFW_KEY_W))
+	if (glfwGetKey(Application::Get()->GetWindow(), GLFW_KEY_W))
 	{
 		movement.z += 1;
 	}
-	if (m_app->GetKeyDown(GLFW_KEY_S))
+	if (Application::Get()->GetKeyDown(GLFW_KEY_S))
 	{
 		movement.z -= 1;
 	}
-	if (m_app->GetKeyDown(GLFW_KEY_A))
+	if (Application::Get()->GetKeyDown(GLFW_KEY_A))
 	{
 		movement.x -= 1;
 	}
-	if (m_app->GetKeyDown(GLFW_KEY_D))
+	if (Application::Get()->GetKeyDown(GLFW_KEY_D))
 	{
 		movement.x += 1;
 	}
-	if (m_app->GetKeyDown(GLFW_KEY_SPACE))
+	if (Application::Get()->GetKeyDown(GLFW_KEY_SPACE))
 	{
 		movement.y += 1;
 	}
-	if (m_app->GetKeyDown(GLFW_KEY_LEFT_SHIFT))
+	if (Application::Get()->GetKeyDown(GLFW_KEY_LEFT_SHIFT))
 	{
 		movement.y -= 1;
 	}
 
-	if (m_app->GetKeyDown(GLFW_KEY_UP))
+	if (Application::Get()->GetKeyDown(GLFW_KEY_UP))
 	{
 		m_yRot += delta * m_turnSpeed;
 	}
-	if (m_app->GetKeyDown(GLFW_KEY_DOWN))
+	if (Application::Get()->GetKeyDown(GLFW_KEY_DOWN))
 	{
 		m_yRot -= delta * m_turnSpeed;
 	}
-	if (m_app->GetKeyDown(GLFW_KEY_LEFT))
+	if (Application::Get()->GetKeyDown(GLFW_KEY_LEFT))
 	{
 		m_xRot -= delta * m_turnSpeed;
 	}
-	if (m_app->GetKeyDown(GLFW_KEY_RIGHT))
+	if (Application::Get()->GetKeyDown(GLFW_KEY_RIGHT))
 	{
 		m_xRot += delta * m_turnSpeed;
 	}
 
-	if (m_app->GetMouseButtonDown(GLFW_MOUSE_BUTTON_2))
+	if (Application::Get()->GetMouseButtonDown(GLFW_MOUSE_BUTTON_2))
 	{
-		glm::vec2 mouseMove = m_app->GetMouseDelta() * (m_sensitivity / 50000);
+		glm::vec2 mouseMove = Application::Get()->GetMouseDelta() * (m_sensitivity / 50000);
 		m_xRot -= mouseMove.x;
 		m_yRot += mouseMove.y;
 		// Need to get mouse pos

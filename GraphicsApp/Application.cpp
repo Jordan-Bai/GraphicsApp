@@ -7,6 +7,8 @@
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 
+Application* Application::s_instance;
+
 Application::Application()
 	: m_window(nullptr), m_currentCamera(nullptr)
 {
@@ -14,11 +16,6 @@ Application::Application()
 
 Application::~Application()
 {
-	//for (GameObject* o : m_gameObjects)
-	//{
-	//	delete o;
-	//}
-	
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplGlfw_Shutdown();
 	ImGui::DestroyContext();
@@ -27,10 +24,17 @@ Application::~Application()
 }
 
 
+Application* Application::Get()
+{
+	if (s_instance == nullptr)
+	{
+		s_instance = new Application();
+	}
+	return s_instance;
+}
+
 int Application::Initialize()
 {
-    //glfwSetCursorPosCallback(m_window, SetMousePos);
-
 	if (!glfwInit())
 	{
 		std::cout << "GLFW COULD NOT INIT" << std::endl;
@@ -55,6 +59,8 @@ int Application::Initialize()
 		return -1;
 	}
 
+	glEnable(GL_DEPTH_TEST); // Enables depth buffer
+
 	// IMGUI SETUP
 	ImGui::CreateContext();
 
@@ -71,7 +77,7 @@ std::vector<GameObject*> Application::GetObjects()
 void Application::AddObject(GameObject* object)
 {
 	m_gameObjects.push_back(object);
-	object->Init(this);
+	//object->Init(this);
 	if (object->m_mat != nullptr)
 	{
 		if (object->m_mat->m_shader == nullptr)

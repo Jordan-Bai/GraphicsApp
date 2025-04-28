@@ -22,12 +22,17 @@ class Application
 	std::vector<ShaderProgram*> m_shaders;
 	Camera* m_currentCamera;
 
-public:
+protected:
+	static Application* s_instance;
+
 	Application();
 	~Application();
 
 	Application(const Application& other) = delete;
 	Application& operator=(const Application& other) = delete;
+
+public:
+	static Application* Get();
 
 	int Initialize();
 	std::vector<GameObject*> GetObjects();

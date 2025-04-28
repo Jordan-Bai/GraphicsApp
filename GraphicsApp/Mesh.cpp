@@ -380,35 +380,6 @@ void Mesh::Draw()
 {
 	// Bind VAO
 	glBindVertexArray(m_vertArray);
-	
-	//// vertPos
-	//glVertexAttribPointer(0,	// Index: Corresponds to layout(location = _) in the vertex shader
-	//	3,						// Size: number of the following type per vertex: in the case 3, since there are 3 floats per vertex
-	//	GL_FLOAT,				// Type: type to read the data as
-	//	GL_FALSE,				// Normalised: whether values should be maped to [-1, 1] (for signed) or [0, 1] (for unsigned)
-	//	sizeof(Vertex),			// Stride: The amount to move through the vertex buffer per vertex
-	//	0);						// Pointer: How far from the pointed to index the start of the data to read is
-	//// vertNormal
-	//glVertexAttribPointer(1,
-	//	3,
-	//	GL_FLOAT,
-	//	GL_FALSE,
-	//	sizeof(Vertex),
-	//	(const void*)(3 * sizeof(float)));
-	//// vertTangent
-	//glVertexAttribPointer(2,
-	//	3,
-	//	GL_FLOAT,
-	//	GL_FALSE,
-	//	sizeof(Vertex),
-	//	(const void*)(6 * sizeof(float)));
-	//// vertUVcoord
-	//glVertexAttribPointer(3,
-	//	2,						// Only 2 cuz it's a vector 2
-	//	GL_FLOAT,
-	//	GL_FALSE,
-	//	sizeof(Vertex),
-	//	(const void*)(9 * sizeof(float)));
 
 	//glDrawArrays(GL_TRIANGLES, 0, m_verts.size()); // FOR DRAWING WITHout INDEX BUFFERS
 	glDrawElements(GL_TRIANGLES, m_triCount * 3, GL_UNSIGNED_INT, 0); // FOR DRAWING WITH INDEX BUFFERS
