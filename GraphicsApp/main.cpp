@@ -33,27 +33,33 @@ int main()
 	glm::vec3 sunDirection = { 0, -1, -0.75 };
 	glm::vec3 sunColour = { 1, 1, 1 };
 
+
+	// Initialise shaders
+	//==========================================================================
 	Shader vertShader1("shader1Vert", GL_VERTEX_SHADER);
-	Shader vertShaderUI("shaderUIVert", GL_VERTEX_SHADER);
 	Shader fragShader1("shader1Frag", GL_FRAGMENT_SHADER);
 	Shader fragShader2("shader2Frag", GL_FRAGMENT_SHADER);
 	Shader fragShaderUnlit("shaderUnlitFrag", GL_FRAGMENT_SHADER);
-	Shader fragShaderUI("shaderUIFrag", GL_FRAGMENT_SHADER);
-	Shader fragShaderTest("shaderTestFrag", GL_FRAGMENT_SHADER);
+	//Shader fragShaderTest("shaderTestFrag", GL_FRAGMENT_SHADER);
+	Shader vertShaderScreenspace("shaderScreenspaceVert", GL_VERTEX_SHADER);
+	Shader fragShaderScreenspace("shaderScreenspaceFrag", GL_FRAGMENT_SHADER);
 
 	ShaderProgram shader1(&vertShader1, &fragShader1);
 	ShaderProgram shader2(&vertShader1, &fragShaderUnlit);
 	ShaderProgram shader3(&vertShader1, &fragShader2);
-	ShaderProgram shaderNormal(&vertShader1, &fragShaderTest);
-	ShaderProgram shaderUI(&vertShaderUI, &fragShaderUI);
+	//ShaderProgram shaderNormal(&vertShader1, &fragShaderTest);
+	ShaderProgram shaderScreenspace(&vertShaderScreenspace, &fragShaderScreenspace);
 
 	shader1.m_uniforms.SetUniform("specPower", 10.0f);
 	shader1.m_uniforms.SetUniform("sunDirection", glm::normalize(sunDirection));
 	shader3.m_uniforms.SetUniform("specPower", 10.0f);
 	shader3.m_uniforms.SetUniform("sunDirection", glm::normalize(sunDirection));
 	shader3.m_uniforms.SetUniform("sunColour", sunColour);
-	shaderUI.m_uniforms.SetUniform("aspectRatio", app->GetAspectRatio());
+	shaderScreenspace.m_uniforms.SetUniform("aspectRatio", app->GetAspectRatio());
+	//==========================================================================
 
+	// Initialise meshs/ textures/ materials
+	//==========================================================================
 	Mesh spearMesh;
 	spearMesh.LoadFromFile("soulspear.obj");
 	Mesh cubeMesh;
@@ -61,16 +67,16 @@ int main()
 	Mesh planeMesh;
 	planeMesh.CreatePlaneMesh();
 
-	Texture blank;
-	blank.CreateColourTexture({0.7f, 0.7f, 0.7f});
-	Texture blankNormal;
-	blankNormal.CreateColourTexture({ 0.5f, 0.5f, 1.0f });
-	Texture albedo;
-	albedo.LoadFileAsTexture("soulspear_diffuse.tga");
-	Texture specular;
-	specular.LoadFileAsTexture("soulspear_specular.tga");
-	Texture normal;
-	normal.LoadFileAsTexture("soulspear_normal.tga");
+	Texture blank(glm::vec3{ 0.7f, 0.7f, 0.7f });
+	//blank.CreateColourTexture({0.7f, 0.7f, 0.7f});
+	Texture blankNormal(glm::vec3{ 0.5f, 0.5f, 1.0f });
+	//blankNormal.CreateColourTexture({ 0.5f, 0.5f, 1.0f });
+	Texture albedo("soulspear_diffuse.tga");
+	//albedo.LoadFileAsTexture("soulspear_diffuse.tga");
+	Texture specular("soulspear_specular.tga");
+	//specular.LoadFileAsTexture("soulspear_specular.tga");
+	Texture normal("soulspear_normal.tga");
+	//normal.LoadFileAsTexture("soulspear_normal.tga");
 
 	Material defaultMat(&shader3, &blank, &blank, &blankNormal);
 	defaultMat.SetLightProperties(0.1f, 1.0f, 0.5f);
@@ -79,10 +85,11 @@ int main()
 	Material mat2(&shader3, &albedo, &specular, &normal);
 	mat2.SetLightProperties(0.1f, 1.0f, 1.0f);
 
-	Material lightMat1(&shaderUI);
-	Material lightMat2(&shaderUI);
-	Material lightMat3(&shaderUI);
+	Material lightMatTest(&shaderScreenspace);
+	//==========================================================================
 
+	// Create game objects
+	//==========================================================================
 	GameObject spear1(&spearMesh, &unlitMat);
 	spear1.m_pos = { -4.5f, 0, 0 };
 	GameObject spear2(&spearMesh, &defaultMat);
@@ -93,32 +100,32 @@ int main()
 	spear4.m_pos = { 4.5f, 0, 0 };
 	GameObject cube1(&cubeMesh, &defaultMat);
 
-	// Location indicators for lights
-	GameObject plane1(&planeMesh, &lightMat1);
-	GameObject plane2(&planeMesh, &lightMat2);
-	GameObject plane3(&planeMesh, &lightMat3);
-
 	Camera cam({ 0, 3.0f, 10.0f });
 	app->SetCurrentCamera(&cam);
 
 	std::vector<PointLight*> lights;
-	PointLight light1({ -2.0f, 0.0f, 0.0f }, { 1, 0, 0 }, 10);
-	PointLight light2({ 2.0f, 0.0f, 1.0f }, { 0, 1, 0 }, 10);
-	PointLight light3({ 3.0f, 0.5f, -0.5f }, { 0, 0, 1 }, 10);
+	PointLight light1(&planeMesh, &lightMatTest);
+	light1.m_pos = { -2.0f, 0, 0 };
+	light1.SetColour({ 1, 0, 0 }, 10);
+	PointLight light2(&planeMesh, &lightMatTest);
+	light2.m_pos = { 2.0f, 0, 1.0f };
+	light2.SetColour({ 0, 1, 0 }, 10);
+	PointLight light3(&planeMesh, &lightMatTest);
+	light3.m_pos = { 3.0f, 0.5f, -0.5f };
+	light3.SetColour({ 0, 0, 1 }, 10);
 	lights.push_back(&light1);
 	lights.push_back(&light2);
 	lights.push_back(&light3);
+	//==========================================================================
 
 	std::vector<glm::vec3> lightPositions;
 	std::vector<glm::vec3> lightColours;
 	for (int i = 0; i < lights.size(); i++)
 	{
-		lightPositions.push_back(lights[i]->pos);
+		lightPositions.push_back(lights[i]->m_pos);
 		lightColours.push_back(lights[i]->GetColour());
 	}
 	shader3.m_uniforms.SetUniform("lightCount", (int)lights.size());
-	//shader3.m_uniforms.SetArrayUniform("pointLightPos", lightPositions);
-	//shader3.m_uniforms.SetArrayUniform("pointLightCol", lightColours);
 
 	int selectedLight = 0;
 
@@ -141,29 +148,15 @@ int main()
 
 		app->Update(delta);
 
-		plane1.m_pos = light1.pos;
-		plane2.m_pos = light2.pos;
-		plane3.m_pos = light3.pos;
-
-		lightMat1.m_uniforms.SetUniform("colour", light1.col);
-		lightMat2.m_uniforms.SetUniform("colour", light2.col);
-		lightMat3.m_uniforms.SetUniform("colour", light3.col);
-
-		//if (app->GetKeyDown(GLFW_KEY_X))
-		//{
-		//	app->ReloadShaders();
-		//}
-
-		glm::mat4 vpMat = app->GetVPMatrix();
-		glm::vec3 camPos = app->GetCurrentCamera()->GetPos();
-		
-		app->BindUniformInAllShaders("cameraPos", camPos);
-		app->BindUniformInAllShaders("vpMat", vpMat);
+		// BIND ALL UNIFORMS THAT CAN CHANGE
+		//==========================================================================
+		app->BindUniformInAllShaders("cameraPos", app->GetCurrentCamera()->GetPos());
+		app->BindUniformInAllShaders("vpMat", app->GetVPMatrix());
 		app->BindUniformInAllShaders("sunDirection", glm::normalize(sunDirection));
 		app->BindUniformInAllShaders("sunColour", sunColour);
 
 		int i = selectedLight;
-		lightPositions[i] = lights[i]->pos;
+		lightPositions[i] = lights[i]->m_pos;
 		lightColours[i] = lights[i]->GetColour();
 		shader3.Use();
 		shader3.BindArrayUniform("pointLightPos", lightPositions);
@@ -174,6 +167,8 @@ int main()
 		//shader3.BindArrayElementUniform("pointLightCol", i, lights[i]->GetColour());
 		//shader3.m_uniforms.SetArrayElementUniform("pointLightPos", i, lights[i]->pos);
 		//shader3.m_uniforms.SetArrayElementUniform("pointLightCol", i, lights[i]->GetColour());
+		//==========================================================================
+
 
 		// DO IMGUI STUFF
 		//==========================================================================
@@ -185,9 +180,9 @@ int main()
 		{
 			ImGui::SliderInt("Selected Light", &selectedLight, 0, lights.size() - 1);
 			ImGui::Dummy({ 0, 15 });
-			ImGui::ColorEdit3("Colour", glm::value_ptr(lights[selectedLight]->col));
-			ImGui::SliderFloat("Brightness", &lights[selectedLight]->bright, 0, 50.0f);
-			ImGui::SliderFloat3("Position", glm::value_ptr(lights[selectedLight]->pos), -10.0f, 10.0f);
+			ImGui::ColorEdit3("Colour", glm::value_ptr(lights[selectedLight]->m_col));
+			ImGui::SliderFloat("Brightness", &lights[selectedLight]->m_bright, 0, 50.0f);
+			ImGui::SliderFloat3("Position", glm::value_ptr(lights[selectedLight]->m_pos), -10.0f, 10.0f);
 			ImGui::EndTabItem();
 		}
 		

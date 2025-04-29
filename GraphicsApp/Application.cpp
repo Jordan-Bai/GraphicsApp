@@ -72,15 +72,15 @@ int Application::Initialize()
 	ImGui_ImplOpenGL3_Init();
 }
 
-std::vector<GameObject*> Application::GetObjects()
-{
-	return m_gameObjects;
-}
+//std::vector<GameObject*> Application::GetObjects()
+//{
+//	return m_gameObjects;
+//}
 
 
 void Application::AddObject(GameObject* object)
 {
-	m_gameObjects.push_back(object);
+	//m_gameObjects.push_back(object);
 	if (object->m_mat != nullptr)
 	{
 		if (object->m_mat->m_shader == nullptr)
@@ -88,13 +88,17 @@ void Application::AddObject(GameObject* object)
 			std::cout << "MATERIAL DOES NOT CONTAIN SHADER" << std::endl;
 			return;
 		}
-
-		std::multimap<ShaderProgram*, GameObject*>::iterator it = m_renderedObjects.find(object->m_mat->m_shader);
-		if (it == m_renderedObjects.end()) // If the shader isn't already registered, add it to the list
+	
+		std::multimap<ShaderProgram*, GameObject*>::iterator it = m_gameObjects.find(object->m_mat->m_shader);
+		if (it == m_gameObjects.end()) // If the shader isn't already registered, add it to the list
 		{
 			m_shaders.push_back(object->m_mat->m_shader);
 		}
-		m_renderedObjects.insert(std::pair<ShaderProgram*, GameObject*>(object->m_mat->m_shader, object));
+		m_gameObjects.insert(std::pair<ShaderProgram*, GameObject*>(object->m_mat->m_shader, object));
+	}
+	else
+	{
+		m_gameObjects.insert(std::pair<ShaderProgram*, GameObject*>(nullptr, object));
 	}
 }
 
@@ -268,19 +272,17 @@ float Application::GetAspectRatio()
 
 void Application::Update(float delta)
 {
-    //m_lastMousePos = m_mousePos;
-    //double xPos;
-    //double yPos;
-    //glfwGetCursorPos(m_window, &xPos, &yPos);
-    //m_mousePos = {xPos, yPos};
-
 	ImGui_ImplGlfw_NewFrame();
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui::NewFrame();
 
-	for (GameObject* o : m_gameObjects)
+	//for (GameObject* o : m_gameObjects)
+	//{
+	//	o->Update(delta);
+	//}
+	for (std::pair<ShaderProgram*, GameObject*> p : m_gameObjects)
 	{
-		o->Update(delta);
+		p.second->Update(delta);
 	}
 
 	m_lastMousePos = m_mousePos;
@@ -292,8 +294,12 @@ void Application::Draw()
 	std::multimap<ShaderProgram*, GameObject*>::iterator it;
 	ShaderProgram* currentShader = nullptr;
 
-	for (it = m_renderedObjects.begin(); it != m_renderedObjects.end(); it++)
+	for (it = m_gameObjects.begin(); it != m_gameObjects.end(); it++)
 	{
+		if ((*it).first == nullptr)
+		{
+			continue;
+		}
 		if ((*it).first != currentShader)
 		{
 			currentShader = (*it).first;

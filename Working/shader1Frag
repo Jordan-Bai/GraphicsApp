@@ -19,20 +19,20 @@ out vec4 PixelColour;
 
 void main()
 {
-	vec3 albedoColour = texture(albedoMap, UVCoord).rgb;
-	vec3 specularColour = texture(specularMap, UVCoord).rgb;
-	vec3 normalColour = texture(normalMap, UVCoord).rgb;
-	normalColour = (normalColour * 2) - 1; // Remap to -1 to 1
+	vec3 texAlbedo = texture(albedoMap, UVCoord).rgb;
+	vec3 texSpecular = texture(specularMap, UVCoord).rgb;
+	vec3 texNormal = texture(normalMap, UVCoord).rgb;
+	texNormal = (texNormal * 2) - 1; // Remap to -1 to 1
 	
 	vec3 t = normalize(tangent);
 	vec3 b = normalize(biTangent);
 	vec3 n = normalize(normal);
 	mat3 TBNmat = mat3(t, b, n);
-	vec3 relativeNormal = TBNmat * normalColour;
+	vec3 relativeNormal = TBNmat * texNormal;
 	
 	// Diffuse lighting
 	float dLight = -dot(sunDirection, relativeNormal);
-	vec3 diffuse = albedoColour * sunColour * dLight;
+	vec3 diffuse = texAlbedo * sunColour * dLight;
 	
 	// Specular lighting
 	vec3 viewDir = normalize(pos - cameraPos); // Vector from camera to pixel pos
@@ -40,7 +40,7 @@ void main()
 	
 	float inLine = -dot(viewDir, reflectedRay);
 	float sLight = pow( max(0, inLine), specPower);
-	vec3 specular = specularColour * sunColour * sLight;
+	vec3 specular = texSpecular * sunColour * sLight;
 	
 	PixelColour = vec4(diffuse + specular, 1.0);
 	//PixelColour = vec4(dLight + sLight, dLight + sLight, dLight + sLight, 1.0);

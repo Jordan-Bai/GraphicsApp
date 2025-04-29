@@ -1,24 +1,19 @@
 #pragma once
 
-#include "glm.hpp"
+#include "GameObject.h"
 
-struct PointLight
+class PointLight : public GameObject
 {
-	glm::vec3 pos;
-	glm::vec3 col;
-	float bright;
+public:
+	glm::vec3 m_col;
+	float m_bright;
 
-	PointLight()
-		: pos(), col(), bright()
-	{
-	}
-	PointLight(glm::vec3 position, glm::vec3 colour, float brightness)
-		: pos(position), col(colour), bright(brightness)
-	{
-	}
+	PointLight();
+	PointLight(Mesh* mesh, Material* material);
+	PointLight(glm::vec3 position, glm::vec3 colour, float brightness);
 
-	glm::vec3 GetColour()
-	{
-		return col * bright;
-	}
+	void SetColour(glm::vec3 colour, float brightness);
+	glm::vec3 GetColour();
+
+	virtual void Draw() override;
 };

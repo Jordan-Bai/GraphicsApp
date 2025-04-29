@@ -17,8 +17,8 @@ class Application
 	float m_width = 1280;
 	float m_height = 720;
 
-	std::vector<GameObject*> m_gameObjects;
-	std::multimap<ShaderProgram*, GameObject*> m_renderedObjects;
+	//std::vector<GameObject*> m_gameObjects;
+	std::multimap<ShaderProgram*, GameObject*> m_gameObjects;
 	std::vector<ShaderProgram*> m_shaders;
 	Camera* m_currentCamera;
 
@@ -35,7 +35,8 @@ public:
 	static Application* Get();
 
 	int Initialize();
-	std::vector<GameObject*> GetObjects();
+
+	//std::vector<GameObject*> GetObjects();
 	void AddObject(GameObject* object);
 	Camera* GetCurrentCamera();
 	void SetCurrentCamera(Camera* camera);
