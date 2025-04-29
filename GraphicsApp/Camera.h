@@ -10,8 +10,6 @@ public:
 	float m_xRot;
 	float m_yRot;
 
-	//float zoom = 10;
-
 public:
 	Camera();
 	Camera(glm::vec3 pos);

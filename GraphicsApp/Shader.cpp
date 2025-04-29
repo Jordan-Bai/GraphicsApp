@@ -69,6 +69,7 @@ Shader::~Shader()
 	glDeleteShader(m_shaderID);
 }
 
+
 bool Shader::ShaderLoaded()
 {
 	return m_shaderID != 0;

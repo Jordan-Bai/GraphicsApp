@@ -7,12 +7,18 @@
 
 #include <iostream>
 
+Mesh::Mesh()
+	: m_vertArray(), m_vertBuffer(), m_indexBuffer(), m_triCount(0)
+{
+}
+
 Mesh::~Mesh()
 {
 	glDeleteBuffers(1, &m_vertBuffer);
 	glDeleteBuffers(1, &m_indexBuffer);
 	glDeleteVertexArrays(1, &m_vertArray);
 }
+
 
 void Mesh::CreatePlaneMesh()
 {
@@ -23,14 +29,10 @@ void Mesh::CreatePlaneMesh()
 	// |     |
 	// |     |
 	// 2-----3
-	Vertex a0({ -1, 1, 0 }, { 0, 0, 1 }, { 1, 0, 0 }, { 0, 0 });
-	Vertex a1({ 1, 1, 0 }, { 0, 0, 1 }, { 1, 0, 0 }, { 0, 1 });
-	Vertex a2({ -1, -1, 0 }, { 0, 0, 1 }, { 1, 0, 0 }, { 1, 0 });
-	Vertex a3({ 1, -1, 0 }, { 0, 0, 1 }, { 1, 0, 0 }, { 1, 1 });
-	verts.push_back(a0);
-	verts.push_back(a1);
-	verts.push_back(a2);
-	verts.push_back(a3);
+	verts.push_back({ { -1, 1, 0 }, { 0, 0, 1 }, { 1, 0, 0 }, { 0, 0 } });
+	verts.push_back({ { 1, 1, 0 }, { 0, 0, 1 }, { 1, 0, 0 }, { 0, 1 } });
+	verts.push_back({ { -1, -1, 0 }, { 0, 0, 1 }, { 1, 0, 0 }, { 1, 0 } });
+	verts.push_back({ { 1, -1, 0 }, { 0, 0, 1 }, { 1, 0, 0 }, { 1, 1 } });
 	indicies.push_back(0);
 	indicies.push_back(1);
 	indicies.push_back(2);
@@ -48,142 +50,84 @@ void Mesh::CreateCubeMesh()
 
 	std::vector<glm::vec2> offsets = { { -1, 1 }, { 1, 1 }, { -1, -1 }, { 1, -1 } };
 	std::vector<glm::vec2> UVs = { { 0, 0 }, { 1, 0 }, { 0, 1 }, { 1, 1 } };
-	// 0-----1
-	// |     |
-	// |     |
-	// 2-----3
+	//  (-1,1)    (1,1)
+	//      0-----1
+	//      |     |
+	//      |     |
+	//      2-----3
+	// (-1,-1)    (1,-1)
 
 	// Front face
+	//   -------
+	//  /|    /|
+	// 0-----1 |
+	// | /---|-/
+	// |/    |/
+	// 2-----3
 	for (int i = 0; i < 4; i++)
 	{
 		verts.push_back({ { offsets[i].x, offsets[i].y, 1 }, { 0, 0, 1 }, { 1, 0, 0 }, UVs[i] });
 	}
 
 	// Back face
+	//   0-----1
+	//  /|    /|
+	// ------- |
+	// | 2---|-3
+	// |/    |/
+	// -------
 	for (int i = 0; i < 4; i++)
 	{
 		verts.push_back({ { offsets[i].x, offsets[i].y, -1 }, { 0, 0, -1 }, { -1, 0, 0 }, UVs[i] });
 	}
 
 	// Right face
+	//   ------3
+	//  /|    /|
+	// ------1 |
+	// | /---|-2
+	// |/    |/
+	// ------0
 	for (int i = 0; i < 4; i++)
 	{
 		verts.push_back({ { 1, offsets[i].x, offsets[i].y }, { 1, 0, 0 }, { 0, 0, 1 }, UVs[i] });
 	}
 
 	// Left face
+	//   3------
+	//  /|    /|
+	// 1------ |
+	// | 2---|-/
+	// |/    |/
+	// 0------
 	for (int i = 0; i < 4; i++)
 	{
 		verts.push_back({ { -1, offsets[i].x, offsets[i].y }, { -1, 0, 0 }, { 0, 0, -1 }, UVs[i] });
 	}
 
 	// Top face
+	//   2-----3
+	//  /|    /|
+	// 0-----1 |
+	// | /---|-/
+	// |/    |/
+	// -------
 	for (int i = 0; i < 4; i++)
 	{
 		verts.push_back({ { offsets[i].x, 1, offsets[i].y }, { 0, 1, 0 }, { 1, 0, 0 }, UVs[i] });
 	}
 
 	// Bottom face
+	//   -------
+	//  /|    /|
+	// ------- |
+	// | 2---|-3
+	// |/    |/
+	// 0-----1
 	for (int i = 0; i < 4; i++)
 	{
 		verts.push_back({ { offsets[i].x, -1, offsets[i].y }, { 0, -1, 0 }, { -1, 0, 0 }, UVs[i] });
 	}
-
-	//// Front face
-	////   -------
-	////  /|    /|
-	//// 0-----1 |
-	//// | /---|-/
-	//// |/    |/
-	//// 2-----3
-	//Vertex a0({ -1, 1, 1 },		{ 0, 0, 1 }, { 1, 0, 0 }, { 0, 0 });
-	//Vertex a1({ 1, 1, 1 },		{ 0, 0, 1 }, { 1, 0, 0 }, { 0, 1 });
-	//Vertex a2({ -1, -1, 1 },	{ 0, 0, 1 }, { 1, 0, 0 }, { 1, 0 });
-	//Vertex a3({ 1, -1, 1 },		{ 0, 0, 1 }, { 1, 0, 0 }, { 1, 1 });
-	//verts.push_back(a0);
-	//verts.push_back(a1);
-	//verts.push_back(a2);
-	//verts.push_back(a3);
-	//
-	//// Back face
-	////   0-----1
-	////  /|    /|
-	//// ------- |
-	//// | 2---|-3
-	//// |/    |/
-	//// -------
-	//Vertex b0({ -1, 1, -1 },	{ 0, 0, -1 }, { -1, 0, 0 }, { 0, 0 });
-	//Vertex b1({ 1, 1, -1 },		{ 0, 0, -1 }, { -1, 0, 0 }, { 0, 1 });
-	//Vertex b2({ -1, -1, -1 },	{ 0, 0, -1 }, { -1, 0, 0 }, { 1, 0 });
-	//Vertex b3({ 1, -1, -1 },	{ 0, 0, -1 }, { -1, 0, 0 }, { 1, 1 });
-	//verts.push_back(b0);
-	//verts.push_back(b1);
-	//verts.push_back(b2);
-	//verts.push_back(b3);
-	//
-	//// Left face
-	////   1------
-	////  /|    /|
-	//// 0------ |
-	//// | 3---|-/
-	//// |/    |/
-	//// 2------
-	//Vertex c0({ -1, 1, 1 },		{ -1, 0, 0 }, { 0, 0, -1 }, { 0, 0 });
-	//Vertex c1({ -1, 1, -1 },	{ -1, 0, 0 }, { 0, 0, -1 }, { 0, 1 });
-	//Vertex c2({ -1, -1, 1 },	{ -1, 0, 0 }, { 0, 0, -1 }, { 1, 0 });
-	//Vertex c3({ -1, -1, -1 },	{ -1, 0, 0 }, { 0, 0, -1 }, { 1, 1 });
-	//verts.push_back(c2);
-	//verts.push_back(c0);
-	//verts.push_back(c3);
-	//verts.push_back(c1);
-	//
-	//// Right face
-	////   ------1
-	////  /|    /|
-	//// ------0 |
-	//// | /---|-3
-	//// |/    |/
-	//// ------2
-	//Vertex d0({ 1, 1, 1 },		{ 1, 0, 0 }, { 0, 0, 1 }, { 0, 0 });
-	//Vertex d1({ 1, 1, -1 },		{ 1, 0, 0 }, { 0, 0, 1 }, { 0, 1 });
-	//Vertex d2({ 1, -1, 1 },		{ 1, 0, 0 }, { 0, 0, 1 }, { 1, 0 });
-	//Vertex d3({ 1, -1, -1 },	{ 1, 0, 0 }, { 0, 0, 1 }, { 1, 1 });
-	//verts.push_back(d0);
-	//verts.push_back(d1);
-	//verts.push_back(d2);
-	//verts.push_back(d3);
-	//
-	//// Top face
-	////   2-----3
-	////  /|    /|
-	//// 0-----1 |
-	//// | /---|-/
-	//// |/    |/
-	//// -------
-	//Vertex e0({ -1, 1, 1 },		{ 0, 1, 0 }, { 1, 0, 0 }, { 0, 0 });
-	//Vertex e1({ 1, 1, 1 },		{ 0, 1, 0 }, { 1, 0, 0 }, { 0, 1 });
-	//Vertex e2({ -1, 1, -1 },	{ 0, 1, 0 }, { 1, 0, 0 }, { 1, 0 });
-	//Vertex e3({ 1, 1, -1 },		{ 0, 1, 0 }, { 1, 0, 0 }, { 1, 1 });
-	//verts.push_back(e0);
-	//verts.push_back(e1);
-	//verts.push_back(e2);
-	//verts.push_back(e3);
-	//
-	//// Bottom face
-	////   -------
-	////  /|    /|
-	//// ------- |
-	//// | 2---|-3
-	//// |/    |/
-	//// 0-----1
-	//Vertex f0({ -1, -1, 1 },	{ 0, -1, 0 }, { -1, 0, 0 }, { 0, 0 });
-	//Vertex f1({ 1, -1, 1 },		{ 0, -1, 0 }, { -1, 0, 0 }, { 0, 1 });
-	//Vertex f2({ -1, -1, -1 },	{ 0, -1, 0 }, { -1, 0, 0 }, { 1, 0 });
-	//Vertex f3({ 1, -1, -1 },	{ 0, -1, 0 }, { -1, 0, 0 }, { 1, 1 });
-	//verts.push_back(f0);
-	//verts.push_back(f1);
-	//verts.push_back(f2);
-	//verts.push_back(f3);
 
 	for (int i = 0; i < 24; i += 4)
 	{
@@ -198,88 +142,6 @@ void Mesh::CreateCubeMesh()
 	InitObject(verts, indicies);
 }
 
-//void Mesh::CreateSmoothCubeMesh()
-//{
-//	std::vector<Vertex> verts;
-//	std::vector<int> indicies;
-//
-//	//   4-----5
-//	//  /|    /|
-//	// 0-----1 |
-//	// | 6---|-7
-//	// |/    |/
-//	// 2-----3
-//	// Each normal pointing out from the center: means since normals are blended across a face, 
-//	// normals will act like a sphere
-//	Vertex c0({ -1, 1, 1 },		{ -0.5, 0.7071068, 0.5 },	{ -0.7071068, 0, 0.7071068 },	{ 0, 0 });
-//	Vertex c1({ 1, 1, 1 },		{ 0.5, 0.7071068, 0.5 },	{ -0.7071068, 0, -0.7071068 },	{ 0, 1 });
-//	Vertex c2({ -1, -1, 1 },	{ -0.5, -0.7071068, 0.5 },	{ -0.7071068, 0, 0.7071068 },	{ 1, 0 });
-//	Vertex c3({ 1, -1, 1 },		{ 0.5, -0.7071068, 0.5 },	{ -0.7071068, 0, -0.7071068 },	{ 1, 1 });
-//	Vertex c4({ -1, 1, -1 },	{ -0.5, 0.7071068, -0.5 },	{ 0.7071068, 0, 0.7071068 },	{ 0, 1 });
-//	Vertex c5({ 1, 1, -1 },		{ 0.5, 0.7071068, -0.5 },	{ 0.7071068, 0, -0.7071068 },	{ 0, 0 });
-//	Vertex c6({ -1, -1, -1 },	{ -0.5, -0.7071068, -0.5 },	{ 0.7071068, 0, 0.7071068 },	{ 1, 1 });
-//	Vertex c7({ 1, -1, -1 },	{ 0.5, -0.7071068, -0.5 },	{ 0.7071068, 0, -0.7071068 },	{ 1, 0 });
-//
-//	verts.push_back(c0);
-//	verts.push_back(c1);
-//	verts.push_back(c2);
-//	verts.push_back(c3);
-//	verts.push_back(c4);
-//	verts.push_back(c5);
-//	verts.push_back(c6);
-//	verts.push_back(c7);
-//
-//	// Front face
-//	indicies.push_back(0);
-//	indicies.push_back(1);
-//	indicies.push_back(2);
-//	indicies.push_back(1);
-//	indicies.push_back(2);
-//	indicies.push_back(3);
-//
-//	// Right face
-//	indicies.push_back(1);
-//	indicies.push_back(5);
-//	indicies.push_back(3);
-//	indicies.push_back(5);
-//	indicies.push_back(3);
-//	indicies.push_back(7);
-//
-//	// Bottom face
-//	indicies.push_back(7);
-//	indicies.push_back(6);
-//	indicies.push_back(3);
-//	indicies.push_back(6);
-//	indicies.push_back(3);
-//	indicies.push_back(2);
-//
-//	// Left face
-//	indicies.push_back(4);
-//	indicies.push_back(0);
-//	indicies.push_back(6);
-//	indicies.push_back(0);
-//	indicies.push_back(6);
-//	indicies.push_back(2);
-//
-//	// Top face
-//	indicies.push_back(4);
-//	indicies.push_back(5);
-//	indicies.push_back(0);
-//	indicies.push_back(5);
-//	indicies.push_back(0);
-//	indicies.push_back(1);
-//
-//	// Back face
-//	indicies.push_back(4);
-//	indicies.push_back(5);
-//	indicies.push_back(6);
-//	indicies.push_back(5);
-//	indicies.push_back(6);
-//	indicies.push_back(7);
-//
-//	InitObject(verts, indicies);
-//}
-
 void Mesh::LoadFromFile(std::string fileName)
 {
 	Assimp::Importer importer;
@@ -288,7 +150,6 @@ void Mesh::LoadFromFile(std::string fileName)
 	const aiScene* fileScene = importer.ReadFile(fileName, flags);
 	// Second parameter is aiPostProcessSteps: determines which post process steps to apply
 	// Triangulate makes sure every face is a triangle
-	// JoinIdenticalVertices good for index buffering
 	// ConvertToLeftHanded makes sure all UVs are the way round we want (better than FlipUVs)
 
 	std::vector<Vertex> verts;
@@ -320,7 +181,6 @@ void Mesh::LoadFromFile(std::string fileName)
 
 			if (mesh->HasTextureCoords(0)) // Check if they have texture coords
 			{
-				// COULD MESS STUFF UP IF UV'S ARE NOT IN 1ST UV CHANNEL
 				newVertex.UVcoord.x = mesh->mTextureCoords[0][i].x;
 				newVertex.UVcoord.y = mesh->mTextureCoords[0][i].y;
 			}
@@ -345,7 +205,6 @@ void Mesh::LoadFromFile(std::string fileName)
 		if (!mesh->HasTangentsAndBitangents())
 		{
 			std::cout << "TANGENTS COULD NOT BE LOADED" << std::endl;
-			
 		}
 
 	}
@@ -403,8 +262,6 @@ void Mesh::InitObject(std::vector<Vertex>& verts, std::vector<int>& indices)
 		sizeof(Vertex),
 		(const void*)(9 * sizeof(float)));
 
-	//glBindBuffer(GL_ARRAY_BUFFER, 0);
-
 	// Bind IBO
 	//==========================================================================
 	// Needs to happen AFTER the VAO is bound, as otherwise they won't link up
@@ -418,6 +275,7 @@ void Mesh::InitObject(std::vector<Vertex>& verts, std::vector<int>& indices)
 
 	m_triCount = indices.size() / 3;
 }
+
 
 void Mesh::Draw()
 {

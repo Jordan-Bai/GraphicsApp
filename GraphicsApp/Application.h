@@ -17,9 +17,7 @@ class Application
 	float m_width = 1280;
 	float m_height = 720;
 
-	//std::vector<GameObject*> m_gameObjects;
 	std::multimap<ShaderProgram*, GameObject*> m_gameObjects;
-	std::vector<ShaderProgram*> m_shaders;
 	Camera* m_currentCamera;
 
 protected:
@@ -36,7 +34,6 @@ public:
 
 	int Initialize();
 
-	//std::vector<GameObject*> GetObjects();
 	void AddObject(GameObject* object);
 	Camera* GetCurrentCamera();
 	void SetCurrentCamera(Camera* camera);
@@ -71,8 +68,3 @@ public:
 	void Update(float delta);
 	void Draw();
 };
-
-//template<typename T, type>
-//inline void Application::SetUniformInAllShaders(std::string uniformName, T const& t)
-//{
-//}

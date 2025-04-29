@@ -20,5 +20,4 @@ public:
 
 	virtual void Update(float delta);
 	virtual void Draw();
-	//virtual void Draw(glm::vec3 lightDir, float specPower, glm::mat4 vpMat, glm::vec3 camPos);
 };

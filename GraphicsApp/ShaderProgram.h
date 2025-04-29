@@ -6,21 +6,15 @@
 class ShaderProgram
 {
 private:
-	GLuint shaderProgram = 0;
+	GLuint m_shaderProgram = 0;
 
 	Shader* m_vertShader = nullptr;
 	Shader* m_fragShader = nullptr;
 
-	std::string m_vertexFileName;
-	std::string m_fragmentFileName;
-
 public:
-	UniformStorage m_uniforms;
+	UniformStorage m_uniforms; // Stores uniforms, so if the shader is ever reloaded, the uniforms can be reapplied
 
-	//ShaderProgram() {}
 	ShaderProgram(Shader* vertexShader, Shader* fragmentShader);
-	ShaderProgram(std::string vertexFilename, std::string fragmentFilename);
-
 	~ShaderProgram();
 
 	ShaderProgram(const ShaderProgram& other) = delete;
@@ -33,14 +27,15 @@ public:
 	void BindUniform(std::string varName, float value);
 	void BindUniform(std::string varName, glm::vec3 value);
 	void BindUniform(std::string varName, glm::mat4 value);
-	void BindArrayUniform(std::string varName, std::vector<int> value);
-	void BindArrayUniform(std::string varName, std::vector<float> value);
-	void BindArrayUniform(std::string varName, std::vector<glm::vec3> value);
-	void BindArrayUniform(std::string varName, std::vector<glm::mat4> value);
-	void BindArrayElementUniform(std::string varName, int index, int value); // Also includes binding samplers
-	void BindArrayElementUniform(std::string varName, int index, float value);
-	void BindArrayElementUniform(std::string varName, int index, glm::vec3 value);
-	void BindArrayElementUniform(std::string varName, int index, glm::mat4 value);
+	void BindUniform(std::string varName, std::vector<int> value);
+	void BindUniform(std::string varName, std::vector<float> value);
+	void BindUniform(std::string varName, std::vector<glm::vec3> value);
+	void BindUniform(std::string varName, std::vector<glm::mat4> value);
+	// Bind a single element of a uniform array
+	void BindUniformElement(std::string varName, int index, int value);
+	void BindUniformElement(std::string varName, int index, float value);
+	void BindUniformElement(std::string varName, int index, glm::vec3 value);
+	void BindUniformElement(std::string varName, int index, glm::mat4 value);
 
 	void ApplyUniforms();
 };

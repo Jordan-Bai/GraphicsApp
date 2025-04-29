@@ -10,7 +10,7 @@
 Application* Application::s_instance;
 
 Application::Application()
-	: m_window(nullptr), m_currentCamera(nullptr)
+	: m_window(nullptr), m_currentCamera(nullptr), m_mousePos(), m_lastMousePos()
 {
 }
 
@@ -61,39 +61,22 @@ int Application::Initialize()
 
 	glEnable(GL_DEPTH_TEST); // Enables depth buffer
 
-	// INPUT SETUP
+	// Input setup
 	glfwSetKeyCallback(m_window, &Application::KeyCallback);
 	glfwSetCursorPosCallback(m_window, &Application::CursorPosCallback);
 
-	// IMGUI SETUP
+	// ImGui setup
 	ImGui::CreateContext();
 
 	ImGui_ImplGlfw_InitForOpenGL(m_window, true);
 	ImGui_ImplOpenGL3_Init();
 }
 
-//std::vector<GameObject*> Application::GetObjects()
-//{
-//	return m_gameObjects;
-//}
-
 
 void Application::AddObject(GameObject* object)
 {
-	//m_gameObjects.push_back(object);
-	if (object->m_mat != nullptr)
+	if (object->m_mat != nullptr && object->m_mat->m_shader != nullptr)
 	{
-		if (object->m_mat->m_shader == nullptr)
-		{
-			std::cout << "MATERIAL DOES NOT CONTAIN SHADER" << std::endl;
-			return;
-		}
-	
-		std::multimap<ShaderProgram*, GameObject*>::iterator it = m_gameObjects.find(object->m_mat->m_shader);
-		if (it == m_gameObjects.end()) // If the shader isn't already registered, add it to the list
-		{
-			m_shaders.push_back(object->m_mat->m_shader);
-		}
 		m_gameObjects.insert(std::pair<ShaderProgram*, GameObject*>(object->m_mat->m_shader, object));
 	}
 	else
@@ -120,87 +103,139 @@ GLFWwindow* Application::GetWindow()
 
 void Application::BindUniformInAllShaders(std::string uniformName, int value)
 {
-	for (ShaderProgram* s : m_shaders)
+	std::multimap<ShaderProgram*, GameObject*>::iterator it = m_gameObjects.begin();
+	while (it != m_gameObjects.end())
 	{
-		s->Use();
-		s->BindUniform(uniformName, value);
+		if (it->first != nullptr)
+		{
+			it->first->Use();
+			it->first->BindUniform(uniformName, value);
+		}
+		it = m_gameObjects.upper_bound(it->first);
 	}
 }
 
 void Application::BindUniformInAllShaders(std::string uniformName, float value)
 {
-	for (ShaderProgram* s : m_shaders)
+	std::multimap<ShaderProgram*, GameObject*>::iterator it = m_gameObjects.begin();
+	while (it != m_gameObjects.end())
 	{
-		s->Use();
-		s->BindUniform(uniformName, value);
+		if (it->first != nullptr)
+		{
+			it->first->Use();
+			it->first->BindUniform(uniformName, value);
+		}
+		it = m_gameObjects.upper_bound(it->first);
 	}
 }
 
 void Application::BindUniformInAllShaders(std::string uniformName, glm::vec3 value)
 {
-	for (ShaderProgram* s : m_shaders)
+	std::multimap<ShaderProgram*, GameObject*>::iterator it = m_gameObjects.begin();
+	while (it != m_gameObjects.end())
 	{
-		s->Use();
-		s->BindUniform(uniformName, value);
+		if (it->first != nullptr)
+		{
+			it->first->Use();
+			it->first->BindUniform(uniformName, value);
+		}
+		it = m_gameObjects.upper_bound(it->first);
 	}
 }
 
 void Application::BindUniformInAllShaders(std::string uniformName, glm::mat4 value)
 {
-	for (ShaderProgram* s : m_shaders)
+	std::multimap<ShaderProgram*, GameObject*>::iterator it = m_gameObjects.begin();
+	while (it != m_gameObjects.end())
 	{
-		s->Use();
-		s->BindUniform(uniformName, value);
+		if (it->first != nullptr)
+		{
+			it->first->Use();
+			it->first->BindUniform(uniformName, value);
+		}
+		it = m_gameObjects.upper_bound(it->first);
 	}
 }
 
 
 void Application::SetUniformInAllShaders(std::string uniformName, int value)
 {
-	for (ShaderProgram* s : m_shaders)
+	std::multimap<ShaderProgram*, GameObject*>::iterator it = m_gameObjects.begin();
+	while (it != m_gameObjects.end())
 	{
-		s->m_uniforms.SetUniform(uniformName, value);
+		if (it->first != nullptr)
+		{
+			it->first->m_uniforms.SetUniform(uniformName, value);
+		}
+		it = m_gameObjects.upper_bound(it->first);
 	}
 }
 
 void Application::SetUniformInAllShaders(std::string uniformName, float value)
 {
-	for (ShaderProgram* s : m_shaders)
+	std::multimap<ShaderProgram*, GameObject*>::iterator it = m_gameObjects.begin();
+	while (it != m_gameObjects.end())
 	{
-		s->m_uniforms.SetUniform(uniformName, value);
+		if (it->first != nullptr)
+		{
+			it->first->m_uniforms.SetUniform(uniformName, value);
+		}
+		it = m_gameObjects.upper_bound(it->first);
 	}
 }
 
 void Application::SetUniformInAllShaders(std::string uniformName, glm::vec3 value)
 {
-	for (ShaderProgram* s : m_shaders)
+	std::multimap<ShaderProgram*, GameObject*>::iterator it = m_gameObjects.begin();
+	while (it != m_gameObjects.end())
 	{
-		s->m_uniforms.SetUniform(uniformName, value);
+		if (it->first != nullptr)
+		{
+			it->first->m_uniforms.SetUniform(uniformName, value);
+		}
+		it = m_gameObjects.upper_bound(it->first);
 	}
 }
 
 void Application::SetUniformInAllShaders(std::string uniformName, glm::mat4 value)
 {
-	for (ShaderProgram* s : m_shaders)
+	std::multimap<ShaderProgram*, GameObject*>::iterator it = m_gameObjects.begin();
+	while (it != m_gameObjects.end())
 	{
-		s->m_uniforms.SetUniform(uniformName, value);
+		if (it->first != nullptr)
+		{
+			it->first->m_uniforms.SetUniform(uniformName, value);
+		}
+		it = m_gameObjects.upper_bound(it->first);
 	}
 }
 
 
 void Application::ReloadShaders()
 {
-	for (ShaderProgram* s : m_shaders)
+	std::cout << "=====RELOADING ALL SHADERS=====" << std::endl;
+	std::multimap<ShaderProgram*, GameObject*>::iterator it = m_gameObjects.begin();
+	while (it != m_gameObjects.end())
 	{
-		s->ReloadShader();
+		if (it->first != nullptr)
+		{
+			it->first->ReloadShader();
+		}
+		it = m_gameObjects.upper_bound(it->first);
 	}
+	std::cout << "=====ALL SHADERS RELOADED=====" << std::endl;
 }
 
 void Application::ApplyAllUniforms()
 {
-	for (ShaderProgram* s : m_shaders)
+	std::multimap<ShaderProgram*, GameObject*>::iterator it = m_gameObjects.begin();
+	while (it != m_gameObjects.end())
 	{
-		s->ApplyUniforms();
+		if (it->first != nullptr)
+		{
+			it->first->ApplyUniforms();
+		}
+		it = m_gameObjects.upper_bound(it->first);
 	}
 }
 
@@ -239,6 +274,10 @@ void Application::CursorPosCallback(GLFWwindow* window, double xPos, double yPos
 	s_instance->m_mousePos = { xPos, yPos };
 }
 
+void Application::MouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
+{
+}
+
 
 glm::mat4 Application::GetProjectionMatrix()
 {
@@ -260,7 +299,7 @@ glm::mat4 Application::GetVPMatrix()
 	glm::mat4 view = m_currentCamera->GetViewMatrix();
 
 	return GetProjectionMatrix() * view;
-	// ^ Actually applied right to left, because of the way they're being multiplied 
+	// ^ Applied right to left, because of the way they're being multiplied 
 	// (openGL uses column-major order for matricies)
 }
 
@@ -276,10 +315,6 @@ void Application::Update(float delta)
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui::NewFrame();
 
-	//for (GameObject* o : m_gameObjects)
-	//{
-	//	o->Update(delta);
-	//}
 	for (std::pair<ShaderProgram*, GameObject*> p : m_gameObjects)
 	{
 		p.second->Update(delta);

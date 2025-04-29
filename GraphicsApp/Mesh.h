@@ -14,15 +14,11 @@ protected:
 	int m_triCount;
 
 public:
-	Mesh()
-		: m_vertArray(), m_vertBuffer(), m_indexBuffer()
-	{
-	}
+	Mesh();
 	~Mesh();
 
 	void CreatePlaneMesh();
 	void CreateCubeMesh();
-	//void CreateSmoothCubeMesh();
 	void LoadFromFile(std::string fileName);
 	virtual void InitObject(std::vector<Vertex>& verts, std::vector<int>& indicies);
 

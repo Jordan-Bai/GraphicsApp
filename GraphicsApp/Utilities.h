@@ -49,14 +49,15 @@ struct UniformStorage
 	void SetUniform(std::string varName, float value);
 	void SetUniform(std::string varName, glm::vec3 value);
 	void SetUniform(std::string varName, glm::mat4 value);
-	void SetArrayUniform(std::string varName, std::vector<int> value);
-	void SetArrayUniform(std::string varName, std::vector<float> value);
-	void SetArrayUniform(std::string varName, std::vector<glm::vec3> value);
-	void SetArrayUniform(std::string varName, std::vector<glm::mat4> value);
-	void SetArrayElementUniform(std::string varName, int index, int value);
-	void SetArrayElementUniform(std::string varName, int index, float value);
-	void SetArrayElementUniform(std::string varName, int index, glm::vec3 value);
-	void SetArrayElementUniform(std::string varName, int index, glm::mat4 value);
+	void SetUniform(std::string varName, std::vector<int> value);
+	void SetUniform(std::string varName, std::vector<float> value);
+	void SetUniform(std::string varName, std::vector<glm::vec3> value);
+	void SetUniform(std::string varName, std::vector<glm::mat4> value);
+	// Set a single element of a uniform array
+	void SetUniformElement(std::string varName, int index, int value);
+	void SetUniformElement(std::string varName, int index, float value);
+	void SetUniformElement(std::string varName, int index, glm::vec3 value);
+	void SetUniformElement(std::string varName, int index, glm::mat4 value);
 
 	void ApplyAll(ShaderProgram& shader);
 };

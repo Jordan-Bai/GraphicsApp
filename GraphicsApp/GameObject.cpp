@@ -14,6 +14,7 @@ GameObject::GameObject(Mesh* mesh, Material* material)
 	Application::Get()->AddObject(this);
 }
 
+
 glm::mat4 GameObject::GetRotation()
 {
 	glm::mat4 xRot = glm::rotate(glm::mat4(1), m_rot.x, glm::vec3(1.0f, 0.0f, 0.0f));
@@ -28,10 +29,11 @@ glm::mat4 GameObject::GetObjectSpace()
 	glm::mat4 rotation = GetRotation();
 	glm::mat4 scale = glm::scale(glm::mat4(1), m_scale);
 	return translation * scale * rotation;
-	// ^ Actually applied right to left, because of the way they're being multiplied 
+	// ^ Applied right to left, because of the way they're being multiplied 
 	// (openGL uses column-major order for matricies)
 	// So rotation is applied first, then scale, then translation
 }
+
 
 void GameObject::Update(float delta)
 {
@@ -39,39 +41,14 @@ void GameObject::Update(float delta)
 
 void GameObject::Draw()
 {
-	if (m_mesh)
+	if (!m_mesh)
 	{
-		if (!m_mat)
-		{
-			std::cout << "MESH DOES NOT HAVE MATERIAL" << std::endl;
-			return;
-		}
-
-		m_mat->m_shader->BindUniform("modelMat", GetObjectSpace());
-		m_mat->ApplyMaterial();
-
-		m_mesh->Draw();
+		std::cout << "OBJECT DOES NOT HAVE MESH" << std::endl;
+		return;
 	}
-}
 
-//void GameObject::Draw(glm::vec3 lightDir, float specPower, glm::mat4 vpMat, glm::vec3 camPos)
-//{
-//	if (m_mesh)
-//	{
-//		if (!m_mat)
-//		{
-//			std::cout << "MESH DOES NOT HAVE MATERIAL" << std::endl;
-//			return;
-//		}
-//
-//		m_mat->m_shader->Use();
-//		m_mat->m_shader->BindUniform("sunDirection", lightDir);
-//		m_mat->m_shader->BindUniform("specPower", specPower);
-//		m_mat->m_shader->BindUniform("vpMat", vpMat);
-//		m_mat->m_shader->BindUniform("cameraPos", camPos);
-//		m_mat->m_shader->BindUniform("modelMat", GetObjectSpace());
-//		m_mat->ApplyMaterial();
-//
-//		m_mesh->Draw();
-//	}
-//}
+	m_mat->m_shader->BindUniform("modelMat", GetObjectSpace());
+	m_mat->ApplyMaterial();
+
+	m_mesh->Draw();
+}

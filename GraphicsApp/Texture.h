@@ -10,7 +10,4 @@ struct Texture
 	Texture(std::string fileName);
 	Texture(glm::vec3 colour);
 	~Texture();
-
-	void LoadFileAsTexture(std::string fileName);
-	void CreateColourTexture(glm::vec3 colour);
 };

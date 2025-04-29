@@ -19,6 +19,7 @@ std::string LoadFileAsString(std::string fileName)
 	return output;
 }
 
+
 void UniformStorage::SetUniform(std::string varName, int value)
 {
 	m_ints[varName] = value;
@@ -39,42 +40,42 @@ void UniformStorage::SetUniform(std::string varName, glm::mat4 value)
 	m_mat4s[varName] = value;
 }
 
-void UniformStorage::SetArrayUniform(std::string varName, std::vector<int> value)
+void UniformStorage::SetUniform(std::string varName, std::vector<int> value)
 {
 	m_intArrays[varName] = value;
 }
 
-void UniformStorage::SetArrayUniform(std::string varName, std::vector<float> value)
+void UniformStorage::SetUniform(std::string varName, std::vector<float> value)
 {
 	m_floatArrays[varName] = value;
 }
 
-void UniformStorage::SetArrayUniform(std::string varName, std::vector<glm::vec3> value)
+void UniformStorage::SetUniform(std::string varName, std::vector<glm::vec3> value)
 {
 	m_vec3Arrays[varName] = value;
 }
 
-void UniformStorage::SetArrayUniform(std::string varName, std::vector<glm::mat4> value)
+void UniformStorage::SetUniform(std::string varName, std::vector<glm::mat4> value)
 {
 	m_mat4Arrays[varName] = value;
 }
 
-void UniformStorage::SetArrayElementUniform(std::string varName, int index, int value)
+void UniformStorage::SetUniformElement(std::string varName, int index, int value)
 {
 	m_intArrays[varName][index] = value;
 }
 
-void UniformStorage::SetArrayElementUniform(std::string varName, int index, float value)
+void UniformStorage::SetUniformElement(std::string varName, int index, float value)
 {
 	m_floatArrays[varName][index] = value;
 }
 
-void UniformStorage::SetArrayElementUniform(std::string varName, int index, glm::vec3 value)
+void UniformStorage::SetUniformElement(std::string varName, int index, glm::vec3 value)
 {
 	m_vec3Arrays[varName][index] = value;
 }
 
-void UniformStorage::SetArrayElementUniform(std::string varName, int index, glm::mat4 value)
+void UniformStorage::SetUniformElement(std::string varName, int index, glm::mat4 value)
 {
 	m_mat4Arrays[varName][index] = value;
 }
@@ -91,7 +92,7 @@ void UniformStorage::ApplyAll(ShaderProgram& shader)
 	std::map<std::string, std::vector<int>>::iterator intArrayIt;
 	for (intArrayIt = m_intArrays.begin(); intArrayIt != m_intArrays.end(); intArrayIt++)
 	{
-		shader.BindArrayUniform(intArrayIt->first, intArrayIt->second);
+		shader.BindUniform(intArrayIt->first, intArrayIt->second);
 	}
 
 	// Floats
@@ -103,7 +104,7 @@ void UniformStorage::ApplyAll(ShaderProgram& shader)
 	std::map<std::string, std::vector<float>>::iterator floatArrayIt;
 	for (floatArrayIt = m_floatArrays.begin(); floatArrayIt != m_floatArrays.end(); floatArrayIt++)
 	{
-		shader.BindArrayUniform(floatArrayIt->first, floatArrayIt->second);
+		shader.BindUniform(floatArrayIt->first, floatArrayIt->second);
 	}
 
 	// Vec3s
@@ -115,7 +116,7 @@ void UniformStorage::ApplyAll(ShaderProgram& shader)
 	std::map<std::string, std::vector<glm::vec3>>::iterator vec3ArrayIt;
 	for (vec3ArrayIt = m_vec3Arrays.begin(); vec3ArrayIt != m_vec3Arrays.end(); vec3ArrayIt++)
 	{
-		shader.BindArrayUniform(vec3ArrayIt->first, vec3ArrayIt->second);
+		shader.BindUniform(vec3ArrayIt->first, vec3ArrayIt->second);
 	}
 
 	// Mat4s
@@ -127,6 +128,6 @@ void UniformStorage::ApplyAll(ShaderProgram& shader)
 	std::map<std::string, std::vector<glm::mat4>>::iterator mat4ArrayIt;
 	for (mat4ArrayIt = m_mat4Arrays.begin(); mat4ArrayIt != m_mat4Arrays.end(); mat4ArrayIt++)
 	{
-		shader.BindArrayUniform(mat4ArrayIt->first, mat4ArrayIt->second);
+		shader.BindUniform(mat4ArrayIt->first, mat4ArrayIt->second);
 	}
 }

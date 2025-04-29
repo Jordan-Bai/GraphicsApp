@@ -1,4 +1,5 @@
 #include "PointLight.h"
+#include <iostream>
 
 PointLight::PointLight()
 	: m_col(), m_bright()
@@ -6,7 +7,7 @@ PointLight::PointLight()
 }
 
 PointLight::PointLight(Mesh* mesh, Material* material)
-	: GameObject(mesh, material)
+	: GameObject(mesh, material), m_col(), m_bright(1)
 {
 }
 
@@ -31,6 +32,12 @@ glm::vec3 PointLight::GetColour()
 
 void PointLight::Draw()
 {
+	if (!m_mesh)
+	{
+		std::cout << "OBJECT DOES NOT HAVE MESH" << std::endl;
+		return;
+	}
+
 	m_mat->m_shader->BindUniform("modelMat", GetObjectSpace());
 	m_mat->m_shader->BindUniform("colour", GetColour());
 

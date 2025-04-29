@@ -12,11 +12,7 @@ public:
 	Texture* m_specularMap;
 	Texture* m_normalMap;
 
-	// Material properties
 	UniformStorage m_uniforms;
-	//float m_ambient = 0.1f;
-	//float m_diffuse = 1.0f;
-	//float m_specular = 1.0f;
 
 	Material(ShaderProgram* shader);
 	Material(ShaderProgram* shader, Texture* albedo, Texture* specular, Texture* normal);
