@@ -53,6 +53,10 @@ struct UniformStorage
 	void SetArrayUniform(std::string varName, std::vector<float> value);
 	void SetArrayUniform(std::string varName, std::vector<glm::vec3> value);
 	void SetArrayUniform(std::string varName, std::vector<glm::mat4> value);
+	void SetArrayElementUniform(std::string varName, int index, int value);
+	void SetArrayElementUniform(std::string varName, int index, float value);
+	void SetArrayElementUniform(std::string varName, int index, glm::vec3 value);
+	void SetArrayElementUniform(std::string varName, int index, glm::mat4 value);
 
 	void ApplyAll(ShaderProgram& shader);
 };

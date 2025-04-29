@@ -46,9 +46,5 @@ void Material::ApplyMaterial()
 	m_shader->BindUniform("specularMap", 1);
 	m_shader->BindUniform("normalMap", 2);
 
-	//m_shader->BindUniform("matAmbient", m_ambient);
-	//m_shader->BindUniform("matDiffuse", m_diffuse);
-	//m_shader->BindUniform("matSpecular", m_specular);
-
 	m_uniforms.ApplyAll(*m_shader);
 }

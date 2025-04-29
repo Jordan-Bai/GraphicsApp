@@ -54,10 +54,6 @@ int main()
 	shader3.m_uniforms.SetUniform("sunColour", sunColour);
 	shaderUI.m_uniforms.SetUniform("aspectRatio", app->GetAspectRatio());
 
-	Camera cam({ 0, 3.0f, 10.0f });
-	app->AddObject(&cam);
-	app->SetCurrentCamera(&cam);
-
 	Mesh spearMesh;
 	spearMesh.LoadFromFile("soulspear.obj");
 	Mesh cubeMesh;
@@ -77,9 +73,8 @@ int main()
 	normal.LoadFileAsTexture("soulspear_normal.tga");
 
 	Material defaultMat(&shader3, &blank, &blank, &blankNormal);
-	defaultMat.SetLightProperties(0.1f, 1.0f, 0.1f);
+	defaultMat.SetLightProperties(0.1f, 1.0f, 0.5f);
 	Material unlitMat(&shader2, &albedo, &specular, &normal);
-	//Material normalMat(&shader3, &normal, &normal, &normal);
 	Material mat1(&shader1, &albedo, &specular, &normal);
 	Material mat2(&shader3, &albedo, &specular, &normal);
 	mat2.SetLightProperties(0.1f, 1.0f, 1.0f);
@@ -88,28 +83,23 @@ int main()
 	Material lightMat2(&shaderUI);
 	Material lightMat3(&shaderUI);
 
-	GameObject spear1(&spearMesh, &mat1);
+	GameObject spear1(&spearMesh, &unlitMat);
 	spear1.m_pos = { -4.5f, 0, 0 };
-	app->AddObject(&spear1);
-	GameObject spear2(&spearMesh, &mat2);
+	GameObject spear2(&spearMesh, &defaultMat);
 	spear2.m_pos = { -1.5f, 0, 0 };
-	app->AddObject(&spear2);
 	GameObject spear3(&spearMesh, &mat2);
 	spear3.m_pos = { 1.5f, 0, 0 };
-	app->AddObject(&spear3);
-	GameObject spear4(&spearMesh, &unlitMat);
+	GameObject spear4(&spearMesh, &mat2);
 	spear4.m_pos = { 4.5f, 0, 0 };
-	app->AddObject(&spear4);
-
 	GameObject cube1(&cubeMesh, &defaultMat);
-	app->AddObject(&cube1);
 
+	// Location indicators for lights
 	GameObject plane1(&planeMesh, &lightMat1);
-	app->AddObject(&plane1);
 	GameObject plane2(&planeMesh, &lightMat2);
-	app->AddObject(&plane2);
 	GameObject plane3(&planeMesh, &lightMat3);
-	app->AddObject(&plane3);
+
+	Camera cam({ 0, 3.0f, 10.0f });
+	app->SetCurrentCamera(&cam);
 
 	std::vector<PointLight*> lights;
 	PointLight light1({ -2.0f, 0.0f, 0.0f }, { 1, 0, 0 }, 10);
@@ -127,6 +117,8 @@ int main()
 		lightColours.push_back(lights[i]->GetColour());
 	}
 	shader3.m_uniforms.SetUniform("lightCount", (int)lights.size());
+	//shader3.m_uniforms.SetArrayUniform("pointLightPos", lightPositions);
+	//shader3.m_uniforms.SetArrayUniform("pointLightCol", lightColours);
 
 	int selectedLight = 0;
 
@@ -157,10 +149,10 @@ int main()
 		lightMat2.m_uniforms.SetUniform("colour", light2.col);
 		lightMat3.m_uniforms.SetUniform("colour", light3.col);
 
-		if (app->GetKeyDown(GLFW_KEY_X))
-		{
-			app->ReloadShaders();
-		}
+		//if (app->GetKeyDown(GLFW_KEY_X))
+		//{
+		//	app->ReloadShaders();
+		//}
 
 		glm::mat4 vpMat = app->GetVPMatrix();
 		glm::vec3 camPos = app->GetCurrentCamera()->GetPos();
@@ -170,18 +162,18 @@ int main()
 		app->BindUniformInAllShaders("sunDirection", glm::normalize(sunDirection));
 		app->BindUniformInAllShaders("sunColour", sunColour);
 
-		for (int i = 0; i < lights.size(); i++)
-		{
-			//glm::vec4 transformedPos = { lights[i]->pos.x, lights[i]->pos.y, lights[i]->pos.z, 1 };
-			////transformedPos = vpMat * transformedPos;
-			//lightPositions[i] = { transformedPos.x, transformedPos.y, transformedPos.z };
-
-			lightPositions[i] = lights[i]->pos;
-			lightColours[i] = lights[i]->GetColour();
-		}
+		int i = selectedLight;
+		lightPositions[i] = lights[i]->pos;
+		lightColours[i] = lights[i]->GetColour();
 		shader3.Use();
 		shader3.BindArrayUniform("pointLightPos", lightPositions);
 		shader3.BindArrayUniform("pointLightCol", lightColours);
+		//int i = selectedLight;
+		//shader3.Use();
+		//shader3.BindArrayElementUniform("pointLightPos", i, lights[i]->pos);
+		//shader3.BindArrayElementUniform("pointLightCol", i, lights[i]->GetColour());
+		//shader3.m_uniforms.SetArrayElementUniform("pointLightPos", i, lights[i]->pos);
+		//shader3.m_uniforms.SetArrayElementUniform("pointLightCol", i, lights[i]->GetColour());
 
 		// DO IMGUI STUFF
 		//==========================================================================

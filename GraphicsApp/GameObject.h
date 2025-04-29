@@ -5,9 +5,6 @@
 
 class GameObject
 {
-protected:
-	//Application* m_app = nullptr;
-
 public:
 	glm::vec3 m_pos;
 	glm::vec3 m_rot;
@@ -17,12 +14,11 @@ public:
 
 	GameObject();
 	GameObject(Mesh* mesh, Material* material);
-	//void Init(Application* app);
 
 	glm::mat4 GetRotation();
 	glm::mat4 GetObjectSpace();
 
 	virtual void Update(float delta);
 	virtual void Draw();
-	virtual void Draw(glm::vec3 lightDir, float specPower, glm::mat4 vpMat, glm::vec3 camPos);
+	//virtual void Draw(glm::vec3 lightDir, float specPower, glm::mat4 vpMat, glm::vec3 camPos);
 };

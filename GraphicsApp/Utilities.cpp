@@ -59,6 +59,26 @@ void UniformStorage::SetArrayUniform(std::string varName, std::vector<glm::mat4>
 	m_mat4Arrays[varName] = value;
 }
 
+void UniformStorage::SetArrayElementUniform(std::string varName, int index, int value)
+{
+	m_intArrays[varName][index] = value;
+}
+
+void UniformStorage::SetArrayElementUniform(std::string varName, int index, float value)
+{
+	m_floatArrays[varName][index] = value;
+}
+
+void UniformStorage::SetArrayElementUniform(std::string varName, int index, glm::vec3 value)
+{
+	m_vec3Arrays[varName][index] = value;
+}
+
+void UniformStorage::SetArrayElementUniform(std::string varName, int index, glm::mat4 value)
+{
+	m_mat4Arrays[varName][index] = value;
+}
+
 
 void UniformStorage::ApplyAll(ShaderProgram& shader)
 {

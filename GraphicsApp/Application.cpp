@@ -61,6 +61,10 @@ int Application::Initialize()
 
 	glEnable(GL_DEPTH_TEST); // Enables depth buffer
 
+	// INPUT SETUP
+	glfwSetKeyCallback(m_window, &Application::KeyCallback);
+	glfwSetCursorPosCallback(m_window, &Application::CursorPosCallback);
+
 	// IMGUI SETUP
 	ImGui::CreateContext();
 
@@ -77,7 +81,6 @@ std::vector<GameObject*> Application::GetObjects()
 void Application::AddObject(GameObject* object)
 {
 	m_gameObjects.push_back(object);
-	//object->Init(this);
 	if (object->m_mat != nullptr)
 	{
 		if (object->m_mat->m_shader == nullptr)
@@ -219,6 +222,20 @@ bool Application::GetMouseButtonDown(int button)
 }
 
 
+void Application::KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+	if (key == GLFW_KEY_X && action == GLFW_PRESS)
+	{
+		s_instance->ReloadShaders();
+	}
+}
+
+void Application::CursorPosCallback(GLFWwindow* window, double xPos, double yPos)
+{
+	s_instance->m_mousePos = { xPos, yPos };
+}
+
+
 glm::mat4 Application::GetProjectionMatrix()
 {
 	return glm::perspective(
@@ -251,11 +268,11 @@ float Application::GetAspectRatio()
 
 void Application::Update(float delta)
 {
-    m_lastMousePos = m_mousePos;
-    double xPos;
-    double yPos;
-    glfwGetCursorPos(m_window, &xPos, &yPos);
-    m_mousePos = {xPos, yPos};
+    //m_lastMousePos = m_mousePos;
+    //double xPos;
+    //double yPos;
+    //glfwGetCursorPos(m_window, &xPos, &yPos);
+    //m_mousePos = {xPos, yPos};
 
 	ImGui_ImplGlfw_NewFrame();
 	ImGui_ImplOpenGL3_NewFrame();
@@ -266,8 +283,7 @@ void Application::Update(float delta)
 		o->Update(delta);
 	}
 
-	//BindUniformInAllShaders("cameraPos", m_currentCamera->GetPos());
-	//BindUniformInAllShaders("vpMat", GetVPMatrix());
+	m_lastMousePos = m_mousePos;
 }
 
 void Application::Draw()

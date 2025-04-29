@@ -5,17 +5,14 @@
 GameObject::GameObject()
 	: m_mesh(nullptr), m_mat(nullptr), m_pos(), m_rot(), m_scale({1, 1, 1})
 {
+	Application::Get()->AddObject(this);
 }
 
 GameObject::GameObject(Mesh* mesh, Material* material)
 	: m_mesh(mesh), m_mat(material), m_pos(), m_rot(), m_scale({ 1, 1, 1 })
 {
+	Application::Get()->AddObject(this);
 }
-
-//void GameObject::Init(Application* app)
-//{
-//	m_app = app;
-//}
 
 glm::mat4 GameObject::GetRotation()
 {
@@ -57,24 +54,24 @@ void GameObject::Draw()
 	}
 }
 
-void GameObject::Draw(glm::vec3 lightDir, float specPower, glm::mat4 vpMat, glm::vec3 camPos)
-{
-	if (m_mesh)
-	{
-		if (!m_mat)
-		{
-			std::cout << "MESH DOES NOT HAVE MATERIAL" << std::endl;
-			return;
-		}
-
-		m_mat->m_shader->Use();
-		m_mat->m_shader->BindUniform("sunDirection", lightDir);
-		m_mat->m_shader->BindUniform("specPower", specPower);
-		m_mat->m_shader->BindUniform("vpMat", vpMat);
-		m_mat->m_shader->BindUniform("cameraPos", camPos);
-		m_mat->m_shader->BindUniform("modelMat", GetObjectSpace());
-		m_mat->ApplyMaterial();
-
-		m_mesh->Draw();
-	}
-}
+//void GameObject::Draw(glm::vec3 lightDir, float specPower, glm::mat4 vpMat, glm::vec3 camPos)
+//{
+//	if (m_mesh)
+//	{
+//		if (!m_mat)
+//		{
+//			std::cout << "MESH DOES NOT HAVE MATERIAL" << std::endl;
+//			return;
+//		}
+//
+//		m_mat->m_shader->Use();
+//		m_mat->m_shader->BindUniform("sunDirection", lightDir);
+//		m_mat->m_shader->BindUniform("specPower", specPower);
+//		m_mat->m_shader->BindUniform("vpMat", vpMat);
+//		m_mat->m_shader->BindUniform("cameraPos", camPos);
+//		m_mat->m_shader->BindUniform("modelMat", GetObjectSpace());
+//		m_mat->ApplyMaterial();
+//
+//		m_mesh->Draw();
+//	}
+//}

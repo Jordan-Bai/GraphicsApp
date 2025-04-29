@@ -22,7 +22,7 @@ public:
 
 	void CreatePlaneMesh();
 	void CreateCubeMesh();
-	void CreateSmoothCubeMesh();
+	//void CreateSmoothCubeMesh();
 	void LoadFromFile(std::string fileName);
 	virtual void InitObject(std::vector<Vertex>& verts, std::vector<int>& indicies);
 

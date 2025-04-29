@@ -37,6 +37,10 @@ public:
 	void BindArrayUniform(std::string varName, std::vector<float> value);
 	void BindArrayUniform(std::string varName, std::vector<glm::vec3> value);
 	void BindArrayUniform(std::string varName, std::vector<glm::mat4> value);
+	void BindArrayElementUniform(std::string varName, int index, int value); // Also includes binding samplers
+	void BindArrayElementUniform(std::string varName, int index, float value);
+	void BindArrayElementUniform(std::string varName, int index, glm::vec3 value);
+	void BindArrayElementUniform(std::string varName, int index, glm::mat4 value);
 
 	void ApplyUniforms();
 };

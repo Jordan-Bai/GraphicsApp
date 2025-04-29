@@ -206,6 +206,38 @@ void ShaderProgram::BindArrayUniform(std::string varName, std::vector<glm::mat4>
 		&value[0][0][0]);	// Pointer to first float in mat
 }
 
+void ShaderProgram::BindArrayElementUniform(std::string varName, int index, int value)
+{
+	std::string indexText = "[" + std::to_string(index) + "]";
+	GLint varLoc = glGetUniformLocation(shaderProgram, (varName + indexText).c_str());
+	glUniform1iv(varLoc, 1, &value);
+}
+
+void ShaderProgram::BindArrayElementUniform(std::string varName, int index, float value)
+{
+	std::string indexText = "[" + std::to_string(index) + "]";
+	GLint varLoc = glGetUniformLocation(shaderProgram, (varName + indexText).c_str());
+	glUniform1fv(varLoc, 1, &value);
+}
+
+void ShaderProgram::BindArrayElementUniform(std::string varName, int index, glm::vec3 value)
+{
+	std::string indexText = "[" + std::to_string(index) + "]";
+	GLint varLoc = glGetUniformLocation(shaderProgram, (varName + indexText).c_str());
+	glUniform3fv(varLoc, 1, (float*)&value);
+}
+
+void ShaderProgram::BindArrayElementUniform(std::string varName, int index, glm::mat4 value)
+{
+	std::string indexText = "[" + std::to_string(index) + "]";
+	GLint varLoc = glGetUniformLocation(shaderProgram, (varName + indexText).c_str());
+	glUniformMatrix4fv(
+		varLoc,
+		1,
+		GL_FALSE,		// Don't want to transpose
+		&value[0][0]);	// Pointer to first float in mat
+}
+
 
 void ShaderProgram::ApplyUniforms()
 {
