@@ -9,6 +9,25 @@
 
 #include <iostream>
 
+float Lerp(float t, float a, float b)
+{
+	return (a * (1 - t)) + (b * t);
+}
+
+float Smoothstep(float t, float a, float b)
+{
+	//float alpha = t;
+	float alpha = -(t * t) * ((2 * t) - 3);
+	return (a * (1 - alpha)) + (b * alpha);
+}
+
+float Remap(float value, float prevMin, float prevMax, float nextMin, float nextMax)
+{
+	//return (value * 0.5f) + 0.5f;
+	float scaleDiff = (nextMax - nextMin) / (prevMax - prevMin);
+	return (value - prevMin + nextMin) * scaleDiff;
+}
+
 int main()
 {
 	// WINDOW SETUP
@@ -43,6 +62,54 @@ int main()
 	shaderScreenspace.m_uniforms.SetUniform("aspectRatio", app->GetAspectRatio());
 	//==========================================================================
 
+	const int gridSize = 10;
+
+	glm::vec2 perlinGrid[gridSize * gridSize];
+	for (int i = 0; i < gridSize * gridSize; i++)
+	{
+		float x = ((float)rand() / (float)RAND_MAX);
+		float y = ((float)rand() / (float)RAND_MAX);
+		glm::vec2 randomVec((x * 2) - 1, (y * 2) - 1);
+		randomVec /= glm::length(randomVec);
+		perlinGrid[i] = randomVec;
+	}
+
+	int tileRes = 10;
+
+	std::vector<glm::vec3> perlinNoise;
+	for (int y = 0; y < (gridSize - 1) * tileRes; y++)
+	{
+		for (int x = 0; x < (gridSize - 1) * tileRes; x++)
+		{
+			int x1 = x / tileRes;
+			int x2 = x1 + 1;
+			int y1 = y / tileRes;
+			int y2 = y1 + 1;
+
+			glm::vec2 pos((float)x / (float)tileRes, (float)y / (float)tileRes);
+			glm::vec2 offset1 = pos - glm::vec2(x1, y1);
+			glm::vec2 offset2 = pos - glm::vec2(x1, y2);
+			glm::vec2 offset3 = pos - glm::vec2(x2, y1);
+			glm::vec2 offset4 = pos - glm::vec2(x2, y2);
+
+			float dot1 = glm::dot(offset1, perlinGrid[x1 + (y1 * gridSize)]);
+			float dot2 = glm::dot(offset2, perlinGrid[x1 + (y2 * gridSize)]);
+			float dot3 = glm::dot(offset3, perlinGrid[x2 + (y1 * gridSize)]);
+			float dot4 = glm::dot(offset4, perlinGrid[x2 + (y2 * gridSize)]);
+
+			float lerpX = ((float)x / (float)tileRes) - x1;
+			float lerpY = ((float)y / (float)tileRes) - y1;
+			float leftLerp = Smoothstep(lerpY, dot1, dot2);
+			float rightLerp = Smoothstep(lerpY, dot3, dot4);
+			float total = Smoothstep(lerpX, leftLerp, rightLerp);
+			//total = (total * 0.5f) + 0.5f;
+			total = Remap(total, -0.5, 0.5, 0, 1);
+			perlinNoise.push_back(glm::vec3(total));
+		}
+	}
+
+	Texture perlinTex(perlinNoise, glm::vec2((gridSize - 1) * tileRes));
+
 	// Initialise meshs/ textures/ materials
 	//==========================================================================
 	Mesh spearMesh;
@@ -58,7 +125,7 @@ int main()
 	Texture specular("soulspear_specular.tga");
 	Texture normal("soulspear_normal.tga");
 
-	Material defaultMat(&shaderAllLights, &blank, &blank, &blankNormal);
+	Material defaultMat(&shaderAllLights, &perlinTex, &blank, &blankNormal);
 	defaultMat.SetLightProperties(0.1f, 1.0f, 0.5f);
 	Material unlitMat(&shaderUnlit, &albedo, &specular, &normal);
 	Material mat1(&shaderSunOnly, &albedo, &specular, &normal);
