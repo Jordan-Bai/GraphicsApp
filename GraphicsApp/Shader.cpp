@@ -6,7 +6,7 @@ Shader::Shader(std::string filename, GLuint shaderType)
 {
 	if (shaderType != GL_VERTEX_SHADER && shaderType != GL_FRAGMENT_SHADER)
 	{
-		std::cout << "ERROR: Invalid shader type" << std::endl;
+		std::cout << "ERROR(Shader::Shader): Invalid shader type\n";
 	}
 
 	m_fileName = filename;

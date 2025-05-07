@@ -160,7 +160,7 @@ void Mesh::LoadFromFile(std::string fileName)
 		aiMesh* mesh = fileScene->mMeshes[0]; // Just use the first mesh in the scene
 
 		// Get the verts
-		for (int i = 0; i < mesh->mNumVertices; i++)
+		for (unsigned int i = 0; i < mesh->mNumVertices; i++)
 		{
 			Vertex newVertex;
 
@@ -189,7 +189,7 @@ void Mesh::LoadFromFile(std::string fileName)
 		}
 
 		// Get the indices
-		for (int i = 0; i < mesh->mNumFaces; i++) // For each face in the mesh
+		for (unsigned int i = 0; i < mesh->mNumFaces; i++) // For each face in the mesh
 		{
 			// For each vertex that makes up the face, add its index to the buffer
 			for (int j = 0; j < 3; j++)
@@ -198,13 +198,10 @@ void Mesh::LoadFromFile(std::string fileName)
 			}
 		}
 
-		std::cout << "Verts: " << verts.size() << std::endl;
-		std::cout << "Faces: " << mesh->mNumFaces << std::endl;
-
-		// If the mesh doesn't have tangents & bitangents, output an error at the end (so we're no doing it for every face)
+		// If the mesh doesn't have tangents & bitangents, output an error at the end (so we're not doing it for every face)
 		if (!mesh->HasTangentsAndBitangents())
 		{
-			std::cout << "TANGENTS COULD NOT BE LOADED" << std::endl;
+			std::cout << "ERROR(Mesh::LoadFromFile): Mesh does not have tangents\n";
 		}
 
 	}
@@ -282,8 +279,7 @@ void Mesh::Draw()
 	// Bind VAO
 	glBindVertexArray(m_vertArray);
 
-	//glDrawArrays(GL_TRIANGLES, 0, m_verts.size()); // FOR DRAWING WITHout INDEX BUFFERS
-	glDrawElements(GL_TRIANGLES, m_triCount * 3, GL_UNSIGNED_INT, 0); // FOR DRAWING WITH INDEX BUFFERS
+	glDrawElements(GL_TRIANGLES, (GLsizei)(m_triCount * 3), GL_UNSIGNED_INT, 0);
 
 	// Unbind VAO
 	glBindVertexArray(0);

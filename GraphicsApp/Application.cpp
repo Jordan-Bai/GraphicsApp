@@ -37,7 +37,7 @@ int Application::Initialize()
 {
 	if (!glfwInit())
 	{
-		std::cout << "GLFW COULD NOT INIT" << std::endl;
+		std::cout << "ERROR(Application::Initialize): GLFW could not init\n";
 		return -1;
 	}
 
@@ -45,7 +45,7 @@ int Application::Initialize()
 	if (!m_window)
 	{
 		glfwTerminate();
-		std::cout << "WINDOW COULD NOT BE CREATED" << std::endl;
+		std::cout << "ERROR(Application::Initialize): Window could not be created\n";
 		return -1;
 	}
 
@@ -55,7 +55,7 @@ int Application::Initialize()
 	if (!gladLoadGL())
 	{
 		glfwTerminate();
-		std::cout << "GLAD COULD NOT LOAD" << std::endl;
+		std::cout << "ERROR(Application::Initialize): GLAD could not load\n";
 		return -1;
 	}
 
@@ -70,11 +70,19 @@ int Application::Initialize()
 
 	ImGui_ImplGlfw_InitForOpenGL(m_window, true);
 	ImGui_ImplOpenGL3_Init();
+
+	return 1;
 }
 
 
 void Application::AddObject(GameObject* object)
 {
+	if (object == nullptr)
+	{
+		std::cout << "ERROR(Application::AddObject): Cannot add null object\n";
+		return;
+	}
+
 	if (object->m_mat != nullptr && object->m_mat->m_shader != nullptr)
 	{
 		m_gameObjects.insert(std::pair<ShaderProgram*, GameObject*>(object->m_mat->m_shader, object));
@@ -213,7 +221,7 @@ void Application::SetUniformInAllShaders(std::string uniformName, glm::mat4 valu
 
 void Application::ReloadShaders()
 {
-	std::cout << "=====RELOADING ALL SHADERS=====" << std::endl;
+	std::cout << "=====RELOADING ALL SHADERS=====\n";
 	std::multimap<ShaderProgram*, GameObject*>::iterator it = m_gameObjects.begin();
 	while (it != m_gameObjects.end())
 	{
@@ -223,7 +231,7 @@ void Application::ReloadShaders()
 		}
 		it = m_gameObjects.upper_bound(it->first);
 	}
-	std::cout << "=====ALL SHADERS RELOADED=====" << std::endl;
+	std::cout << "=====ALL SHADERS RELOADED=====\n";
 }
 
 void Application::ApplyAllUniforms()
@@ -292,7 +300,7 @@ glm::mat4 Application::GetVPMatrix()
 {
 	if (m_currentCamera == nullptr)
 	{
-		std::cout << "ERROR: No valid camera set" << std::endl;
+		std::cout << "ERROR(Application::GetVPMatrix): No valid camera set\n";
 		return glm::mat4(1);
 	}
 

@@ -16,7 +16,7 @@ int main()
 	Application* app = Application::Get();
 	if (app->Initialize() == -1)
 	{
-		std::cout << "APPLICATION COULD NOT INITIALIZE" << std::endl;
+		std::cout << "ERROR(main): Application could not inititalize\n";
 		return -1;
 	}
 	//==========================================================================
@@ -65,7 +65,7 @@ int main()
 	Material mat2(&shaderAllLights, &albedo, &specular, &normal);
 	mat2.SetLightProperties(0.1f, 1.0f, 1.0f);
 
-	Material lightMatTest(&shaderScreenspace);
+	Material lightMat(&shaderScreenspace);
 	//==========================================================================
 
 	// Create game objects
@@ -83,13 +83,13 @@ int main()
 	Camera cam({ 0, 3.0f, 10.0f });
 	app->SetCurrentCamera(&cam);
 
-	PointLight light1(&planeMesh, &lightMatTest);
+	PointLight light1(&planeMesh, &lightMat);
 	light1.m_pos = { -2.0f, 0, 0 };
 	light1.SetColour({ 1, 0, 0 }, 5);
-	PointLight light2(&planeMesh, &lightMatTest);
-	light2.m_pos = { 2.0f, 0, 1.0f };
+	PointLight light2(&planeMesh, &lightMat);
+	light2.m_pos = { 2.0f, -0.5f, 1.5f };
 	light2.SetColour({ 0, 1, 0 }, 5);
-	PointLight light3(&planeMesh, &lightMatTest);
+	PointLight light3(&planeMesh, &lightMat);
 	light3.m_pos = { 3.0f, 0.5f, -0.5f };
 	light3.SetColour({ 0, 0, 1 }, 5);
 	//==========================================================================
@@ -156,7 +156,7 @@ int main()
 
 		if (ImGui::BeginTabItem("Light controls"))
 		{
-			ImGui::SliderInt("Selected Light", &selectedLight, 0, lights.size() - 1);
+			ImGui::SliderInt("Selected Light", &selectedLight, 0, int(lights.size() - 1));
 			ImGui::Dummy({ 0, 15 });
 			ImGui::ColorEdit3("Colour", glm::value_ptr(lights[selectedLight]->m_col));
 			ImGui::SliderFloat("Brightness", &lights[selectedLight]->m_bright, 0, 50.0f);

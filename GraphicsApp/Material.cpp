@@ -22,7 +22,7 @@ void Material::ApplyMaterial()
 {
 	if (!m_shader)
 	{
-		std::cout << "ERROR: Material does not contain shader reference" << std::endl;
+		std::cout << "ERROR(Material::ApplyMaterial): Material does not contain shader reference\n";
 		return;
 	}
 

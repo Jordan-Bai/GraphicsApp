@@ -30,7 +30,7 @@ Texture::Texture(std::string fileName)
 	}
 	else
 	{
-		std::cout << "Failed to load texture" << std::endl;
+		std::cout << "ERROR(Texture::Texture): Failed to load texture data from \"" << fileName << "\"\n";
 	}
 
 	stbi_image_free(data); // Free the data, good practice for not causing memory leaks

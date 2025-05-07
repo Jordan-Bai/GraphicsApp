@@ -6,7 +6,7 @@ ShaderProgram::ShaderProgram(Shader* vertexShader, Shader* fragmentShader)
 {
 	if (vertexShader == nullptr || fragmentShader == nullptr)
 	{
-		std::cout << "ERROR: One or more of the shaders provided was null.\n";
+		std::cout << "ERROR(ShaderProgram::ShaderProgram): One or more of the shaders provided was null.\n";
 	}
 	m_vertShader = vertexShader;
 	m_fragShader = fragmentShader;
@@ -39,7 +39,7 @@ ShaderProgram::ShaderProgram(Shader* vertexShader, Shader* fragmentShader)
 	}
 	else
 	{
-		std::cout << "ERROR: One or more of the shaders was invalid.\n";
+		std::cout << "ERROR(ShaderProgram::ShaderProgram): One or more of the shaders was invalid.\n";
 	}
 
 	if (foundProblem)
@@ -95,7 +95,7 @@ void ShaderProgram::ReloadShader()
 	}
 	else
 	{
-		std::cout << "ERROR: One or more of the shaders was invalid.\n";
+		std::cout << "ERROR(ShaderProgram::ShaderProgram): One or more of the shaders was invalid.\n";
 	}
 
 	if (foundProblem)
@@ -139,19 +139,19 @@ void ShaderProgram::BindUniform(std::string varName, glm::mat4 value)
 void ShaderProgram::BindUniform(std::string varName, std::vector<int> value)
 {
 	GLint varLoc = glGetUniformLocation(m_shaderProgram, varName.c_str());
-	glUniform1iv(varLoc, value.size(), value.data());
+	glUniform1iv(varLoc, (int)value.size(), value.data());
 }
 
 void ShaderProgram::BindUniform(std::string varName, std::vector<float> value)
 {
 	GLint varLoc = glGetUniformLocation(m_shaderProgram, varName.c_str());
-	glUniform1fv(varLoc, value.size(), value.data());
+	glUniform1fv(varLoc, (int)value.size(), value.data());
 }
 
 void ShaderProgram::BindUniform(std::string varName, std::vector<glm::vec3> value)
 {
 	GLint varLoc = glGetUniformLocation(m_shaderProgram, varName.c_str());
-	glUniform3fv(varLoc, value.size(), (float*)value.data());
+	glUniform3fv(varLoc, (int)value.size(), (float*)value.data());
 }
 
 void ShaderProgram::BindUniform(std::string varName, std::vector<glm::mat4> value)
@@ -159,7 +159,7 @@ void ShaderProgram::BindUniform(std::string varName, std::vector<glm::mat4> valu
 	GLint varLoc = glGetUniformLocation(m_shaderProgram, varName.c_str());
 	glUniformMatrix4fv(
 		varLoc,
-		value.size(),
+		(int)value.size(),
 		GL_FALSE,			// Don't want to transpose
 		&value[0][0][0]);	// Pointer to first float in mat
 }

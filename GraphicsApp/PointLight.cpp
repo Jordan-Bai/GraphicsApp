@@ -34,7 +34,7 @@ void PointLight::Draw()
 {
 	if (!m_mesh)
 	{
-		std::cout << "OBJECT DOES NOT HAVE MESH" << std::endl;
+		std::cout << "ERROR(PointLight::Draw): Object does not have mesh\n";
 		return;
 	}
 
