@@ -131,3 +131,23 @@ void UniformStorage::ApplyAll(ShaderProgram& shader)
 		shader.BindUniform(mat4ArrayIt->first, mat4ArrayIt->second);
 	}
 }
+
+
+float Lerp(float t, float a, float b)
+{
+	return (a * (1 - t)) + (b * t);
+}
+
+float Smoothstep(float t, float a, float b)
+{
+	//float alpha = t;
+	float alpha = -(t * t) * ((2 * t) - 3);
+	return (a * (1 - alpha)) + (b * alpha);
+}
+
+float Remap(float value, float prevMin, float prevMax, float nextMin, float nextMax)
+{
+	//return (value * 0.5f) + 0.5f;
+	float scaleDiff = (nextMax - nextMin) / (prevMax - prevMin);
+	return (value - prevMin + nextMin) * scaleDiff;
+}

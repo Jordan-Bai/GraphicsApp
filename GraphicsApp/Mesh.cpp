@@ -1,4 +1,5 @@
 #include "Mesh.h"
+
 #include "ext/matrix_transform.hpp"
 
 #include <assimp/Importer.hpp>
@@ -137,6 +138,72 @@ void Mesh::CreateCubeMesh()
 		indicies.push_back(i + 1);
 		indicies.push_back(i + 2);
 		indicies.push_back(i + 3);
+	}
+
+	InitObject(verts, indicies);
+}
+
+void Mesh::CreateFromHeightMap(Texture* heightmap, int sizeX, int sizeZ)
+{
+	CreateFromHeightMap(heightmap, sizeX, sizeZ, 1);
+}
+
+void Mesh::CreateFromHeightMap(Texture* heightmap, int sizeX, int sizeZ, int vertsPerPixel)
+{
+	std::vector<glm::vec3> pixels(sizeX * sizeZ);
+	glBindTexture(GL_TEXTURE_2D, heightmap->m_texture);
+	glGetTexImage(GL_TEXTURE_2D,		// The type of texture to generate
+		0,								// The 'mipmap level' (0 being the highest one)
+		GL_RGB,							// Internal format (what channel format is used internally)
+		GL_FLOAT,						// The type of the data
+		pixels.data());
+
+	std::vector<Vertex> verts;
+	std::vector<int> indicies;
+
+	// Force it to round up
+	int scaledX = (sizeX + vertsPerPixel - 1) / vertsPerPixel;
+	int scaledZ = (sizeZ + vertsPerPixel - 1) / vertsPerPixel;
+
+	for (int z = 0; z < sizeZ; z += vertsPerPixel)
+	{
+		for (int x = 0; x < sizeX; x += vertsPerPixel)
+		{
+			Vertex newVertex;
+			float y = pixels[x + (z * sizeX)].x;
+			y = Remap(y, 0, 1, -1, 2);
+			newVertex.pos = glm::vec3(x, y, z);
+			newVertex.normal = glm::vec3(0, 1, 0);
+			newVertex.tangent = glm::vec3(1, 0, 0);
+			newVertex.UVcoord = glm::vec2((float)x / (float)sizeX, (float)z / (float)sizeZ);
+			verts.push_back(newVertex);
+
+			//   (x,z)   (x+1,z)
+			//      0-----1
+			//      |     |
+			//      |     |
+			//      2-----4
+			// (x,z+1)   (x+1,z+1)
+			if (x < sizeX - vertsPerPixel && z < sizeZ - vertsPerPixel)
+			{
+				int testX = x / vertsPerPixel;
+				int testZ = z / vertsPerPixel;
+				//	0--1
+				//	| /|
+				//	|/ |
+				//	2---
+				indicies.push_back(testX + (testZ * scaledX));
+				indicies.push_back(testX + 1 + (testZ * scaledX));
+				indicies.push_back(testX + ((testZ + 1) * scaledX));
+				//	---1
+				//	| /|
+				//	|/ |
+				//	2--3
+				indicies.push_back(testX + 1 + (testZ * scaledX));
+				indicies.push_back(testX + ((testZ + 1) * scaledX));
+				indicies.push_back(testX + 1 + ((testZ + 1) * scaledX));
+			}
+		}
 	}
 
 	InitObject(verts, indicies);

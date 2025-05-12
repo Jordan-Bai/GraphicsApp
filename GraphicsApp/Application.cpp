@@ -325,7 +325,6 @@ void Application::Update(float delta)
 
 void Application::Draw()
 {
-	glm::mat4 vpMat = GetVPMatrix();
 	std::multimap<ShaderProgram*, GameObject*>::iterator it;
 	ShaderProgram* currentShader = nullptr;
 

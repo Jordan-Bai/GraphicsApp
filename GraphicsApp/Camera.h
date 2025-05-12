@@ -4,7 +4,7 @@
 class Camera : public GameObject
 {
 public:
-	float m_moveSpeed = 3;
+	float m_moveSpeed = 8;
 	float m_turnSpeed = 0.5f;
 	float m_sensitivity = 60;
 	float m_xRot;

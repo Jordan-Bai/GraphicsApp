@@ -61,3 +61,7 @@ struct UniformStorage
 
 	void ApplyAll(ShaderProgram& shader);
 };
+
+float Lerp(float t, float a, float b);
+float Smoothstep(float t, float a, float b);
+float Remap(float value, float prevMin, float prevMax, float nextMin, float nextMax);
