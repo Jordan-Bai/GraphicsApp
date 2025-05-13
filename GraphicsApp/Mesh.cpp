@@ -172,6 +172,7 @@ void Mesh::CreateFromHeightMap(Texture* heightmap, int sizeX, int sizeZ, int ver
 			Vertex newVertex;
 			float y = pixels[x + (z * sizeX)].x;
 			y = Remap(y, 0, 1, -1, 2);
+			//y = 0; // FOR TESTING
 			newVertex.pos = glm::vec3(x, y, z);
 			newVertex.normal = glm::vec3(0, 1, 0);
 			newVertex.tangent = glm::vec3(1, 0, 0);
@@ -281,6 +282,13 @@ void Mesh::LoadFromFile(std::string fileName)
 
 void Mesh::InitObject(std::vector<Vertex>& verts, std::vector<int>& indices)
 {
+	if (m_vertArray != 0)
+	{
+		glDeleteBuffers(1, &m_vertBuffer);
+		glDeleteBuffers(1, &m_indexBuffer);
+		glDeleteVertexArrays(1, &m_vertArray);
+	}
+
 	glGenVertexArrays(1, &m_vertArray);
 	glGenBuffers(1, &m_vertBuffer);
 	glGenBuffers(1, &m_indexBuffer);

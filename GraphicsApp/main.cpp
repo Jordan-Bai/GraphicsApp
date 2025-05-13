@@ -2,6 +2,7 @@
 #include "Camera.h"
 #include "PointLight.h"
 #include "PerlinNoise.h"
+#include "RandomWalk.h"
 
 #include <ext.hpp>
 #include <imgui.h>
@@ -9,26 +10,6 @@
 #include "imgui_impl_opengl3.h"
 
 #include <iostream>
-#include <chrono>
-
-//float Lerp(float t, float a, float b)
-//{
-//	return (a * (1 - t)) + (b * t);
-//}
-//
-//float Smoothstep(float t, float a, float b)
-//{
-//	//float alpha = t;
-//	float alpha = -(t * t) * ((2 * t) - 3);
-//	return (a * (1 - alpha)) + (b * alpha);
-//}
-//
-//float Remap(float value, float prevMin, float prevMax, float nextMin, float nextMax)
-//{
-//	//return (value * 0.5f) + 0.5f;
-//	float scaleDiff = (nextMax - nextMin) / (prevMax - prevMin);
-//	return (value - prevMin + nextMin) * scaleDiff;
-//}
 
 int main()
 {
@@ -64,12 +45,19 @@ int main()
 	shaderScreenspace.m_uniforms.SetUniform("aspectRatio", app->GetAspectRatio());
 	//==========================================================================
 
-	srand(std::chrono::system_clock::now().time_since_epoch().count());
+	srand(time(0));
 	//srand(1);
 	const int gridSize = 8;
 	const int tileRes = 8;
-	int textureSize = (gridSize - 1) * tileRes;
-	Texture perlinTex = GenerateNoise(gridSize, tileRes);
+	Texture perlinTex = GeneratePerlinNoise(gridSize, tileRes);
+
+	const int walkGridSize = 100;
+	Texture randomWalkTex = GenerateWalk(walkGridSize, 20000);
+	glTextureParameteri(randomWalkTex.m_texture, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTextureParameteri(randomWalkTex.m_texture, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+	//int textureSize = (gridSize - 1) * tileRes;
+	int textureSize = walkGridSize;
 
 	// Initialise meshs/ textures/ materials
 	//==========================================================================

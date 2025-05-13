@@ -2,7 +2,7 @@
 
 #include "Utilities.h"
 
-Texture GenerateNoise(int gridSize, int tileRes)
+Texture GeneratePerlinNoise(int gridSize, int tileRes)
 {
 	glm::vec2* perlinGrid = new glm::vec2[gridSize * gridSize];
 	for (int i = 0; i < gridSize * gridSize; i++)

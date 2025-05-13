@@ -84,6 +84,9 @@
     <ClCompile Include="PerlinNoise.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="RandomWalk.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Utilities.h">
@@ -153,6 +156,9 @@
       <Filter>Header Files\Imgui</Filter>
     </ClInclude>
     <ClInclude Include="PerlinNoise.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RandomWalk.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
