@@ -13,9 +13,12 @@ protected:
 	GLuint m_indexBuffer; // Sometimes called IBO (Index Buffer Object)
 
 	int m_triCount;
+	std::vector<Vertex> m_verts;
+	std::vector<int> m_indicies;
 
 public:
 	Mesh();
+	Mesh(const Mesh& other) = delete;
 	~Mesh();
 
 	void CreatePlaneMesh();
@@ -23,7 +26,11 @@ public:
 	void CreateFromHeightMap(Texture* heightmap, int sizeX, int sizeZ);
 	void CreateFromHeightMap(Texture* heightmap, int sizeX, int sizeZ, int vertsPerPixel);
 	void LoadFromFile(std::string fileName);
-	virtual void InitObject(std::vector<Vertex>& verts, std::vector<int>& indicies);
+	virtual void InitObject();
 
 	virtual void Draw();
+
+	Mesh& operator=(const Mesh& other) = delete;
+
+	std::vector<Vertex> GetVerts();
 };

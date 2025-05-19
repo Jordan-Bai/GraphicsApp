@@ -23,31 +23,31 @@ Mesh::~Mesh()
 
 void Mesh::CreatePlaneMesh()
 {
-	std::vector<Vertex> verts;
-	std::vector<int> indicies;
+	//std::vector<Vertex> verts;
+	//std::vector<int> indicies;
 
 	// 0-----1
 	// |     |
 	// |     |
 	// 2-----3
-	verts.push_back({ { -1, 1, 0 }, { 0, 0, 1 }, { 1, 0, 0 }, { 0, 0 } });
-	verts.push_back({ { 1, 1, 0 }, { 0, 0, 1 }, { 1, 0, 0 }, { 0, 1 } });
-	verts.push_back({ { -1, -1, 0 }, { 0, 0, 1 }, { 1, 0, 0 }, { 1, 0 } });
-	verts.push_back({ { 1, -1, 0 }, { 0, 0, 1 }, { 1, 0, 0 }, { 1, 1 } });
-	indicies.push_back(0);
-	indicies.push_back(1);
-	indicies.push_back(2);
-	indicies.push_back(1);
-	indicies.push_back(2);
-	indicies.push_back(3);
+	m_verts.push_back({ { -1, 1, 0 }, { 0, 0, 1 }, { 1, 0, 0 }, { 0, 0 } });
+	m_verts.push_back({ { 1, 1, 0 }, { 0, 0, 1 }, { 1, 0, 0 }, { 0, 1 } });
+	m_verts.push_back({ { -1, -1, 0 }, { 0, 0, 1 }, { 1, 0, 0 }, { 1, 0 } });
+	m_verts.push_back({ { 1, -1, 0 }, { 0, 0, 1 }, { 1, 0, 0 }, { 1, 1 } });
+	m_indicies.push_back(0);
+	m_indicies.push_back(1);
+	m_indicies.push_back(2);
+	m_indicies.push_back(1);
+	m_indicies.push_back(2);
+	m_indicies.push_back(3);
 
-	InitObject(verts, indicies);
+	InitObject();
 }
 
 void Mesh::CreateCubeMesh()
 {
-	std::vector<Vertex> verts;
-	std::vector<int> indicies;
+	//std::vector<Vertex> verts;
+	//std::vector<int> indicies;
 
 	std::vector<glm::vec2> offsets = { { -1, 1 }, { 1, 1 }, { -1, -1 }, { 1, -1 } };
 	std::vector<glm::vec2> UVs = { { 0, 0 }, { 1, 0 }, { 0, 1 }, { 1, 1 } };
@@ -67,7 +67,7 @@ void Mesh::CreateCubeMesh()
 	// 2-----3
 	for (int i = 0; i < 4; i++)
 	{
-		verts.push_back({ { offsets[i].x, offsets[i].y, 1 }, { 0, 0, 1 }, { 1, 0, 0 }, UVs[i] });
+		m_verts.push_back({ { offsets[i].x, offsets[i].y, 1 }, { 0, 0, 1 }, { 1, 0, 0 }, UVs[i] });
 	}
 
 	// Back face
@@ -79,7 +79,7 @@ void Mesh::CreateCubeMesh()
 	// -------
 	for (int i = 0; i < 4; i++)
 	{
-		verts.push_back({ { offsets[i].x, offsets[i].y, -1 }, { 0, 0, -1 }, { -1, 0, 0 }, UVs[i] });
+		m_verts.push_back({ { offsets[i].x, offsets[i].y, -1 }, { 0, 0, -1 }, { -1, 0, 0 }, UVs[i] });
 	}
 
 	// Right face
@@ -91,7 +91,7 @@ void Mesh::CreateCubeMesh()
 	// ------0
 	for (int i = 0; i < 4; i++)
 	{
-		verts.push_back({ { 1, offsets[i].x, offsets[i].y }, { 1, 0, 0 }, { 0, 0, 1 }, UVs[i] });
+		m_verts.push_back({ { 1, offsets[i].x, offsets[i].y }, { 1, 0, 0 }, { 0, 0, 1 }, UVs[i] });
 	}
 
 	// Left face
@@ -103,7 +103,7 @@ void Mesh::CreateCubeMesh()
 	// 0------
 	for (int i = 0; i < 4; i++)
 	{
-		verts.push_back({ { -1, offsets[i].x, offsets[i].y }, { -1, 0, 0 }, { 0, 0, -1 }, UVs[i] });
+		m_verts.push_back({ { -1, offsets[i].x, offsets[i].y }, { -1, 0, 0 }, { 0, 0, -1 }, UVs[i] });
 	}
 
 	// Top face
@@ -115,7 +115,7 @@ void Mesh::CreateCubeMesh()
 	// -------
 	for (int i = 0; i < 4; i++)
 	{
-		verts.push_back({ { offsets[i].x, 1, offsets[i].y }, { 0, 1, 0 }, { 1, 0, 0 }, UVs[i] });
+		m_verts.push_back({ { offsets[i].x, 1, offsets[i].y }, { 0, 1, 0 }, { 1, 0, 0 }, UVs[i] });
 	}
 
 	// Bottom face
@@ -127,20 +127,20 @@ void Mesh::CreateCubeMesh()
 	// 0-----1
 	for (int i = 0; i < 4; i++)
 	{
-		verts.push_back({ { offsets[i].x, -1, offsets[i].y }, { 0, -1, 0 }, { -1, 0, 0 }, UVs[i] });
+		m_verts.push_back({ { offsets[i].x, -1, offsets[i].y }, { 0, -1, 0 }, { -1, 0, 0 }, UVs[i] });
 	}
 
 	for (int i = 0; i < 24; i += 4)
 	{
-		indicies.push_back(i);
-		indicies.push_back(i + 1);
-		indicies.push_back(i + 2);
-		indicies.push_back(i + 1);
-		indicies.push_back(i + 2);
-		indicies.push_back(i + 3);
+		m_indicies.push_back(i);
+		m_indicies.push_back(i + 1);
+		m_indicies.push_back(i + 2);
+		m_indicies.push_back(i + 1);
+		m_indicies.push_back(i + 2);
+		m_indicies.push_back(i + 3);
 	}
 
-	InitObject(verts, indicies);
+	InitObject();
 }
 
 void Mesh::CreateFromHeightMap(Texture* heightmap, int sizeX, int sizeZ)
@@ -158,8 +158,8 @@ void Mesh::CreateFromHeightMap(Texture* heightmap, int sizeX, int sizeZ, int ver
 		GL_FLOAT,						// The type of the data
 		pixels.data());
 
-	std::vector<Vertex> verts;
-	std::vector<int> indicies;
+	//std::vector<Vertex> verts;
+	//std::vector<int> indicies;
 
 	// Force it to round up
 	int scaledX = (sizeX + vertsPerPixel - 1) / vertsPerPixel;
@@ -174,10 +174,53 @@ void Mesh::CreateFromHeightMap(Texture* heightmap, int sizeX, int sizeZ, int ver
 			y = Remap(y, 0, 1, -1, 2);
 			//y = 0; // FOR TESTING
 			newVertex.pos = glm::vec3(x, y, z);
-			newVertex.normal = glm::vec3(0, 1, 0);
+			//newVertex.normal = glm::vec3(0, 1, 0);
 			newVertex.tangent = glm::vec3(1, 0, 0);
 			newVertex.UVcoord = glm::vec2((float)x / (float)sizeX, (float)z / (float)sizeZ);
-			verts.push_back(newVertex);
+			//verts.push_back(newVertex);
+
+			glm::vec3 norm1(0, 1, 0);
+			if (x > 0 && x < sizeX - 1)
+			{
+				float y2 = pixels[x - 1 + (z * sizeX)].x;
+				y2 = Remap(y2, 0, 1, -1, 2);
+				float yChange = y - y2;
+				glm::vec3 leftNorm(-yChange, 1, 0);
+				leftNorm = glm::normalize(leftNorm);
+
+				float y3 = pixels[x + 1 + (z * sizeX)].x;
+				y3 = Remap(y3, 0, 1, -1, 2);
+				yChange = y3 - y;
+				glm::vec3 rightNorm(-yChange, 1, 0);
+				rightNorm = glm::normalize(rightNorm);
+
+				norm1 = glm::normalize(leftNorm + rightNorm);
+				//norm1 = leftNorm;
+			}
+
+			glm::vec3 norm2(0, 1, 0);
+			if (z > 0 && z < sizeZ - 1)
+			{
+				float y2 = pixels[x + ((z - 1) * sizeX)].x;
+				y2 = Remap(y2, 0, 1, -1, 2);
+				float yChange = y - y2;
+				glm::vec3 downNorm(0, 1, -yChange);
+				downNorm = glm::normalize(downNorm);
+
+				float y3 = pixels[x + ((z + 1) * sizeX)].x;
+				y3 = Remap(y3, 0, 1, -1, 2);
+				yChange = y3 - y;
+				glm::vec3 upNorm(0, 1, -yChange);
+				upNorm = glm::normalize(upNorm);
+
+				norm2 = glm::normalize(downNorm + upNorm);
+				//norm2 = downNorm;
+			}
+
+			newVertex.normal = glm::normalize(norm1 + norm2);
+
+			m_verts.push_back(newVertex);
+			
 
 			//   (x,z)   (x+1,z)
 			//      0-----1
@@ -193,21 +236,21 @@ void Mesh::CreateFromHeightMap(Texture* heightmap, int sizeX, int sizeZ, int ver
 				//	| /|
 				//	|/ |
 				//	2---
-				indicies.push_back(testX + (testZ * scaledX));
-				indicies.push_back(testX + 1 + (testZ * scaledX));
-				indicies.push_back(testX + ((testZ + 1) * scaledX));
+				m_indicies.push_back(testX + (testZ * scaledX));
+				m_indicies.push_back(testX + 1 + (testZ * scaledX));
+				m_indicies.push_back(testX + ((testZ + 1) * scaledX));
 				//	---1
 				//	| /|
 				//	|/ |
 				//	2--3
-				indicies.push_back(testX + 1 + (testZ * scaledX));
-				indicies.push_back(testX + ((testZ + 1) * scaledX));
-				indicies.push_back(testX + 1 + ((testZ + 1) * scaledX));
+				m_indicies.push_back(testX + 1 + (testZ * scaledX));
+				m_indicies.push_back(testX + ((testZ + 1) * scaledX));
+				m_indicies.push_back(testX + 1 + ((testZ + 1) * scaledX));
 			}
 		}
 	}
 
-	InitObject(verts, indicies);
+	InitObject();
 }
 
 void Mesh::LoadFromFile(std::string fileName)
@@ -277,10 +320,10 @@ void Mesh::LoadFromFile(std::string fileName)
 
 	}
 
-	InitObject(verts, indicies);
+	InitObject();
 }
 
-void Mesh::InitObject(std::vector<Vertex>& verts, std::vector<int>& indices)
+void Mesh::InitObject()
 {
 	if (m_vertArray != 0)
 	{
@@ -298,7 +341,7 @@ void Mesh::InitObject(std::vector<Vertex>& verts, std::vector<int>& indices)
 	glBindVertexArray(m_vertArray);
 
 	glBindBuffer(GL_ARRAY_BUFFER, m_vertBuffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * verts.size(), verts.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * m_verts.size(), m_verts.data(), GL_STATIC_DRAW);
 
 	// Set vertex data
 	//==========================================================================
@@ -341,14 +384,14 @@ void Mesh::InitObject(std::vector<Vertex>& verts, std::vector<int>& indices)
 	//==========================================================================
 	// Needs to happen AFTER the VAO is bound, as otherwise they won't link up
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_indexBuffer);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(int) * indices.size(), indices.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(int) * m_indicies.size(), m_indicies.data(), GL_STATIC_DRAW);
 
 	// Unbind VAO
 	//==========================================================================
 	// Don't need to unbind the VBO and IBO, as unbinding the VAO will automatically unbind them
 	glBindVertexArray(0);
 
-	m_triCount = indices.size() / 3;
+	m_triCount = m_indicies.size() / 3;
 }
 
 
@@ -362,4 +405,9 @@ void Mesh::Draw()
 
 	// Unbind VAO
 	glBindVertexArray(0);
+}
+
+std::vector<Vertex> Mesh::GetVerts()
+{
+	return m_verts;
 }

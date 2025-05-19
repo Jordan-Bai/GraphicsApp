@@ -157,6 +157,7 @@
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="PerlinNoise.cpp" />
     <ClCompile Include="PointLight.cpp" />
+    <ClCompile Include="PoissonDisk.cpp" />
     <ClCompile Include="RandomWalk.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="ShaderProgram.cpp" />
@@ -181,6 +182,7 @@
     <ClInclude Include="Material.h" />
     <ClInclude Include="PerlinNoise.h" />
     <ClInclude Include="PointLight.h" />
+    <ClInclude Include="PoissonDisk.h" />
     <ClInclude Include="RandomWalk.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="Texture.h" />

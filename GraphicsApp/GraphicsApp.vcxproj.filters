@@ -87,6 +87,9 @@
     <ClCompile Include="RandomWalk.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="PoissonDisk.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Utilities.h">
@@ -159,6 +162,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="RandomWalk.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PoissonDisk.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

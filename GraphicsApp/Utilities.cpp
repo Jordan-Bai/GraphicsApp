@@ -151,3 +151,28 @@ float Remap(float value, float prevMin, float prevMax, float nextMin, float next
 	float scaleDiff = (nextMax - nextMin) / (prevMax - prevMin);
 	return (value - prevMin + nextMin) * scaleDiff;
 }
+
+float Min(float value, float min)
+{
+	float result = value;
+	if (result > min)
+	{
+		result = min;
+	}
+	return result;
+}
+
+float Max(float value, float max)
+{
+	float result = value;
+	if (result < max)
+	{
+		result = max;
+	}
+	return result;
+}
+
+float Clamp(float value, float min, float max)
+{
+	return Max(min, Min(value, max));
+}

@@ -3,6 +3,7 @@
 #include "PointLight.h"
 #include "PerlinNoise.h"
 #include "RandomWalk.h"
+#include "PoissonDisk.h"
 
 #include <ext.hpp>
 #include <imgui.h>
@@ -23,7 +24,7 @@ int main()
 	}
 	//==========================================================================
 
-	glm::vec3 sunDirection = { 0, -1, -0.75 };
+	glm::vec3 sunDirection = { 1, -1, -0.75 };
 	glm::vec3 sunColour = { 1, 1, 1 };
 
 	// Initialise shaders
@@ -53,11 +54,16 @@ int main()
 
 	const int walkGridSize = 100;
 	Texture randomWalkTex = GenerateWalk(walkGridSize, 20000);
+	randomWalkTex.BlurTexture(3, 0.5f);
 	glTextureParameteri(randomWalkTex.m_texture, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTextureParameteri(randomWalkTex.m_texture, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-	//int textureSize = (gridSize - 1) * tileRes;
-	int textureSize = walkGridSize;
+	int textureSize = (gridSize - 1) * tileRes;
+
+	//Texture test("TestTex.png");
+	//test.BlurTexture(1, 1.0f);
+	//glTextureParameteri(test.m_texture, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	//glTextureParameteri(test.m_texture, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
 	// Initialise meshs/ textures/ materials
 	//==========================================================================
@@ -65,27 +71,41 @@ int main()
 	cubeMesh.CreateCubeMesh();
 	Mesh terrainMesh;
 	//terrainMesh.CreateFromHeightMap(&perlinTex, textureSize, textureSize);
-	terrainMesh.CreateFromHeightMap(&perlinTex, textureSize, textureSize, 2);
+	terrainMesh.CreateFromHeightMap(&perlinTex, textureSize, textureSize);
 	Mesh terrainMesh1;
-	terrainMesh1.CreateFromHeightMap(&perlinTex, textureSize, textureSize);
+	terrainMesh1.CreateFromHeightMap(&randomWalkTex, walkGridSize, walkGridSize);
 
 	Texture blank(glm::vec3{ 0.7f, 0.7f, 0.7f });
 	Texture blankNormal(glm::vec3{ 0.5f, 0.5f, 1.0f });
 
-	Material defaultMat(&shaderSunOnly, &perlinTex, &blank, &blankNormal);
+	Material defaultMat(&shaderAllLights, &blank, &blank, &blankNormal);
 	defaultMat.SetLightProperties(0.1f, 1.0f, 0.5f);
+	Material perlinMat(&shaderUnlit, &perlinTex, &blank, &blankNormal);
+	Material walkMat(&shaderUnlit, &randomWalkTex, &blank, &blankNormal);
 
 	Material lightMatTest(&shaderScreenspace);
 	//==========================================================================
 
 	// Create game objects
 	//==========================================================================
-	GameObject terrain(&terrainMesh, &defaultMat);
-	terrain.m_pos = glm::vec3(-textureSize, -2, -textureSize);
-	GameObject terrain1(&terrainMesh1, &defaultMat);
-	terrain1.m_pos = glm::vec3(0, -2, -textureSize);
+	//GameObject terrain(&terrainMesh, &perlinMat);
+	//terrain.m_pos = glm::vec3(-textureSize, -2, -textureSize);
+	GameObject terrain1(&terrainMesh1, &walkMat);
+	//terrain1.m_pos = glm::vec3(0, -2, -textureSize);
+	//GameObject test(&cubeMesh, &defaultMat);
 
-	Camera cam({ 0, 3.0f, 10.0f });
+
+	ObjectType cube;
+	cube.rad = 1;
+	cube.exclusionRad = 5;
+	cube.spawnAttempts = 6;
+	cube.mesh = &cubeMesh;
+	cube.mat = &defaultMat;
+	cube.maxOverlap = 0.1;
+	std::vector<GameObject*> boxes = PopulateMap(cube, randomWalkTex);
+
+
+	Camera cam({ 50, 3.0f, 120.0f });
 	app->SetCurrentCamera(&cam);
 	//==========================================================================
 
@@ -133,6 +153,11 @@ int main()
 		glfwSwapBuffers(app->GetWindow()); // Displays buffer we just wrote to 
 		glfwPollEvents(); // Check for inputs
 		//==========================================================================
+	}
+
+	for (GameObject* b : boxes)
+	{
+		delete b;
 	}
 
 	glfwTerminate();
