@@ -47,7 +47,7 @@ int main()
 	//==========================================================================
 
 	srand(time(0));
-	//srand(1);
+	srand(1);
 	const int gridSize = 8;
 	const int tileRes = 8;
 	Texture perlinTex = GeneratePerlinNoise(gridSize, tileRes);
@@ -60,26 +60,30 @@ int main()
 
 	int textureSize = (gridSize - 1) * tileRes;
 
-	//Texture test("TestTex.png");
-	//test.BlurTexture(1, 1.0f);
-	//glTextureParameteri(test.m_texture, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	//glTextureParameteri(test.m_texture, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
 	// Initialise meshs/ textures/ materials
 	//==========================================================================
 	Mesh cubeMesh;
 	cubeMesh.CreateCubeMesh();
+	Mesh treeMesh1;
+	treeMesh1.LoadFromFile("Tree1.obj");
+	Mesh treeMesh2;
+	treeMesh2.LoadFromFile("Tree2.obj");
 	Mesh terrainMesh;
 	//terrainMesh.CreateFromHeightMap(&perlinTex, textureSize, textureSize);
 	terrainMesh.CreateFromHeightMap(&perlinTex, textureSize, textureSize);
 	Mesh terrainMesh1;
 	terrainMesh1.CreateFromHeightMap(&randomWalkTex, walkGridSize, walkGridSize);
 
-	Texture blank(glm::vec3{ 0.7f, 0.7f, 0.7f });
+	Texture blank(glm::vec3(0.7f));
 	Texture blankNormal(glm::vec3{ 0.5f, 0.5f, 1.0f });
+	Texture red(glm::vec3{ 1.0f, 0.0f, 0.0f });
 
 	Material defaultMat(&shaderAllLights, &blank, &blank, &blankNormal);
 	defaultMat.SetLightProperties(0.1f, 1.0f, 0.5f);
+	Material blueMat(&shaderAllLights, &blankNormal, &blankNormal, &blankNormal);
+	blueMat.SetLightProperties(0.1f, 1.0f, 0.5f);
+	Material redMat(&shaderAllLights, &red, &red, &blankNormal);
+	redMat.SetLightProperties(0.1f, 1.0f, 0.5f);
 	Material perlinMat(&shaderUnlit, &perlinTex, &blank, &blankNormal);
 	Material walkMat(&shaderUnlit, &randomWalkTex, &blank, &blankNormal);
 
@@ -88,21 +92,25 @@ int main()
 
 	// Create game objects
 	//==========================================================================
-	//GameObject terrain(&terrainMesh, &perlinMat);
-	//terrain.m_pos = glm::vec3(-textureSize, -2, -textureSize);
-	GameObject terrain1(&terrainMesh1, &walkMat);
-	//terrain1.m_pos = glm::vec3(0, -2, -textureSize);
-	//GameObject test(&cubeMesh, &defaultMat);
+	GameObject terrain(&terrainMesh1, &walkMat);
+	//terrain.m_pos = glm::vec3(0, -2, -textureSize);
+	//GameObject tree(&treeMesh, &defaultMat);
+	//tree.m_scale = glm::vec3(10);
 
+	Variant treeVar1(&treeMesh1, &defaultMat, glm::vec3(0.5f));
+	Variant treeVar2(&treeMesh2, &blueMat, glm::vec3(0.5f));
+	Variant treeVar3(&treeMesh2, &redMat, glm::vec3(0.5f));
 
-	ObjectType cube;
-	cube.rad = 1;
-	cube.exclusionRad = 5;
-	cube.spawnAttempts = 6;
-	cube.mesh = &cubeMesh;
-	cube.mat = &defaultMat;
-	cube.maxOverlap = 0.1;
-	std::vector<GameObject*> boxes = PopulateMap(cube, randomWalkTex);
+	ObjectType trees;
+	trees.rad = 1;
+	trees.exclusionRad = 5;
+	trees.spawnAttempts = 10;
+	trees.objectVariants.push_back(treeVar1);
+	trees.objectVariants.push_back(treeVar2);
+	trees.objectVariants.push_back(treeVar3);
+	trees.minOverlap = 0;
+	trees.maxOverlap = 0.5;
+	std::vector<GameObject*> boxes = PopulateMap(trees, randomWalkTex);
 
 
 	Camera cam({ 50, 3.0f, 120.0f });

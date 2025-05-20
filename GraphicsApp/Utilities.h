@@ -63,6 +63,7 @@ struct UniformStorage
 };
 
 float Lerp(float t, float a, float b);
+glm::vec3 Lerp(float t, glm::vec3 a, glm::vec3 b);
 float Smoothstep(float t, float a, float b);
 float Remap(float value, float prevMin, float prevMax, float nextMin, float nextMax);
 float Min(float value, float min);

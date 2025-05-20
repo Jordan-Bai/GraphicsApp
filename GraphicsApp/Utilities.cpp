@@ -138,6 +138,11 @@ float Lerp(float t, float a, float b)
 	return (a * (1 - t)) + (b * t);
 }
 
+glm::vec3 Lerp(float t, glm::vec3 a, glm::vec3 b)
+{
+	return (a * (1 - t)) + (b * t);
+}
+
 float Smoothstep(float t, float a, float b)
 {
 	//float alpha = t;
@@ -149,7 +154,7 @@ float Remap(float value, float prevMin, float prevMax, float nextMin, float next
 {
 	//return (value * 0.5f) + 0.5f;
 	float scaleDiff = (nextMax - nextMin) / (prevMax - prevMin);
-	return (value - prevMin + nextMin) * scaleDiff;
+	return ((value - prevMin) * scaleDiff) + nextMin;
 }
 
 float Min(float value, float min)

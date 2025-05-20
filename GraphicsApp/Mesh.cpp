@@ -230,22 +230,22 @@ void Mesh::CreateFromHeightMap(Texture* heightmap, int sizeX, int sizeZ, int ver
 			// (x,z+1)   (x+1,z+1)
 			if (x < sizeX - vertsPerPixel && z < sizeZ - vertsPerPixel)
 			{
-				int testX = x / vertsPerPixel;
-				int testZ = z / vertsPerPixel;
+				int indexX = x / vertsPerPixel;
+				int indexZ = z / vertsPerPixel;
 				//	0--1
 				//	| /|
 				//	|/ |
 				//	2---
-				m_indicies.push_back(testX + (testZ * scaledX));
-				m_indicies.push_back(testX + 1 + (testZ * scaledX));
-				m_indicies.push_back(testX + ((testZ + 1) * scaledX));
+				m_indicies.push_back(indexX + (indexZ * scaledX));
+				m_indicies.push_back(indexX + 1 + (indexZ * scaledX));
+				m_indicies.push_back(indexX + ((indexZ + 1) * scaledX));
 				//	---1
 				//	| /|
 				//	|/ |
 				//	2--3
-				m_indicies.push_back(testX + 1 + (testZ * scaledX));
-				m_indicies.push_back(testX + ((testZ + 1) * scaledX));
-				m_indicies.push_back(testX + 1 + ((testZ + 1) * scaledX));
+				m_indicies.push_back(indexX + 1 + (indexZ * scaledX));
+				m_indicies.push_back(indexX + ((indexZ + 1) * scaledX));
+				m_indicies.push_back(indexX + 1 + ((indexZ + 1) * scaledX));
 			}
 		}
 	}
@@ -263,8 +263,8 @@ void Mesh::LoadFromFile(std::string fileName)
 	// Triangulate makes sure every face is a triangle
 	// ConvertToLeftHanded makes sure all UVs are the way round we want (better than FlipUVs)
 
-	std::vector<Vertex> verts;
-	std::vector<int> indicies;
+	//std::vector<Vertex> verts;
+	//std::vector<int> indicies;
 
 	if (fileScene->mNumMeshes > 0)
 	{
@@ -296,7 +296,7 @@ void Mesh::LoadFromFile(std::string fileName)
 				newVertex.UVcoord.y = mesh->mTextureCoords[0][i].y;
 			}
 
-			verts.push_back(newVertex);
+			m_verts.push_back(newVertex);
 		}
 
 		// Get the indices
@@ -305,11 +305,11 @@ void Mesh::LoadFromFile(std::string fileName)
 			// For each vertex that makes up the face, add its index to the buffer
 			for (int j = 0; j < 3; j++)
 			{
-				indicies.push_back(mesh->mFaces[i].mIndices[j]);
+				m_indicies.push_back(mesh->mFaces[i].mIndices[j]);
 			}
 		}
 
-		std::cout << "Verts: " << verts.size() << std::endl;
+		std::cout << "Verts: " << m_verts.size() << std::endl;
 		std::cout << "Faces: " << mesh->mNumFaces << std::endl;
 
 		// If the mesh doesn't have tangents & bitangents, output an error at the end (so we're no doing it for every face)
