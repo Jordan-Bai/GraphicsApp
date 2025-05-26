@@ -1,46 +1,9 @@
 #pragma once
-#include "Mesh.h"
 #include "GameObject.h"
-
-struct Variant
-{
-	Mesh* mesh;
-	Material* mat;
-	//glm::vec3 scale;
-
-	Variant();
-	Variant(Mesh* _mesh, Material* _mat);
-	//Variant(Mesh* _mesh, Material* _mat, glm::vec3 _scale);
-};
-
-class ObjectType
-{
-public:
-	float rad;
-	float exclusionRad;
-	int spawnAttempts;
-	bool rotate;
-
-	std::vector<Variant> objectVariants;
-	//std::vector<Mesh*> meshes;
-	//Material* mat;
-	glm::vec3 scale;
-
-	float minOverlap;
-	float maxOverlap;
-	float maxRotation;
-
-	ObjectType();
-};
+#include "ObjectType.h"
 
 std::vector<GameObject*> PopulateMap(ObjectType object, Texture& heightMap);
+std::vector<GameObject*> PopulateMap(ObjectType object, Texture& heightMap, int seed);
 
-glm::vec2 HeightRangeOld(glm::vec2 pos, float radius, Texture& heightMap);
-glm::vec2 HeightRange(glm::vec2 pos, float radius, Texture& heightMap);
-
-glm::vec3 GetRotation(glm::vec2 pos, float radius, Texture& heightMap);
-
-bool CanSpawn(glm::vec3 pos, ObjectType object, std::vector<glm::vec3>& posList, Texture& heightMap);
-
-glm::vec3 GetColour(glm::vec2 pos, Texture& heightMap);
-glm::vec3 GetColour(glm::vec2 pos, std::vector<glm::vec3>& mapData, int sizeX, int sizeY);
+bool Colliding(glm::vec3 pos, ObjectType object, std::vector<glm::vec3>& posList);
+bool CanSpawn(glm::vec3 pos, ObjectType object, std::vector<glm::vec3>& posList, TextureData& heightMap);

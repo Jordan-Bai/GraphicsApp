@@ -1,7 +1,16 @@
 #include "RandomWalk.h"
+#include <random>
 
 Texture GenerateWalk(int gridSize, int steps)
 {
+    return GenerateWalk(gridSize, steps, time(0));
+}
+
+Texture GenerateWalk(int gridSize, int steps, int seed)
+{
+    std::mt19937 twister(seed);
+    std::uniform_int_distribution<int> randomMove(-1, 1);
+
     std::vector<glm::vec3> heightMap(gridSize * gridSize);
 
     int x = gridSize / 2;
@@ -9,11 +18,10 @@ Texture GenerateWalk(int gridSize, int steps)
 
     for (int i = 0; i < steps; i++)
     {
-        //int testX = x;
-        //int testY = y;
-
-        x += (rand() % 3) - 1; // -1, 0, or 1
-        y += (rand() % 3) - 1; // -1, 0, or 1
+        //x += (rand() % 3) - 1; // -1, 0, or 1
+        //y += (rand() % 3) - 1; // -1, 0, or 1
+        x += randomMove(twister); // -1, 0, or 1
+        y += randomMove(twister); // -1, 0, or 1
 
         x = x % gridSize;
         y = y % gridSize;
@@ -26,15 +34,8 @@ Texture GenerateWalk(int gridSize, int steps)
             y += gridSize;
         }
 
-        //if (x + (y * gridSize) >= gridSize * gridSize || x + (y * gridSize) < 0)
-        //{
-        //    //heightMap[x + (y * gridSize)] += glm::vec3(0);
-        //    heightMap[x + (y * gridSize)] += 0;
-        //}
-        //heightMap[x + (y * gridSize)] += glm::vec3(0.1);
         heightMap[x + (y * gridSize)] += 0.1f;
     }
 
     return Texture(heightMap, { gridSize, gridSize });
-    //return Texture((char*)heightMap.data(), { gridSize, gridSize }, GL_RGB, GL_FLOAT);
 }

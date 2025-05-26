@@ -99,8 +99,9 @@ void Application::RemoveObject(GameObject* object)
 		if (it->second == object)
 		{
 			m_gameObjects.erase(it);
-			return;
+			break;
 		}
+		it++;
 	}
 }
 

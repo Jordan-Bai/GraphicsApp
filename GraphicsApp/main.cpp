@@ -48,7 +48,6 @@ int main()
 	shaderAllLights.m_uniforms.SetUniform("specPower", 10.0f);
 	shaderScreenspace.m_uniforms.SetUniform("aspectRatio", app->GetAspectRatio());
 	//==========================================================================
-
 	srand(time(0));
 	//srand(1);
 	const int gridSize = 8;
@@ -114,23 +113,10 @@ int main()
 	trees.minOverlap = 0;
 	trees.maxOverlap = 10;
 	trees.rotate = true;
-	trees.maxRotation = 0.9;
+	trees.maxRotation = 0.1;
 	trees.scale = glm::vec3(0.5f);
 	std::vector<GameObject*> boxes;
 	boxes = PopulateMap(trees, randomWalkTex);
-
-	//std::vector<GameObject*> boxes;
-	//for (int x = 0; x < walkGridSize; x += 4)
-	//{
-	//	for (int z = 0; z < walkGridSize; z += 4)
-	//	{
-	//		GameObject* obj = new GameObject(&treeMesh2, &redMat);
-	//		glm::vec2 pos = glm::vec2(x + 0.5f, z + 0.5f);
-	//		obj->m_pos = glm::vec3(pos.x, 0.25f, pos.y);
-	//		obj->m_rot = GetRotation(pos, 0.5f, randomWalkTex);
-	//		obj->m_scale = glm::vec3(0.25f);
-	//	}
-	//}
 
 
 	Camera cam({ 50, 3.0f, 120.0f });

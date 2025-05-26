@@ -173,6 +173,7 @@ void Mesh::CreateFromHeightMap(Texture* heightmap, int sizeX, int sizeZ, int ver
 			float y = pixels[x + (z * sizeX)].x;
 			//y = Remap(y, 0, 1, -1, 2);
 			//y = Remap(y, 0, 1, 0, 1.5f);
+			
 			//y = 0; // FOR TESTING
 			newVertex.pos = glm::vec3(x, y, z);
 			//newVertex.normal = glm::vec3(0, 1, 0);
@@ -184,13 +185,13 @@ void Mesh::CreateFromHeightMap(Texture* heightmap, int sizeX, int sizeZ, int ver
 			if (x > 0 && x < sizeX - 1)
 			{
 				float y2 = pixels[x - 1 + (z * sizeX)].x;
-				y2 = Remap(y2, 0, 1, -1, 2);
+				//y2 = Remap(y2, 0, 1, -1, 2);
 				float yChange = y - y2;
 				glm::vec3 leftNorm(-yChange, 1, 0);
 				leftNorm = glm::normalize(leftNorm);
 
 				float y3 = pixels[x + 1 + (z * sizeX)].x;
-				y3 = Remap(y3, 0, 1, -1, 2);
+				//y3 = Remap(y3, 0, 1, -1, 2);
 				yChange = y3 - y;
 				glm::vec3 rightNorm(-yChange, 1, 0);
 				rightNorm = glm::normalize(rightNorm);
@@ -203,13 +204,13 @@ void Mesh::CreateFromHeightMap(Texture* heightmap, int sizeX, int sizeZ, int ver
 			if (z > 0 && z < sizeZ - 1)
 			{
 				float y2 = pixels[x + ((z - 1) * sizeX)].x;
-				y2 = Remap(y2, 0, 1, -1, 2);
+				//y2 = Remap(y2, 0, 1, -1, 2);
 				float yChange = y - y2;
 				glm::vec3 downNorm(0, 1, -yChange);
 				downNorm = glm::normalize(downNorm);
 
 				float y3 = pixels[x + ((z + 1) * sizeX)].x;
-				y3 = Remap(y3, 0, 1, -1, 2);
+				//y3 = Remap(y3, 0, 1, -1, 2);
 				yChange = y3 - y;
 				glm::vec3 upNorm(0, 1, -yChange);
 				upNorm = glm::normalize(upNorm);

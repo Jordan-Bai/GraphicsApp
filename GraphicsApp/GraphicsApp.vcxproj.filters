@@ -22,6 +22,9 @@
     <Filter Include="Source Files\Imgui">
       <UniqueIdentifier>{cb1cad1c-947d-4e7a-a6d7-22ab77b061ca}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ProcGen">
+      <UniqueIdentifier>{53af8f5b-5849-4033-8d0a-fb2196dfe12f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -82,13 +85,19 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="PerlinNoise.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="RandomWalk.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>ProcGen</Filter>
     </ClCompile>
     <ClCompile Include="PoissonDisk.cpp">
+      <Filter>ProcGen</Filter>
+    </ClCompile>
+    <ClCompile Include="RandomWalk.cpp">
+      <Filter>ProcGen</Filter>
+    </ClCompile>
+    <ClCompile Include="TextureUtilities.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ObjectType.cpp">
+      <Filter>ProcGen</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -158,13 +167,19 @@
     <ClInclude Include="..\imgui\imstb_truetype.h">
       <Filter>Header Files\Imgui</Filter>
     </ClInclude>
+    <ClInclude Include="PoissonDisk.h">
+      <Filter>ProcGen</Filter>
+    </ClInclude>
     <ClInclude Include="PerlinNoise.h">
-      <Filter>Header Files</Filter>
+      <Filter>ProcGen</Filter>
     </ClInclude>
     <ClInclude Include="RandomWalk.h">
-      <Filter>Header Files</Filter>
+      <Filter>ProcGen</Filter>
     </ClInclude>
-    <ClInclude Include="PoissonDisk.h">
+    <ClInclude Include="ObjectType.h">
+      <Filter>ProcGen</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureUtilities.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -2,3 +2,4 @@
 #include "Texture.h"
 
 Texture GenerateWalk(int gridSize, int steps);
+Texture GenerateWalk(int gridSize, int steps, int seed);

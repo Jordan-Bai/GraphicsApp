@@ -1,14 +1,23 @@
 #include "PerlinNoise.h"
 
 #include "Utilities.h"
+#include <random>
 
 Texture GeneratePerlinNoise(int gridSize, int tileRes)
 {
+	return GeneratePerlinNoise(gridSize, tileRes, time(0));
+}
+
+Texture GeneratePerlinNoise(int gridSize, int tileRes, int seed)
+{
+	std::mt19937 twister(seed);
+	std::uniform_real_distribution<float> randomFloat(0.0f, 1.0f);
+
 	glm::vec2* perlinGrid = new glm::vec2[gridSize * gridSize];
 	for (int i = 0; i < gridSize * gridSize; i++)
 	{
-		float x = ((float)rand() / (float)RAND_MAX);
-		float y = ((float)rand() / (float)RAND_MAX);
+		float x = randomFloat(twister);
+		float y = randomFloat(twister);
 		glm::vec2 randomVec((x * 2) - 1, (y * 2) - 1);
 		randomVec /= glm::length(randomVec);
 		perlinGrid[i] = randomVec;
@@ -44,9 +53,6 @@ Texture GeneratePerlinNoise(int gridSize, int tileRes)
 			float rightLerp = Smoothstep(lerpY, dot3, dot4);
 			float total = Smoothstep(lerpX, leftLerp, rightLerp);
 			total = Remap(total, -0.5, 0.5, 0, 1);
-			//total = Remap(total, 0, 1, 0, 2);
-			//total *= total;
-			//total = Remap(total, 0, 4, 0, 1);
 			perlinNoise.push_back(glm::vec3(total));
 		}
 	}

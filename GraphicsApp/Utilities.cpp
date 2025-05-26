@@ -150,12 +150,14 @@ float Smoothstep(float t, float a, float b)
 	return (a * (1 - alpha)) + (b * alpha);
 }
 
+
 float Remap(float value, float prevMin, float prevMax, float nextMin, float nextMax)
 {
 	//return (value * 0.5f) + 0.5f;
 	float scaleDiff = (nextMax - nextMin) / (prevMax - prevMin);
 	return ((value - prevMin) * scaleDiff) + nextMin;
 }
+
 
 float Min(float value, float min)
 {
@@ -181,6 +183,7 @@ float Clamp(float value, float min, float max)
 {
 	return Max(min, Min(value, max));
 }
+
 
 float BestFitLinear(std::vector<glm::vec2> points)
 {
