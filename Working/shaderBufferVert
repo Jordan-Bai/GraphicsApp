@@ -1,0 +1,12 @@
+#version 460
+
+layout(location = 0) in vec3 vertPos;
+layout(location = 3) in vec2 vertUVCoord;
+
+out vec2 uvCoord;
+
+void main()
+{
+	gl_Position = vec4(vertPos.x / 2, vertPos.y / 2, 0.0, 1.0);
+	uvCoord = vertUVCoord;
+}

@@ -35,11 +35,14 @@ int main()
 	Shader fragShaderUnlit("shaderUnlitFrag", GL_FRAGMENT_SHADER);
 	Shader vertShaderScreenspace("shaderScreenspaceVert", GL_VERTEX_SHADER);
 	Shader fragShaderScreenspace("shaderScreenspaceFrag", GL_FRAGMENT_SHADER);
+	Shader vertShaderBuffer("shaderBufferVert", GL_VERTEX_SHADER);
+	Shader fragShaderBuffer("shaderBufferFrag", GL_FRAGMENT_SHADER);
 
 	ShaderProgram shaderSunOnly(&vertShader1, &fragShader1);
 	ShaderProgram shaderAllLights(&vertShader1, &fragShader2);
 	ShaderProgram shaderUnlit(&vertShader1, &fragShaderUnlit);
 	ShaderProgram shaderScreenspace(&vertShaderScreenspace, &fragShaderScreenspace);
+	ShaderProgram shaderBuffer(&vertShaderBuffer, &fragShaderBuffer);
 
 	shaderSunOnly.m_uniforms.SetUniform("specPower", 10.0f);
 	shaderAllLights.m_uniforms.SetUniform("specPower", 10.0f);
@@ -47,14 +50,14 @@ int main()
 	//==========================================================================
 
 	srand(time(0));
-	srand(1);
+	//srand(1);
 	const int gridSize = 8;
 	const int tileRes = 8;
 	Texture perlinTex = GeneratePerlinNoise(gridSize, tileRes);
 
 	const int walkGridSize = 100;
 	Texture randomWalkTex = GenerateWalk(walkGridSize, 20000);
-	randomWalkTex.BlurTexture(3, 0.5f);
+	//randomWalkTex.BlurTexture(2, 0.5f);
 	glTextureParameteri(randomWalkTex.m_texture, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTextureParameteri(randomWalkTex.m_texture, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
@@ -97,25 +100,63 @@ int main()
 	//GameObject tree(&treeMesh, &defaultMat);
 	//tree.m_scale = glm::vec3(10);
 
-	Variant treeVar1(&treeMesh1, &defaultMat, glm::vec3(0.5f));
-	Variant treeVar2(&treeMesh2, &blueMat, glm::vec3(0.5f));
-	Variant treeVar3(&treeMesh2, &redMat, glm::vec3(0.5f));
+	Variant treeVar1(&treeMesh1, &defaultMat); //, glm::vec3(0.5f));
+	Variant treeVar2(&treeMesh2, &blueMat); //, glm::vec3(0.5f));
+	Variant treeVar3(&treeMesh2, &redMat); //, glm::vec3(0.5f));
 
 	ObjectType trees;
-	trees.rad = 1;
-	trees.exclusionRad = 5;
+	trees.rad = 0.5;
+	trees.exclusionRad = 6;
 	trees.spawnAttempts = 10;
 	trees.objectVariants.push_back(treeVar1);
 	trees.objectVariants.push_back(treeVar2);
 	trees.objectVariants.push_back(treeVar3);
 	trees.minOverlap = 0;
-	trees.maxOverlap = 0.5;
-	std::vector<GameObject*> boxes = PopulateMap(trees, randomWalkTex);
+	trees.maxOverlap = 10;
+	trees.rotate = true;
+	trees.maxRotation = 0.9;
+	trees.scale = glm::vec3(0.5f);
+	std::vector<GameObject*> boxes;
+	boxes = PopulateMap(trees, randomWalkTex);
+
+	//std::vector<GameObject*> boxes;
+	//for (int x = 0; x < walkGridSize; x += 4)
+	//{
+	//	for (int z = 0; z < walkGridSize; z += 4)
+	//	{
+	//		GameObject* obj = new GameObject(&treeMesh2, &redMat);
+	//		glm::vec2 pos = glm::vec2(x + 0.5f, z + 0.5f);
+	//		obj->m_pos = glm::vec3(pos.x, 0.25f, pos.y);
+	//		obj->m_rot = GetRotation(pos, 0.5f, randomWalkTex);
+	//		obj->m_scale = glm::vec3(0.25f);
+	//	}
+	//}
 
 
 	Camera cam({ 50, 3.0f, 120.0f });
 	app->SetCurrentCamera(&cam);
 	//==========================================================================
+
+
+	// TESTING FRAME BUFFER
+	//==========================================================================
+	GLuint frameBuffer;
+	glGenFramebuffers(1, &frameBuffer);
+	glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
+
+	GLuint depthBuffer;
+	glGenRenderbuffers(1, &depthBuffer);
+	glBindRenderbuffer(GL_RENDERBUFFER, depthBuffer);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, 100, 100);
+	glBindRenderbuffer(GL_RENDERBUFFER, 0);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, depthBuffer);
+
+	Texture bufferTex(glm::vec2(100, 100));
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, bufferTex.m_texture, 0);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	//==========================================================================
+
 
 	app->SetUniformInAllShaders("sunDirection", glm::normalize(sunDirection));
 	app->SetUniformInAllShaders("sunColour", sunColour);
@@ -130,6 +171,8 @@ int main()
 
 		// CLEAR SCREEN
 		//==========================================================================
+		//glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
+
 		// Clears the screen
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		// Set background colour
@@ -148,13 +191,52 @@ int main()
 		// DO IMGUI STUFF
 		//==========================================================================
 		// Must be before app.Draw(), as the info needs to be stored using ImGui::Render() before its actually drawn
-		//ImGui::Begin("DEBUG MENU");
-		//ImGui::End();
+		ImGui::Begin("DEBUG MENU");
+
+		if (boxes.size() == 0)
+		{
+			if (ImGui::Button("Spawn Objects"))
+			{
+				boxes = PopulateMap(trees, randomWalkTex);
+				app->SetUniformInAllShaders("sunDirection", glm::normalize(sunDirection));
+				app->SetUniformInAllShaders("sunColour", sunColour);
+				app->ApplyAllUniforms();
+			}
+			ImGui::Dummy({ 0, 15 });
+			ImGui::SliderFloat3("Scale", glm::value_ptr(trees.scale), 0.0f, 10.0f);
+		}
+		else
+		{
+			if (ImGui::Button("Clear Objects"))
+			{
+				for (GameObject* b : boxes)
+				{
+					delete b;
+				}
+				boxes.clear();
+			}
+		}
+
+		ImGui::End();
 
 		ImGui::Render();
 		//==========================================================================
 
 		app->Draw();
+
+		// FRAME BUFFER STUFF
+		//==========================================================================
+		//glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		//
+		//// Clears the screen
+		//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		//// Set background colour
+		//glClearColor(0.5f, 0.5f, 0.7f, 0.5f);
+		//
+		//shaderBuffer.Use();
+		//glBindTexture(GL_TEXTURE_2D, bufferTex.m_texture);
+		//cubeMesh.Draw();
+		//==========================================================================
 
 		// END OF FRAME
 		//==========================================================================

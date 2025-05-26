@@ -76,6 +76,44 @@ Texture::Texture(glm::vec3 colour)
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
+Texture::Texture(glm::vec3 colour, glm::vec2 size)
+{
+	m_size = size;
+	std::vector<glm::vec3> colourGrid(size.x * size.y, colour);
+	glGenTextures(1, &m_texture); // Generate 1 texture buffer
+
+	glBindTexture(GL_TEXTURE_2D, m_texture);
+	glTexImage2D(GL_TEXTURE_2D,		// The type of texture to generate
+		0,							// The 'mipmap level' (0 being the highest one)
+		GL_RGB,						// Internal format (what channel format is used internally)
+		size.x, size.y,				// The image specifications
+		0,							// Always 0 for legacy reasons apparently
+		GL_RGB,						// Format (what channel format is being uploaded)
+		GL_FLOAT,					// The type of the data
+		(char*)colourGrid.data());	// The data itself
+
+	glGenerateMipmap(GL_TEXTURE_2D); // Mip-mapping
+	glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+Texture::Texture(glm::vec2 size)
+{
+	glGenTextures(1, &m_texture); // Generate 1 texture buffer
+
+	glBindTexture(GL_TEXTURE_2D, m_texture);
+	glTexImage2D(GL_TEXTURE_2D,		// The type of texture to generate
+		0,							// The 'mipmap level' (0 being the highest one)
+		GL_RGB,						// Internal format (what channel format is used internally)
+		size.x, size.y,				// The image specifications
+		0,							// Always 0 for legacy reasons apparently
+		GL_RGB,						// Format (what channel format is being uploaded)
+		GL_FLOAT,					// The type of the data
+		NULL);						// The data itself
+
+	glGenerateMipmap(GL_TEXTURE_2D); // Mip-mapping
+	glBindTexture(GL_TEXTURE_2D, 0);
+}
+
 Texture::Texture(std::vector<glm::vec3> colourGrid, glm::vec2 size)
 {
 	m_size = size;

@@ -11,6 +11,8 @@ struct Texture
 
 	Texture(std::string fileName);
 	Texture(glm::vec3 colour);
+	Texture(glm::vec3 colour, glm::vec2 size);
+	Texture(glm::vec2 size);
 	Texture(std::vector<glm::vec3> colourGrid, glm::vec2 size);
 	Texture(char* colourData, glm::vec2 size, GLenum format, GLenum type);
 	Texture(const Texture& other);

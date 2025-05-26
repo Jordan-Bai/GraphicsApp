@@ -1,0 +1,13 @@
+#version 460
+
+in vec2 uvCoord;
+
+uniform sampler2D bufferTex;
+
+out vec4 PixelColour;
+
+void main()
+{
+	//PixelColour = vec4(1.0, 1.0, 1.0, 1.0);
+	PixelColour = texture(bufferTex, uvCoord);
+}

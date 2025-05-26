@@ -181,3 +181,84 @@ float Clamp(float value, float min, float max)
 {
 	return Max(min, Min(value, max));
 }
+
+float BestFitLinear(std::vector<glm::vec2> points)
+{
+	float xySum = 0;
+	float xSum = 0;
+	float ySum = 0;
+	float xSqrSum = 0;
+
+	for (glm::vec2 p : points)
+	{
+		xySum += p.x * p.y;
+		xSum += p.x;
+		ySum += p.y;
+		xSqrSum += p.x * p.x;
+	}
+
+	float numPoints = points.size();
+
+	float slope = (numPoints * xySum) - (xSum * ySum);
+	slope /= (numPoints * xSqrSum) - (xSum * xSum);
+
+	return slope;
+}
+
+glm::vec3 BestFitLinear(std::vector<glm::vec3> points)
+{
+	float xySum = 0;
+	float xSum = 0;
+	float ySum = 0;
+	float xSqrSum = 0;
+
+	float zySum = 0;
+	float zSum = 0;
+	float zSqrSum = 0;
+
+	for (glm::vec3 p : points)
+	{
+		xySum += p.x * p.y;
+		xSum += p.x;
+		ySum += p.y;
+		xSqrSum += p.x * p.x;
+
+		zySum += p.z * p.y;
+		zSum += p.z;
+		zSqrSum += p.z * p.z;
+	}
+
+	float numPoints = points.size();
+
+	float xSlope = (numPoints * zySum) - (zSum * ySum);
+	xSlope /= (numPoints * zSqrSum) - (zSum * zSum);
+	float zSlope = (numPoints * xySum) - (xSum * ySum);
+	zSlope /= (numPoints * xSqrSum) - (xSum * xSum);
+
+	//xSlope *= 1.5f;
+	//zSlope *= 1.5f;
+
+	//return glm::vec3(0, 0, atan(zSlope));
+	//return glm::vec3(atan(xSlope), 0, 0);
+	return glm::vec3(atan(xSlope), 0, atan(zSlope));
+}
+
+float BestFitPCA(std::vector<glm::vec2> points)
+{
+	glm::vec2 center;
+
+	for (glm::vec2 p : points)
+	{
+		center += p;
+	}
+	center /= (float)points.size();
+
+	std::vector<glm::vec2> movedPoints;
+	for (glm::vec2 p : points)
+	{
+		movedPoints.push_back(p - center);
+	}
+
+
+	return 0.0f;
+}

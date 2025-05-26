@@ -85,6 +85,25 @@ void Application::AddObject(GameObject* object)
 	}
 }
 
+void Application::RemoveObject(GameObject* object)
+{
+	ShaderProgram* shader = nullptr;
+	if (object->m_mat != nullptr)
+	{
+		shader = object->m_mat->m_shader;
+	}
+
+	std::multimap<ShaderProgram*, GameObject*>::iterator it = m_gameObjects.find(shader);
+	while (it != m_gameObjects.end() && it->first == shader)
+	{
+		if (it->second == object)
+		{
+			m_gameObjects.erase(it);
+			return;
+		}
+	}
+}
+
 Camera* Application::GetCurrentCamera()
 {
 	return m_currentCamera;

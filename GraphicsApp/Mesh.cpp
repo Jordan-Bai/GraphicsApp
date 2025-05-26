@@ -171,7 +171,8 @@ void Mesh::CreateFromHeightMap(Texture* heightmap, int sizeX, int sizeZ, int ver
 		{
 			Vertex newVertex;
 			float y = pixels[x + (z * sizeX)].x;
-			y = Remap(y, 0, 1, -1, 2);
+			//y = Remap(y, 0, 1, -1, 2);
+			//y = Remap(y, 0, 1, 0, 1.5f);
 			//y = 0; // FOR TESTING
 			newVertex.pos = glm::vec3(x, y, z);
 			//newVertex.normal = glm::vec3(0, 1, 0);

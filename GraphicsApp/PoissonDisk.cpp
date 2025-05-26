@@ -2,23 +2,26 @@
 #include <vector>
 #include <iostream>
 
+#include "gtc/quaternion.hpp"
+//#include "gtx/quaternion.hpp"
+
 Variant::Variant()
-	: mesh(nullptr), mat(nullptr), scale(1)
+	: mesh(nullptr), mat(nullptr)//, scale(1)
 {
 }
 
 Variant::Variant(Mesh* _mesh, Material* _mat)
-	: mesh(_mesh), mat(_mat), scale(1)
+	: mesh(_mesh), mat(_mat)//, scale(1)
 {
 }
 
-Variant::Variant(Mesh* _mesh, Material* _mat, glm::vec3 _scale)
-	: mesh(_mesh), mat(_mat), scale(_scale)
-{
-}
+//Variant::Variant(Mesh* _mesh, Material* _mat, glm::vec3 _scale)
+//	: mesh(_mesh), mat(_mat), scale(_scale)
+//{
+//}
 
 ObjectType::ObjectType()
-	: rad(1), exclusionRad(1), spawnAttempts(5), minOverlap(0), maxOverlap(1)
+	: rad(1), exclusionRad(1), spawnAttempts(5), rotate(false), scale(1), minOverlap(0), maxOverlap(1), maxRotation(1.57)
 {
 }
 
@@ -38,14 +41,14 @@ std::vector<GameObject*> PopulateMap(ObjectType object, Texture& heightMap)
 	float x = (float)rand() * heightMap.m_size.x / (float)RAND_MAX;
 	float z = (float)rand() * heightMap.m_size.y / (float)RAND_MAX;
 	float y = HeightRange(glm::vec2(x, z), object.rad, heightMap).x;
-	y = Remap(y, 0, 1, -1, 2);
+	//y = Remap(y, 0, 1, -1, 2);
 	glm::vec3 firstPos(x, y, z);
 	while (!CanSpawn(firstPos, object, posList, heightMap))
 	{
 		x = (float)rand() * heightMap.m_size.x / (float)RAND_MAX;
 		z = (float)rand() * heightMap.m_size.y / (float)RAND_MAX;
 		y = HeightRange(glm::vec2(x, z), object.rad, heightMap).x;
-		y = Remap(y, 0, 1, -1, 2);
+		//y = Remap(y, 0, 1, -1, 2);
 		firstPos = {x, y, z};
 	}
 
@@ -67,7 +70,7 @@ std::vector<GameObject*> PopulateMap(ObjectType object, Texture& heightMap)
 			}
 			//y = mapData[xInt + (zInt * heightMap.m_size.x)].x;
 			y = HeightRange(glm::vec2(nextPos.x, nextPos.z), object.rad, heightMap).x;
-			y = Remap(y, 0, 1, -1, 2);
+			//y = Remap(y, 0, 1, -1, 2);
 			nextPos.y = y - object.minOverlap;
 
 			if (CanSpawn(nextPos, object, posList, heightMap))
@@ -105,8 +108,14 @@ std::vector<GameObject*> PopulateMap(ObjectType object, Texture& heightMap)
 			variant = object.objectVariants[index];
 		}
 		GameObject* obj = new GameObject(variant.mesh, variant.mat);
-		obj->m_scale = variant.scale;
+		//obj->m_scale = variant.scale;
+		obj->m_scale = object.scale;
 		obj->m_pos = pos;
+		if (object.rotate)
+		{
+			obj->m_rot = GetRotation(glm::vec2(pos.x, pos.z), object.rad, heightMap);
+			//glm::quat q(GetRotation(glm::vec2(pos.x, pos.z), object.rad, heightMap));
+		}
 
 		objects.push_back(obj);
 	}
@@ -260,12 +269,67 @@ glm::vec2 HeightRange(glm::vec2 pos, float radius, Texture& heightMap)
 	return glm::vec2(minHeight, maxHeight);
 }
 
+glm::vec3 GetRotation(glm::vec2 pos, float radius, Texture& heightMap)
+{
+	std::vector<glm::vec3> mapData(heightMap.m_size.x * heightMap.m_size.y);
+	glBindTexture(GL_TEXTURE_2D, heightMap.m_texture);
+	glGetTexImage(GL_TEXTURE_2D,		// The type of texture to generate
+		0,								// The 'mipmap level' (0 being the highest one)
+		GL_RGB,							// Internal format (what channel format is used internally)
+		GL_FLOAT,						// The type of the data
+		mapData.data());
+
+	float minX = Max(pos.x - radius, 0);
+	float maxX = Min(pos.x + radius, heightMap.m_size.x - 1);
+	float minY = Max(pos.y - radius, 0);
+	float maxY = Min(pos.y + radius, heightMap.m_size.y - 1);
+
+	int iterationsSqrt = 10;
+	float stepSize = 2 * radius / (float)iterationsSqrt;
+
+	//std::vector<glm::vec2> points;
+	std::vector<glm::vec3> points3D;
+
+	for (float x = minX; x < maxX; x += stepSize)
+	{
+		for (float y = minY; y < maxY; y += stepSize)
+		{
+			float height = GetColour(glm::vec2(x, y), mapData, heightMap.m_size.x, heightMap.m_size.y).x;
+			//points.push_back(glm::vec2(x, height));
+			points3D.push_back(glm::vec3(x, height, -y)); 
+			// ^ -y since it's meant to represent the z axis, where forward is negative
+		}
+	}
+
+	//float slope = BestFitLinear(points);
+	glm::vec3 s = BestFitLinear(points3D);
+
+	//return glm::vec3(0, 0, slope);
+	//return glm::vec3(s.y, 0, 0);
+	return s;
+}
+
 bool CanSpawn(glm::vec3 pos, ObjectType object, std::vector<glm::vec3>& posList, Texture& heightMap)
 {
 	//if (pos.x < 0 || pos.x > heightMap.m_size.x || pos.z < 0 || pos.z > heightMap.m_size.y)
 	//{
 	//	return false;
 	//}
+	if (object.rotate)
+	{
+		glm::vec3 rot = GetRotation(glm::vec2(pos.x, pos.z), object.rad, heightMap);
+		if (abs(rot.x) > object.maxRotation || abs(rot.z) > object.maxRotation)
+		{
+			return false;
+		}
+
+		//glm::quat q(GetRotation(glm::vec2(pos.x, pos.z), object.rad, heightMap));
+		//if (q.w > object.maxRotation)
+		//{
+		//	return false;
+		//}
+	}
+
 	glm::vec2 heightRange = HeightRange(glm::vec2(pos.x, pos.z), object.rad, heightMap);
 	float overlapHeight = heightRange.y - heightRange.x;
 	overlapHeight = Remap(overlapHeight, 0, 1, 0, 3);

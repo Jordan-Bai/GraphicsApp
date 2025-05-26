@@ -14,6 +14,11 @@ GameObject::GameObject(Mesh* mesh, Material* material)
 	Application::Get()->AddObject(this);
 }
 
+GameObject::~GameObject()
+{
+	Application::Get()->RemoveObject(this);
+}
+
 
 glm::mat4 GameObject::GetRotation()
 {
