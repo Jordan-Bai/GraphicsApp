@@ -23,6 +23,7 @@ Mesh::~Mesh()
 
 void Mesh::CreatePlaneMesh()
 {
+	ClearData();
 	//std::vector<Vertex> verts;
 	//std::vector<int> indicies;
 
@@ -30,10 +31,10 @@ void Mesh::CreatePlaneMesh()
 	// |     |
 	// |     |
 	// 2-----3
-	m_verts.push_back({ { -1, 1, 0 }, { 0, 0, 1 }, { 1, 0, 0 }, { 0, 0 } });
-	m_verts.push_back({ { 1, 1, 0 }, { 0, 0, 1 }, { 1, 0, 0 }, { 0, 1 } });
-	m_verts.push_back({ { -1, -1, 0 }, { 0, 0, 1 }, { 1, 0, 0 }, { 1, 0 } });
-	m_verts.push_back({ { 1, -1, 0 }, { 0, 0, 1 }, { 1, 0, 0 }, { 1, 1 } });
+	m_verts.push_back({ { -1, 1, 0 }, { 0, 0, 1 }, { 1, 0, 0 }, { 0, 1 } });
+	m_verts.push_back({ { 1, 1, 0 }, { 0, 0, 1 }, { 1, 0, 0 }, { 1, 1 } });
+	m_verts.push_back({ { -1, -1, 0 }, { 0, 0, 1 }, { 1, 0, 0 }, { 0, 0 } });
+	m_verts.push_back({ { 1, -1, 0 }, { 0, 0, 1 }, { 1, 0, 0 }, { 1, 0 } });
 	m_indicies.push_back(0);
 	m_indicies.push_back(1);
 	m_indicies.push_back(2);
@@ -46,6 +47,7 @@ void Mesh::CreatePlaneMesh()
 
 void Mesh::CreateCubeMesh()
 {
+	ClearData();
 	//std::vector<Vertex> verts;
 	//std::vector<int> indicies;
 
@@ -150,6 +152,8 @@ void Mesh::CreateFromHeightMap(Texture* heightmap, int sizeX, int sizeZ)
 
 void Mesh::CreateFromHeightMap(Texture* heightmap, int sizeX, int sizeZ, int vertsPerPixel)
 {
+	ClearData();
+
 	std::vector<glm::vec3> pixels(sizeX * sizeZ);
 	glBindTexture(GL_TEXTURE_2D, heightmap->m_texture);
 	glGetTexImage(GL_TEXTURE_2D,		// The type of texture to generate
@@ -327,12 +331,12 @@ void Mesh::LoadFromFile(std::string fileName)
 
 void Mesh::InitObject()
 {
-	if (m_vertArray != 0)
-	{
-		glDeleteBuffers(1, &m_vertBuffer);
-		glDeleteBuffers(1, &m_indexBuffer);
-		glDeleteVertexArrays(1, &m_vertArray);
-	}
+	//if (m_vertArray != 0)
+	//{
+	//	glDeleteBuffers(1, &m_vertBuffer);
+	//	glDeleteBuffers(1, &m_indexBuffer);
+	//	glDeleteVertexArrays(1, &m_vertArray);
+	//}
 
 	glGenVertexArrays(1, &m_vertArray);
 	glGenBuffers(1, &m_vertBuffer);
@@ -394,6 +398,19 @@ void Mesh::InitObject()
 	glBindVertexArray(0);
 
 	m_triCount = m_indicies.size() / 3;
+}
+
+void Mesh::ClearData()
+{
+	if (m_vertArray != 0)
+	{
+		glDeleteBuffers(1, &m_vertBuffer);
+		glDeleteBuffers(1, &m_indexBuffer);
+		glDeleteVertexArrays(1, &m_vertArray);
+
+		m_verts.clear();
+		m_indicies.clear();
+	}
 }
 
 

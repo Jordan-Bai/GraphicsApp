@@ -27,6 +27,7 @@ public:
 	void CreateFromHeightMap(Texture* heightmap, int sizeX, int sizeZ, int vertsPerPixel);
 	void LoadFromFile(std::string fileName);
 	virtual void InitObject();
+	void ClearData();
 
 	virtual void Draw();
 

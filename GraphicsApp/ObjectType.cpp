@@ -22,7 +22,7 @@ float ObjectType::GetBestHeight(glm::vec2 pos, TextureData& heightMap)
 {
 	glm::vec2 heightRange = HeightRange(glm::vec2(pos.x, pos.y), rad, heightMap);
 
-	return heightRange.x + minOverlap;
+	return heightRange.x - minOverlap;
 }
 
 bool ObjectType::CanSpawn(glm::vec2 pos, TextureData& heightMap)
@@ -35,13 +35,15 @@ bool ObjectType::CanSpawn(glm::vec2 pos, TextureData& heightMap)
 			return false;
 		}
 	}
-
-	glm::vec2 heightRange = HeightRange(glm::vec2(pos.x, pos.y), rad, heightMap);
-	float overlapHeight = heightRange.y - heightRange.x;
-	//overlapHeight = Remap(overlapHeight, 0, 1, 0, 3);
-	if (overlapHeight > maxOverlap - minOverlap)
+	else
 	{
-		return false;
+		glm::vec2 heightRange = HeightRange(glm::vec2(pos.x, pos.y), rad, heightMap);
+		float overlapHeight = heightRange.y - heightRange.x;
+		//overlapHeight = Remap(overlapHeight, 0, 1, 0, 3);
+		if (overlapHeight > maxOverlap - minOverlap)
+		{
+			return false;
+		}
 	}
 
 	return true;
@@ -49,17 +51,18 @@ bool ObjectType::CanSpawn(glm::vec2 pos, TextureData& heightMap)
 
 GameObject* ObjectType::GenerateObject(glm::vec3 pos)
 {
-	Variant variant;
+	Variant* variant;
 	if (objectVariants.size() == 0)
 	{
 		std::cout << "ERROR(ObjectType::GenerateObject): Object type does not have variants";
+		return nullptr;
 	}
 	else
 	{
 		int index = rand() % objectVariants.size();
 		variant = objectVariants[index];
 	}
-	GameObject* obj = new GameObject(variant.mesh, variant.mat);
+	GameObject* obj = new GameObject(variant->mesh, variant->mat);
 	obj->m_scale = scale;
 	obj->m_pos = pos;
 
@@ -68,17 +71,43 @@ GameObject* ObjectType::GenerateObject(glm::vec3 pos)
 
 GameObject* ObjectType::GenerateObject(glm::vec3 pos, TextureData& heightMap)
 {
-	Variant variant;
+	Variant* variant;
 	if (objectVariants.size() == 0)
 	{
 		std::cout << "ERROR(ObjectType::GenerateObject): Object type does not have variants";
+		return nullptr;
 	}
 	else
 	{
 		int index = rand() % objectVariants.size();
 		variant = objectVariants[index];
 	}
-	GameObject* obj = new GameObject(variant.mesh, variant.mat);
+	GameObject* obj = new GameObject(variant->mesh, variant->mat);
+	obj->m_scale = scale;
+	obj->m_pos = pos;
+	if (rotate)
+	{
+		obj->m_rot = GetRotation(glm::vec2(pos.x, pos.z), rad, heightMap);
+	}
+
+	return obj;
+}
+
+GameObject* ObjectType::GenerateObject(glm::vec3 pos, TextureData& heightMap, std::mt19937& twister)
+{
+	Variant* variant;
+	if (objectVariants.size() == 0)
+	{
+		std::cout << "ERROR(ObjectType::GenerateObject): Object type does not have variants";
+		return nullptr;
+	}
+	else
+	{
+		std::uniform_int_distribution<int> randomInt(0, objectVariants.size() - 1);
+		int index = randomInt(twister);
+		variant = objectVariants[index];
+	}
+	GameObject* obj = new GameObject(variant->mesh, variant->mat);
 	obj->m_scale = scale;
 	obj->m_pos = pos;
 	if (rotate)

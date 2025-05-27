@@ -15,8 +15,8 @@ std::vector<GameObject*> PopulateMap(ObjectType object, Texture& heightMap, int 
 {
 	TextureData mapData(heightMap);
 	std::mt19937 twister(seed);
-	std::uniform_real_distribution<float> randomX(0.0f, heightMap.m_size.x);
-	std::uniform_real_distribution<float> randomY(0.0f, heightMap.m_size.y);
+	std::uniform_real_distribution<float> randomX(0.0f, heightMap.m_size.x - 1);
+	std::uniform_real_distribution<float> randomY(0.0f, heightMap.m_size.y - 1);
 	std::uniform_real_distribution<float> randomAngle(0.0f, 3.14159 * 2);
 
 	std::vector<glm::vec3> posList; // Vec2 since they'll always be placed at the heighest y level
@@ -25,12 +25,21 @@ std::vector<GameObject*> PopulateMap(ObjectType object, Texture& heightMap, int 
 	float z = randomY(twister);
 	float y = object.GetBestHeight(glm::vec2(x, z), mapData);
 	glm::vec3 firstPos(x, y, z);
+
+	int i = 0;
+	const int spawnAttempts = 1000;
 	while (!CanSpawn(firstPos, object, posList, mapData))
 	{
+		if (i > spawnAttempts)
+		{
+			std::cout << "ERROR(PopulateMap): No valid spawn found within " << spawnAttempts << " spawns" << std::endl;
+			return std::vector<GameObject*>();
+		}
 		x = randomX(twister);
 		z = randomY(twister);
 		y = object.GetBestHeight(glm::vec2(x, z), mapData);
 		firstPos = {x, y, z};
+		i++;
 	}
 
 	posList.push_back(firstPos);
@@ -62,7 +71,7 @@ std::vector<GameObject*> PopulateMap(ObjectType object, Texture& heightMap, int 
 	std::vector<GameObject*> objects;
 	for (glm::vec3 pos : posList)
 	{
-		GameObject* obj = object.GenerateObject(pos, mapData);
+		GameObject* obj = object.GenerateObject(pos, mapData, twister);
 
 		objects.push_back(obj);
 	}
@@ -94,6 +103,10 @@ bool CanSpawn(glm::vec3 pos, ObjectType object, std::vector<glm::vec3>& posList,
 	//		return false;
 	//	}
 	//}
+	if (pos.x < 0 || pos.x > heightMap.sizeX - 1 || pos.y < 0 || pos.y > heightMap.sizeY - 1)
+	{
+		return false;
+	}
 
 	if (!object.CanSpawn(glm::vec2(pos.x, pos.z), heightMap))
 	{

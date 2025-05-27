@@ -328,6 +328,16 @@ float Application::GetAspectRatio()
 	return (float)m_width / (float)m_height;
 }
 
+float Application::GetWidth()
+{
+	return m_width;
+}
+
+float Application::GetHeight()
+{
+	return m_height;
+}
+
 
 void Application::Update(float delta)
 {

@@ -184,6 +184,31 @@ float Clamp(float value, float min, float max)
 	return Max(min, Min(value, max));
 }
 
+//int Max(int value, int max)
+//{
+//	int result = value;
+//	if (result < max)
+//	{
+//		result = max;
+//	}
+//	return result;
+//}
+//
+//int Min(int value, int min)
+//{
+//	int result = value;
+//	if (result > min)
+//	{
+//		result = min;
+//	}
+//	return result;
+//}
+//
+//int Clamp(int value, int min, int max)
+//{
+//	return Max(min, Min(value, max));
+//}
+
 
 float BestFitLinear(std::vector<glm::vec2> points)
 {

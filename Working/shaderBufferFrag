@@ -2,12 +2,12 @@
 
 in vec2 uvCoord;
 
-uniform sampler2D bufferTex;
+uniform sampler2D albedoMap;
 
 out vec4 PixelColour;
 
 void main()
 {
 	//PixelColour = vec4(1.0, 1.0, 1.0, 1.0);
-	PixelColour = texture(bufferTex, uvCoord);
+	PixelColour = texture(albedoMap, uvCoord);
 }

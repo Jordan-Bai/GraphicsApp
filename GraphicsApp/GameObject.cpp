@@ -33,10 +33,10 @@ glm::mat4 GameObject::GetObjectSpace()
 	glm::mat4 translation = glm::translate(glm::mat4(1), m_pos);
 	glm::mat4 rotation = GetRotation();
 	glm::mat4 scale = glm::scale(glm::mat4(1), m_scale);
-	return translation * scale * rotation;
+	return translation * rotation * scale;
 	// ^ Applied right to left, because of the way they're being multiplied 
 	// (openGL uses column-major order for matricies)
-	// So rotation is applied first, then scale, then translation
+	// So sclae is applied first, then rotation, then translation
 }
 
 

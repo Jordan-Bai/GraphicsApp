@@ -1,6 +1,7 @@
 #pragma once
 #include "GameObject.h"
 #include "TextureUtilities.h"
+#include <random>
 
 struct Variant
 {
@@ -21,7 +22,7 @@ public:
 	int spawnAttempts;
 	bool rotate;
 
-	std::vector<Variant> objectVariants;
+	std::vector<Variant*> objectVariants;
 
 	float minOverlap;
 	float maxOverlap;
@@ -36,4 +37,5 @@ public:
 
 	GameObject* GenerateObject(glm::vec3 pos);
 	GameObject* GenerateObject(glm::vec3 pos, TextureData& heightMap);
+	GameObject* GenerateObject(glm::vec3 pos, TextureData& heightMap, std::mt19937& twister);
 };

@@ -266,6 +266,7 @@ void Texture::BlurTexture(int size, float blurStrength)
 
 Texture& Texture::operator=(const Texture& other)
 {
+	m_size = other.m_size;
 	std::vector<glm::vec3> pixels(m_size.x * m_size.y);
 	glBindTexture(GL_TEXTURE_2D, other.m_texture);
 	glGetTexImage(GL_TEXTURE_2D,		// The type of texture to generate
@@ -278,7 +279,7 @@ Texture& Texture::operator=(const Texture& other)
 	glTexImage2D(GL_TEXTURE_2D,		// The type of texture to generate
 		0,							// The 'mipmap level' (0 being the highest one)
 		GL_RGB,						// Internal format (what channel format is used internally)
-		2, 2,						// The image specifications
+		m_size.x, m_size.y,			// The image specifications
 		0,							// Always 0 for legacy reasons apparently
 		GL_RGB,						// Format (what channel format is being uploaded)
 		GL_FLOAT,					// The type of the data
