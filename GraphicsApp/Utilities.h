@@ -71,9 +71,6 @@ float Remap(float value, float prevMin, float prevMax, float nextMin, float next
 float Min(float value, float min);
 float Max(float value, float max);
 float Clamp(float value, float min, float max);
-//int Min(int value, int min);
-//int Max(int value, int max);
-//int Clamp(int value, int min, int max);
 
 float BestFitLinear(std::vector<glm::vec2> points);
 glm::vec3 BestFitLinear(std::vector<glm::vec3> points);

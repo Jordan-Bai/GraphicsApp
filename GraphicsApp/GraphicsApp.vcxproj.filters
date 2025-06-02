@@ -99,6 +99,9 @@
     <ClCompile Include="ObjectType.cpp">
       <Filter>ProcGen</Filter>
     </ClCompile>
+    <ClCompile Include="HeightMapUtils.cpp">
+      <Filter>ProcGen</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Utilities.h">
@@ -181,6 +184,9 @@
     </ClInclude>
     <ClInclude Include="TextureUtilities.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="HeightMapUtils.h">
+      <Filter>ProcGen</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

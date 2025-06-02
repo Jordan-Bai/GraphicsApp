@@ -62,7 +62,8 @@ int main()
 	//Texture perlinTex = GeneratePerlinNoise(gridSize, tileRes);
 
 	const int walkGridSize = 100;
-	Texture randomWalkTex = GenerateWalk(walkGridSize, 20000, heightSeed);
+	int steps = 20000;
+	Texture randomWalkTex = GenerateWalk(walkGridSize, steps, heightSeed);
 	//randomWalkTex.BlurTexture(2, 0.5f);
 	glTextureParameteri(randomWalkTex.m_texture, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTextureParameteri(randomWalkTex.m_texture, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -115,15 +116,15 @@ int main()
 
 	ObjectType trees;
 	trees.rad = 0.5;
-	trees.exclusionRad = 6;
-	trees.spawnAttempts = 10;
+	trees.exclusionRad = 8;
+	trees.spawnAttempts = 8;
 	trees.objectVariants.push_back(treeVar1);
 	trees.objectVariants.push_back(treeVar2);
 	trees.objectVariants.push_back(treeVar3);
 	trees.minOverlap = 0;
 	trees.maxOverlap = 0.1;
-	//trees.rotate = true;
-	trees.maxRotation = 0.1;
+	trees.rotate = true;
+	trees.maxRotation = 1.1;
 	trees.scale = glm::vec3(0.5f);
 	std::vector<GameObject*> boxes;
 	boxes = PopulateMap(trees, randomWalkTex, populateSeed);
@@ -255,23 +256,30 @@ int main()
 			variantPreview.m_scale = trees.scale;
 			if (trees.rotate)
 			{
-				variantPreview.m_rot = glm::vec3(0, 0, trees.maxRotation);
+				variantPreview.m_rot.z = trees.maxRotation;
+				minOverlapPreview.m_rot.z = trees.maxRotation;
+				maxOverlapPreview.m_rot.z = trees.maxRotation;
+				minOverlapPreview.m_pos = glm::vec3(-sin(trees.maxRotation), cos(trees.maxRotation), 0) * trees.minOverlap;
+				maxOverlapPreview.m_pos = glm::vec3(-sin(trees.maxRotation), cos(trees.maxRotation), 0) * trees.maxOverlap;
 			}
 			else
 			{
-				variantPreview.m_rot = glm::vec3();
+				variantPreview.m_rot.z = 0;
+				minOverlapPreview.m_rot.z = 0;
+				maxOverlapPreview.m_rot.z = 0;
+
+				minOverlapPreview.m_pos = glm::vec3(0, trees.minOverlap, 0);
+				maxOverlapPreview.m_pos = glm::vec3(0, trees.maxOverlap, 0);
 			}
 			variantPreview.Draw();
 
-			if (!trees.rotate)
+			//if (!trees.rotate)
 			{
 				// Draw min/ max overlap
 				minOverlapPreview.m_mat->m_shader->Use();
 				minOverlapPreview.m_mat->m_shader->BindUniform("cameraPos", previewCam.GetPos());
 				minOverlapPreview.m_mat->m_shader->BindUniform("vpMat", app->GetProjectionMatrix() * previewCam.GetViewMatrix());
 
-				minOverlapPreview.m_pos.y = trees.minOverlap;
-				maxOverlapPreview.m_pos.y = trees.maxOverlap;
 				minOverlapPreview.m_scale = trees.scale + glm::vec3(0.75f);
 				maxOverlapPreview.m_scale = trees.scale + glm::vec3(0.75f);
 				minOverlapPreview.Draw();
@@ -334,18 +342,18 @@ int main()
 				variantSettings = false;
 				ImGui::SliderFloat("Exclusion radius", &trees.exclusionRad, 0.0f, 50.0f);
 				ImGui::SliderInt("Spawn Attempts", &trees.spawnAttempts, 0, 20);
+				// Min & Max overlap
+				ImGui::SliderFloat("MinOverlap", &trees.minOverlap, -10.0f, 10.0f);
+				trees.minOverlap = Min(trees.minOverlap, trees.maxOverlap);
+				ImGui::SliderFloat("MaxOverlap", &trees.maxOverlap, -10.0f, 10.0f);
+				trees.maxOverlap = Max(trees.minOverlap, trees.maxOverlap);
+				// Rotation
 				ImGui::Checkbox("Rotate", &trees.rotate);
 				if (trees.rotate)
 				{
-					ImGui::SliderFloat("MaxRotation", &trees.maxRotation, 0.0f, 3.14159f);
+					ImGui::SliderFloat("MaxRotation", &trees.maxRotation, 0.0f, 3.14159f / 2.0f);
 				}
-				else
-				{
-					ImGui::SliderFloat("MinOverlap", &trees.minOverlap, -10.0f, 10.0f);
-					trees.minOverlap = Min(trees.minOverlap, trees.maxOverlap);
-					ImGui::SliderFloat("MaxOverlap", &trees.maxOverlap, -10.0f, 10.0f);
-					trees.maxOverlap = Max(trees.minOverlap, trees.maxOverlap);
-				}
+
 				ImGui::SliderFloat3("Scale", glm::value_ptr(trees.scale), 0.0f, 10.0f);
 				ImGui::EndTabItem();
 			}
@@ -409,7 +417,7 @@ int main()
 					{
 						heightSeed = (heightSeed + time(0)) % seedMax;
 					}
-					randomWalkTex = GenerateWalk(walkGridSize, 20000, heightSeed);
+					randomWalkTex = GenerateWalk(walkGridSize, steps, heightSeed);
 					if (blurAmount > 0)
 					{
 						randomWalkTex.BlurTexture(blurSize, blurAmount);
@@ -445,12 +453,6 @@ int main()
 		{
 			shaderBuffer.Use();
 			previewPlane.Draw();
-			//if (variantSettings)
-			//{
-			//	texDisplay1.m_mat = availableMats[selectedMat];
-			//	shaderBuffer.BindUniform("modelMat", texDisplay1.GetObjectSpace());
-			//	texDisplay1.Draw();
-			//}
 		}
 		
 		// END OF FRAME

@@ -14,30 +14,34 @@ TextureData::TextureData(Texture& tex)
 		mapData.data());
 }
 
-glm::vec3 TextureData::GetNearest(int x, int y)
+glm::vec3 TextureData::Get(int x, int y)
 {
 	if (x < 0 || x >= sizeX || y < 0 || y >= sizeY)
 	{
-		std::cout << "ERROR(TestureData::GetNearest): Invalid position";
+		std::cout << "ERROR(TestureData::Get): Invalid position\n";
 		return glm::vec3(-1);
 	}
+	//int testY = sizeY - y;
+	//return mapData[x + (testY * sizeX)];
 	return mapData[x + (y * sizeX)];
 }
 
+
 glm::vec3 TextureData::GetNearest(glm::vec2 pos)
 {
-	return GetNearest(pos.x, pos.y);
+	return Get(pos.x, pos.y);
 }
 
 glm::vec3 TextureData::GetLinear(glm::vec2 pos)
 {
 	if (pos.x < 0 || pos.x >= sizeX - 1 || pos.y < 0 || pos.y >= sizeY - 1)
 	{
-		std::cout << "ERROR(TextureData::GetLinear): Invalid position";
+		std::cout << "ERROR(TextureData::GetLinear): Invalid position\n";
 		return glm::vec3(-1);
 	}
 	int minX = pos.x;
 	int minY = pos.y;
+	//minY = sizeY - pos.y;
 	float xLerp = pos.x - minX;
 	float yLerp = pos.y - minY;
 	glm::vec3 botLeftCol = mapData[minX + (minY * sizeX)];
@@ -51,175 +55,59 @@ glm::vec3 TextureData::GetLinear(glm::vec2 pos)
 }
 
 
-glm::vec2 HeightRangeOld(glm::vec2 pos, float radius, Texture& heightMap)
+glm::vec3 TextureData::GetAverage(int x1, int y1, int x2, int y2)
 {
-	std::vector<glm::vec3> mapData(heightMap.m_size.x * heightMap.m_size.y);
-	glBindTexture(GL_TEXTURE_2D, heightMap.m_texture);
-	glGetTexImage(GL_TEXTURE_2D,		// The type of texture to generate
-		0,								// The 'mipmap level' (0 being the highest one)
-		GL_RGB,							// Internal format (what channel format is used internally)
-		GL_FLOAT,						// The type of the data
-		mapData.data());
+	glm::vec3 colour(0);
 
-	int minX = Max(pos.x - radius, 0);
-	int maxX = Min(pos.x + radius + 1, heightMap.m_size.x - 1);
-	int minY = Max(pos.y - radius, 0);
-	int maxY = Min(pos.y + radius + 1, heightMap.m_size.y - 1);
-	//glm::vec2 posOffset = pos - glm::vec2(minX, minY);
-
-	float minHeight = 1;
-	float maxHeight = 0;
-
-	for (int x = minX; x < maxX; x++)
+	if (x1 < 0 || x2 >= sizeX || y1 < 0 || y2 >= sizeY || x1 > x2 || y1 > y2)
 	{
-		for (int y = minY; y < maxY; y++)
+		std::cout << "ERROR(TestureData::GetAverage): Invalid position \n";
+		return glm::vec3(-1);
+	}
+	
+	for (int x = x1; x <= x2; x++)
+	{
+		for (int y = y1; y <= y2; y++)
 		{
-			float height = mapData[x + (y * heightMap.m_size.x)].x;
-			glm::vec2 offset = pos - glm::vec2(x, y);
-			float magSqrd = (offset.x * offset.x) + (offset.y * offset.y);
-			if (magSqrd <= radius * radius)
-			{
-				minHeight = Min(height, minHeight);
-				maxHeight = Max(height, maxHeight);
-			}
-			else
-			{
-				if (height < minHeight || height > maxHeight)
-				{
-					// Check the vertexes it forms a face with, and see if that face overlaps the circle
-					//	   2--3
-					//	  /| /|
-					//	 / |/ |
-					//	1--X--4
-					//	| /| /
-					//	|/ |/
-					//	6--5
-					std::vector<glm::vec2> connectedPoints;
-					if (x > 0) // Point 1 exists
-					{
-						connectedPoints.push_back(glm::vec2(x - 1, y));
-					}
-					if (y > 0) // Point 2 exists
-					{
-						connectedPoints.push_back(glm::vec2(x, y - 1));
-
-						if (x < heightMap.m_size.x) // Point 3 exists
-						{
-							connectedPoints.push_back(glm::vec2(x + 1, y - 1));
-						}
-					}
-					if (x < heightMap.m_size.x) // Point 4 exists
-					{
-						connectedPoints.push_back(glm::vec2(x + 1, y));
-					}
-					if (y < heightMap.m_size.y) // Point 5 exists
-					{
-						connectedPoints.push_back(glm::vec2(x, y + 1));
-
-						if (x < heightMap.m_size.x) // Point 6 exists
-						{
-							connectedPoints.push_back(glm::vec2(x - 1, y + 1));
-						}
-					}
-
-					for (glm::vec2 p : connectedPoints)
-					{
-						offset = pos - p;
-						magSqrd = (offset.x * offset.x) + (offset.y * offset.y);
-						if (magSqrd <= radius * radius)
-						{
-							// Find the overlap point
-							//float yOffset = pos.y - p.y;
-							//float xOffset = pos.x - p.x;
-							//xOffset = sqrt((radius * radius) - (yOffset * yOffset)) - xOffset;
-							//glm::vec2 overlapPoint(p.y, p.x + xOffset);
-
-							glm::vec2 dir = p - glm::vec2(x, y);
-							dir = glm::normalize(dir);
-							glm::vec2 perp(-dir.y, dir.x);
-							//perp = glm::normalize(perp);
-							float perpLength = glm::dot(perp, offset);
-							float dirLength = sqrt((radius * radius) - (perpLength * perpLength));
-							glm::vec2 overlapPoint = pos + (perp * perpLength) + (dir * dirLength);
-
-							//height = GetColour(overlapPoint, mapData, heightMap.m_size.x, heightMap.m_size.y).x;
-							//minHeight = Min(height, minHeight);
-							//maxHeight = Max(height, maxHeight);
-						}
-					}
-				}
-			}
+			colour += Get(x, y);
 		}
 	}
 
-	return glm::vec2(minHeight, maxHeight);
+	int tileCount = (x2 - x1 + 1) * (y2 - y1 + 1); // +1 for the x & y size since we're also including the max x & y pixels
+
+	return colour / (float)tileCount;
 }
 
-glm::vec2 HeightRange(glm::vec2 pos, float radius, TextureData& heightMap)
+glm::vec3 TextureData::GetAverage(glm::vec2 pos1, glm::vec2 pos2)
 {
-	//std::vector<glm::vec3> mapData(heightMap.m_size.x * heightMap.m_size.y);
-	//glBindTexture(GL_TEXTURE_2D, heightMap.m_texture);
-	//glGetTexImage(GL_TEXTURE_2D,		// The type of texture to generate
-	//	0,								// The 'mipmap level' (0 being the highest one)
-	//	GL_RGB,							// Internal format (what channel format is used internally)
-	//	GL_FLOAT,						// The type of the data
-	//	mapData.data());
+	glm::vec2 min(Min(pos1.x, pos2.x), Min(pos1.y, pos2.y));
+	glm::vec2 max(Max(pos1.x, pos2.x), Max(pos1.y, pos2.y));
+	return GetAverage(min.x, min.y, max.x, max.y);
+}
 
+glm::vec3 TextureData::GetAverage(glm::vec2 pos, float radius)
+{
 	float minX = Max(pos.x - radius, 0);
-	float maxX = Min(pos.x + radius, heightMap.sizeX - 1);
+	float maxX = Min(pos.x + radius, sizeX - 1);
 	float minY = Max(pos.y - radius, 0);
-	float maxY = Min(pos.y + radius, heightMap.sizeY - 1);
+	float maxY = Min(pos.y + radius, sizeY - 1);
 
 	int iterationsSqrt = 10;
 	float stepSize = 2 * radius / (float)iterationsSqrt;
 
-	float minHeight = 1;
-	float maxHeight = 0;
+	glm::vec3 colour(0);
+	int tileCount = 0;
 
 	for (float x = minX; x < maxX; x += stepSize)
 	{
 		for (float y = minY; y < maxY; y += stepSize)
 		{
-			//float height = GetColour(glm::vec2(x, y), mapData, heightMap.m_size.x, heightMap.m_size.y).x;
-			float height = heightMap.GetLinear(glm::vec2(x, y)).x;
-			minHeight = Min(height, minHeight);
-			maxHeight = Max(height, maxHeight);
+			colour += GetLinear(glm::vec2(x, y));
+			tileCount++;
 		}
 	}
 
-	return glm::vec2(minHeight, maxHeight);
-}
+	//int tileCount = iterationsSqrt * iterationsSqrt; // +1 for the x & y size since we're also including the max x & y pixels
 
-
-glm::vec3 GetRotation(glm::vec2 pos, float radius, TextureData& heightMap)
-{
-	float minX = Max(pos.x - radius, 0);
-	float maxX = Min(pos.x + radius, heightMap.sizeX - 1);
-	float minY = Max(pos.y - radius, 0);
-	float maxY = Min(pos.y + radius, heightMap.sizeY - 1);
-
-	int iterationsSqrt = 10;
-	float stepSize = 2 * radius / (float)iterationsSqrt;
-
-	//std::vector<glm::vec2> points;
-	std::vector<glm::vec3> points3D;
-
-	for (float x = minX; x < maxX; x += stepSize)
-	{
-		for (float y = minY; y < maxY; y += stepSize)
-		{
-			//float height = GetColour(glm::vec2(x, y), mapData, heightMap.m_size.x, heightMap.m_size.y).x;
-			float height = heightMap.GetLinear(glm::vec2(x, y)).x;
-			//points.push_back(glm::vec2(x, height));
-			points3D.push_back(glm::vec3(x, height, -y));
-			// ^ -y since it's meant to represent the z axis, where forward is negative
-		}
-	}
-
-	//float slope = BestFitLinear(points);
-	glm::vec3 s = BestFitLinear(points3D);
-
-	//return glm::vec3(0, 0, slope);
-	//return glm::vec3(s.y, 0, 0);
-	return s;
+	return colour / (float)tileCount;
 }

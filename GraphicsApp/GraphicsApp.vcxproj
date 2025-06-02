@@ -152,6 +152,7 @@
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="glad.c" />
+    <ClCompile Include="HeightMapUtils.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="Mesh.cpp" />
@@ -180,6 +181,7 @@
     <ClInclude Include="Camera.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="glad.h" />
+    <ClInclude Include="HeightMapUtils.h" />
     <ClInclude Include="khrplatform.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="ObjectType.h" />

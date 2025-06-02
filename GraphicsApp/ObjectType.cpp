@@ -1,4 +1,5 @@
 #include "ObjectType.h"
+#include "HeightMapUtils.h"
 #include <iostream>
 
 Variant::Variant()
@@ -20,7 +21,14 @@ ObjectType::ObjectType()
 
 float ObjectType::GetBestHeight(glm::vec2 pos, TextureData& heightMap)
 {
+	if (rotate)
+	{
+		// Return the average y
+		return heightMap.GetAverage(pos, rad).x - minOverlap;
+	}
+
 	glm::vec2 heightRange = HeightRange(glm::vec2(pos.x, pos.y), rad, heightMap);
+	//std::cout << heightRange.x - minOverlap << '\n';
 
 	return heightRange.x - minOverlap;
 }
@@ -34,12 +42,17 @@ bool ObjectType::CanSpawn(glm::vec2 pos, TextureData& heightMap)
 		{
 			return false;
 		}
+		//glm::vec2 heightRange = HeightRange(glm::vec2(pos.x, pos.y), rad, heightMap);
+		//float overlap = heightMap.GetAverage(pos, rad).x - heightRange.y;
+		//if (overlap > maxOverlap - minOverlap)
+		//{
+		//	return false;
+		//}
 	}
 	else
 	{
 		glm::vec2 heightRange = HeightRange(glm::vec2(pos.x, pos.y), rad, heightMap);
 		float overlapHeight = heightRange.y - heightRange.x;
-		//overlapHeight = Remap(overlapHeight, 0, 1, 0, 3);
 		if (overlapHeight > maxOverlap - minOverlap)
 		{
 			return false;

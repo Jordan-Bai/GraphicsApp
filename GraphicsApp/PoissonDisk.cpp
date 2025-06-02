@@ -8,10 +8,20 @@
 
 std::vector<GameObject*> PopulateMap(ObjectType object, Texture& heightMap)
 {
-	return PopulateMap(object, heightMap, time(0));
+	return PopulateMap(object, heightMap, glm::vec2(0, 1), time(0));
 }
 
 std::vector<GameObject*> PopulateMap(ObjectType object, Texture& heightMap, int seed)
+{
+	return PopulateMap(object, heightMap, glm::vec2(0, 1), seed);
+}
+
+std::vector<GameObject*> PopulateMap(ObjectType object, Texture& heightMap, glm::vec2 heightRange)
+{
+	return PopulateMap(object, heightMap, heightRange, time(0));
+}
+
+std::vector<GameObject*> PopulateMap(ObjectType object, Texture& heightMap, glm::vec2 heightRange, int seed)
 {
 	TextureData mapData(heightMap);
 	std::mt19937 twister(seed);
@@ -58,8 +68,8 @@ std::vector<GameObject*> PopulateMap(ObjectType object, Texture& heightMap, int 
 			{
 				continue;
 			}
-			y = object.GetBestHeight(glm::vec2(x, z), mapData);
-			nextPos.y = y - object.minOverlap;
+			y = object.GetBestHeight(glm::vec2(nextPos.x, nextPos.z), mapData);
+			nextPos.y = y;
 
 			if (CanSpawn(nextPos, object, posList, mapData))
 			{
@@ -103,7 +113,7 @@ bool CanSpawn(glm::vec3 pos, ObjectType object, std::vector<glm::vec3>& posList,
 	//		return false;
 	//	}
 	//}
-	if (pos.x < 0 || pos.x > heightMap.sizeX - 1 || pos.y < 0 || pos.y > heightMap.sizeY - 1)
+	if (pos.x < 0 || pos.x > heightMap.sizeX - 1 || pos.z < 0 || pos.z > heightMap.sizeY - 1)
 	{
 		return false;
 	}
