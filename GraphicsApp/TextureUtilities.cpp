@@ -18,11 +18,10 @@ glm::vec3 TextureData::Get(int x, int y)
 {
 	if (x < 0 || x >= sizeX || y < 0 || y >= sizeY)
 	{
-		std::cout << "ERROR(TestureData::Get): Invalid position\n";
+		std::cout << "ERROR(TextureData::Get): Invalid position\n";
 		return glm::vec3(-1);
 	}
-	//int testY = sizeY - y;
-	//return mapData[x + (testY * sizeX)];
+
 	return mapData[x + (y * sizeX)];
 }
 
@@ -41,7 +40,6 @@ glm::vec3 TextureData::GetLinear(glm::vec2 pos)
 	}
 	int minX = pos.x;
 	int minY = pos.y;
-	//minY = sizeY - pos.y;
 	float xLerp = pos.x - minX;
 	float yLerp = pos.y - minY;
 	glm::vec3 botLeftCol = mapData[minX + (minY * sizeX)];
@@ -106,8 +104,6 @@ glm::vec3 TextureData::GetAverage(glm::vec2 pos, float radius)
 			tileCount++;
 		}
 	}
-
-	//int tileCount = iterationsSqrt * iterationsSqrt; // +1 for the x & y size since we're also including the max x & y pixels
 
 	return colour / (float)tileCount;
 }

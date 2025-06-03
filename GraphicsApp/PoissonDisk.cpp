@@ -1,6 +1,6 @@
 #include "PoissonDisk.h"
 #include <iostream>
-#include <random>
+//#include <random>
 
 #include "gtc/quaternion.hpp"
 //#include "gtx/quaternion.hpp"
@@ -8,20 +8,10 @@
 
 std::vector<GameObject*> PopulateMap(ObjectType object, Texture& heightMap)
 {
-	return PopulateMap(object, heightMap, glm::vec2(0, 1), time(0));
+	return PopulateMap(object, heightMap, time(0));
 }
 
 std::vector<GameObject*> PopulateMap(ObjectType object, Texture& heightMap, int seed)
-{
-	return PopulateMap(object, heightMap, glm::vec2(0, 1), seed);
-}
-
-std::vector<GameObject*> PopulateMap(ObjectType object, Texture& heightMap, glm::vec2 heightRange)
-{
-	return PopulateMap(object, heightMap, heightRange, time(0));
-}
-
-std::vector<GameObject*> PopulateMap(ObjectType object, Texture& heightMap, glm::vec2 heightRange, int seed)
 {
 	TextureData mapData(heightMap);
 	std::mt19937 twister(seed);

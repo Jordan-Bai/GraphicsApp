@@ -51,15 +51,11 @@ int main()
 	shaderScreenspace.m_uniforms.SetUniform("aspectRatio", app->GetAspectRatio());
 	shaderBuffer.m_uniforms.SetUniform("aspectRatio", app->GetAspectRatio());
 	//==========================================================================
-	//srand(time(0));
-	//srand(1);
 	const int seedMax = 100000;
 	int heightSeed = time(0) % seedMax;
 	int populateSeed = time(0) % seedMax;
-
-	//const int gridSize = 8;
-	//const int tileRes = 8;
-	//Texture perlinTex = GeneratePerlinNoise(gridSize, tileRes);
+	heightSeed = 1;
+	populateSeed = 1;
 
 	const int walkGridSize = 100;
 	int steps = 20000;
@@ -67,8 +63,6 @@ int main()
 	//randomWalkTex.BlurTexture(2, 0.5f);
 	glTextureParameteri(randomWalkTex.m_texture, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTextureParameteri(randomWalkTex.m_texture, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-	//int textureSize = (gridSize - 1) * tileRes;
 
 	// Initialise meshs/ textures/ materials
 	//==========================================================================
@@ -80,10 +74,8 @@ int main()
 	treeMesh1.LoadFromFile("Tree1.obj");
 	Mesh treeMesh2;
 	treeMesh2.LoadFromFile("Tree2.obj");
-	//Mesh terrainMesh;
-	//terrainMesh.CreateFromHeightMap(&perlinTex, textureSize, textureSize);
-	Mesh terrainMesh1;
-	terrainMesh1.CreateFromHeightMap(&randomWalkTex, walkGridSize, walkGridSize);
+	Mesh terrainMesh;
+	terrainMesh.CreateFromHeightMap(&randomWalkTex, walkGridSize, walkGridSize);
 
 	Texture blank(glm::vec3(0.7f));
 	Texture blankNormal(glm::vec3{ 0.5f, 0.5f, 1.0f });
@@ -95,7 +87,6 @@ int main()
 	blueMat.SetLightProperties(0.1f, 1.0f, 0.5f);
 	Material redMat(&shaderSunOnly, &red, &red, &blankNormal);
 	redMat.SetLightProperties(0.1f, 1.0f, 0.5f);
-	//Material perlinMat(&shaderUnlit, &perlinTex, &blank, &blankNormal);
 	Material walkMat(&shaderUnlit, &randomWalkTex, &blank, &blankNormal);
 
 	Material previewMat(&shaderBuffer, &blank, &blank, &blankNormal);
@@ -103,14 +94,11 @@ int main()
 
 	// Create game objects
 	//==========================================================================
-	GameObject terrain(&terrainMesh1, &walkMat);
-	//terrain.m_pos = glm::vec3(0, -2, -textureSize);
-	//GameObject tree(&treeMesh, &defaultMat);
-	//tree.m_scale = glm::vec3(10);
+	GameObject terrain(&terrainMesh, &walkMat);
 
-	Variant* treeVar1 = new Variant(&treeMesh1, &defaultMat); //, glm::vec3(0.5f));
-	Variant* treeVar2 = new Variant(&treeMesh2, &blueMat); //, glm::vec3(0.5f));
-	Variant* treeVar3 = new Variant(&treeMesh2, &redMat); //, glm::vec3(0.5f));
+	Variant* treeVar1 = new Variant(&treeMesh1, &defaultMat);
+	Variant* treeVar2 = new Variant(&treeMesh2, &blueMat);
+	Variant* treeVar3 = new Variant(&treeMesh2, &redMat);
 
 	Variant* selectedVar = treeVar1;
 
@@ -163,12 +151,7 @@ int main()
 
 	GameObject previewPlane(&quadMesh, &previewMat);
 	previewPlane.m_pos = glm::vec3(1, 1, 0);
-	//previewPlane.m_scale = glm::vec3(app->GetAspectRatio(), 1, 1);
 	previewPlane.m_scale *= 0.8f;
-
-	//GameObject texDisplay1(&quadMesh, &previewMat);
-	//texDisplay1.m_pos = glm::vec3(1, -1, 0);
-	//texDisplay1.m_scale *= 0.5f;
 
 	Camera previewCam(glm::vec3(0, 2, 8));
 	app->RemoveObject(&previewCam);
@@ -176,16 +159,10 @@ int main()
 	app->RemoveObject(&minOverlapPreview);
 	app->RemoveObject(&maxOverlapPreview);
 	app->RemoveObject(&previewPlane);
-	//app->RemoveObject(&texDisplay1);
 
 
 	// VARIABLES FOR IMGUI SETTINGS
 	//==========================================================================
-	//bool viewingSettings = false;
-	//if (boxes.size() == 0)
-	//{
-	//	viewingSettings = true;
-	//}
 	bool variantSettings = false;
 
 	int selectedVarIndex = 0;
@@ -201,7 +178,6 @@ int main()
 
 	int blurSize = 1;
 	float blurAmount = 0;
-
 	//==========================================================================
 
 
@@ -218,24 +194,6 @@ int main()
 
 		// FRAME BUFFER STUFF
 		//==========================================================================
-		//glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
-		//
-		//// Set background colour
-		//glClearColor(0.8f, 0.5f, 0.5f, 0.5f);
-		//// Clears the screen
-		//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		
-		//shaderBuffer.Use();
-		//shaderUnlit.Use();
-		//glBindTexture(GL_TEXTURE_2D, bufferTex.m_texture);
-		//cubeMesh.Draw();
-		if (variantSettings)
-		{
-			selectedVar = trees.objectVariants[selectedVarIndex];
-			selectedVar->mat = availableMats[selectedMat[selectedVarIndex]];
-			selectedVar->mesh = availableMeshes[selectedMesh[selectedVarIndex]];
-		}
-
 		if (selectedVar && boxes.size() == 0)
 		{
 			glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
@@ -245,7 +203,9 @@ int main()
 			// Clears the screen
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-			//app->BindUniformInAllShaders("cameraPos", app->GetCurrentCamera()->GetPos());
+			selectedVar = trees.objectVariants[selectedVarIndex];
+			selectedVar->mat = availableMats[selectedMat[selectedVarIndex]];
+			selectedVar->mesh = availableMeshes[selectedMesh[selectedVarIndex]];
 
 			selectedVar->mat->m_shader->Use();
 			selectedVar->mat->m_shader->BindUniform("cameraPos", previewCam.GetPos());
@@ -273,18 +233,15 @@ int main()
 			}
 			variantPreview.Draw();
 
-			//if (!trees.rotate)
-			{
-				// Draw min/ max overlap
-				minOverlapPreview.m_mat->m_shader->Use();
-				minOverlapPreview.m_mat->m_shader->BindUniform("cameraPos", previewCam.GetPos());
-				minOverlapPreview.m_mat->m_shader->BindUniform("vpMat", app->GetProjectionMatrix() * previewCam.GetViewMatrix());
+			// Draw min/ max overlap
+			minOverlapPreview.m_mat->m_shader->Use();
+			minOverlapPreview.m_mat->m_shader->BindUniform("cameraPos", previewCam.GetPos());
+			minOverlapPreview.m_mat->m_shader->BindUniform("vpMat", app->GetProjectionMatrix() * previewCam.GetViewMatrix());
 
-				minOverlapPreview.m_scale = trees.scale + glm::vec3(0.75f);
-				maxOverlapPreview.m_scale = trees.scale + glm::vec3(0.75f);
-				minOverlapPreview.Draw();
-				maxOverlapPreview.Draw();
-			}
+			minOverlapPreview.m_scale = trees.scale + glm::vec3(0.75f);
+			maxOverlapPreview.m_scale = trees.scale + glm::vec3(0.75f);
+			minOverlapPreview.Draw();
+			maxOverlapPreview.Draw();
 
 			// Store the texture properly
 			glBindTexture(GL_TEXTURE_2D, bufferTex.m_texture);
@@ -325,10 +282,6 @@ int main()
 					populateSeed = (populateSeed + time(0)) % seedMax;
 				}
 				boxes = PopulateMap(trees, randomWalkTex, populateSeed);
-				//app->SetUniformInAllShaders("sunDirection", glm::normalize(sunDirection));
-				//app->SetUniformInAllShaders("sunColour", sunColour);
-				//app->ApplyAllUniforms();
-				//viewingSettings = false;
 			}
 			ImGui::Dummy({ 0, 15 });
 			ImGui::SliderFloat3("Preview cam pos", glm::value_ptr(previewCam.m_pos), 0.0f, 10.0f);
@@ -339,7 +292,6 @@ int main()
 			//==========================================================================
 			if (ImGui::BeginTabItem("Object type"))
 			{
-				variantSettings = false;
 				ImGui::SliderFloat("Exclusion radius", &trees.exclusionRad, 0.0f, 50.0f);
 				ImGui::SliderInt("Spawn Attempts", &trees.spawnAttempts, 0, 20);
 				// Min & Max overlap
@@ -361,7 +313,6 @@ int main()
 			//==========================================================================
 			if (ImGui::BeginTabItem("Variant"))
 			{
-				variantSettings = true;
 				if (ImGui::Button("Create new variant"))
 				{
 					Variant* var = new Variant(availableMeshes[0], availableMats[0]);
@@ -422,7 +373,7 @@ int main()
 					{
 						randomWalkTex.BlurTexture(blurSize, blurAmount);
 					}
-					terrainMesh1.CreateFromHeightMap(&randomWalkTex, walkGridSize, walkGridSize);
+					terrainMesh.CreateFromHeightMap(&randomWalkTex, walkGridSize, walkGridSize);
 				}
 				ImGui::EndTabItem();
 			}
@@ -437,7 +388,6 @@ int main()
 					delete b;
 				}
 				boxes.clear();
-				//viewingSettings = true;
 			}
 			ImGui::LabelText("Object seed", std::to_string(populateSeed).c_str());
 		}

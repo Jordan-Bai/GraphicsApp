@@ -24,7 +24,16 @@ float ObjectType::GetBestHeight(glm::vec2 pos, TextureData& heightMap)
 	if (rotate)
 	{
 		// Return the average y
-		return heightMap.GetAverage(pos, rad).x - minOverlap;
+		//return heightMap.GetAverage(pos, rad).x - minOverlap;
+
+		float avgY = heightMap.GetAverage(pos, rad).x;
+		glm::vec3 rot = GetRotation(pos, rad, heightMap);
+		//aif (rot.x > 0.1 || rot.z > 0.1)
+		//a{
+		//a	avgY = avgY;
+		//a}
+		glm::vec2 heightRange = HeightRange(glm::vec3(pos.x, avgY, pos.y), rad, rot, heightMap);
+		return avgY + heightRange.x - minOverlap;
 	}
 
 	glm::vec2 heightRange = HeightRange(glm::vec2(pos.x, pos.y), rad, heightMap);

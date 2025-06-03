@@ -238,14 +238,6 @@ glm::vec3 BestFitLinear(std::vector<glm::vec3> points)
 	float zSlope = (numPoints * xySum) - (xSum * ySum);
 	zSlope /= (numPoints * xSqrSum) - (xSum * xSum);
 
-	// is m is the x gradient, n is the z gradient, & c is the y intercept:
-	// y = mx + nz + c
-	// c = y - mx - nz
-	// Using the avg values for x, y & z: 
-	// c = (ySum / numPoints) - m(xSum / numPoints) - n(zSum / numPoints)
-	// Can be simplified to:
-	//float yIntercept = (ySum - (xSlope * xSum) - (zSlope * zSum)) / numPoints;
-
 	return glm::vec3(atan(xSlope), 0, atan(zSlope));
 }
 

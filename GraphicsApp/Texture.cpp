@@ -15,6 +15,10 @@ Texture::Texture(std::string fileName)
 	unsigned char* data = stbi_load(fileName.c_str(), &width, &height, &channels, 0);
 	// 0 tells it to 'load the image as is', not really sure what that means
 
+	int x, y;
+
+	//data[(x + y * width) * channels + 0]
+
 	GLenum format;
 	switch (channels)
 	{

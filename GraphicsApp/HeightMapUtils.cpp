@@ -4,19 +4,6 @@
 
 glm::vec2 HeightRange(glm::vec2 pos, float radius, TextureData& heightMap)
 {
-	return HeightRange(pos, radius, heightMap, glm::vec2(0, 1));
-}
-
-glm::vec2 HeightRange(glm::vec2 pos, float radius, TextureData& heightMap, glm::vec2 heightRange)
-{
-	//std::vector<glm::vec3> mapData(heightMap.m_size.x * heightMap.m_size.y);
-	//glBindTexture(GL_TEXTURE_2D, heightMap.m_texture);
-	//glGetTexImage(GL_TEXTURE_2D,		// The type of texture to generate
-	//	0,								// The 'mipmap level' (0 being the highest one)
-	//	GL_RGB,							// Internal format (what channel format is used internally)
-	//	GL_FLOAT,						// The type of the data
-	//	mapData.data());
-
 	float minX = Max(pos.x - radius, 0);
 	float maxX = Min(pos.x + radius, heightMap.sizeX - 1);
 	float minY = Max(pos.y - radius, 0);
@@ -25,16 +12,14 @@ glm::vec2 HeightRange(glm::vec2 pos, float radius, TextureData& heightMap, glm::
 	int iterationsSqrt = 10;
 	float stepSize = 2 * radius / (float)iterationsSqrt;
 
-	float minHeight = heightRange.y;
-	float maxHeight = heightRange.x;
+	float minHeight = 1;
+	float maxHeight = 0;
 
 	for (float x = minX; x < maxX; x += stepSize)
 	{
 		for (float y = minY; y < maxY; y += stepSize)
 		{
-			//float height = GetColour(glm::vec2(x, y), mapData, heightMap.m_size.x, heightMap.m_size.y).x;
 			float height = heightMap.GetLinear(glm::vec2(x, y)).x;
-			height = Remap(height, 0, 1, heightRange.x, heightRange.y);
 			minHeight = Min(height, minHeight);
 			maxHeight = Max(height, maxHeight);
 		}
@@ -43,13 +28,45 @@ glm::vec2 HeightRange(glm::vec2 pos, float radius, TextureData& heightMap, glm::
 	return glm::vec2(minHeight, maxHeight);
 }
 
-
-glm::vec3 GetRotation(glm::vec2 pos, float radius, TextureData& heightMap)
+glm::vec2 HeightRange(glm::vec3 pos, float radius, glm::vec3 rot, TextureData& heightMap)
 {
-	return GetRotation(pos, radius, heightMap, glm::vec2(0, 1));
+	float minX = Max(pos.x - radius, 0);
+	float maxX = Min(pos.x + radius, heightMap.sizeX - 1);
+	float minY = Max(pos.z - radius, 0);
+	float maxY = Min(pos.z + radius, heightMap.sizeY - 1);
+
+	int iterationsSqrt = 10;
+	float stepSize = 2 * radius / (float)iterationsSqrt;
+
+	float minHeight = 1;
+	float maxHeight = -1;
+
+	glm::vec3 xAxis(cos(rot.z), sin(rot.z), 0);
+	glm::vec3 zAxis(0, sin(rot.x), cos(rot.x));
+	glm::vec3 perp = glm::cross(xAxis, zAxis);
+	//		     | C		     | Y
+	//		A    |			X    |
+	//		_____|			_____|
+	//		    /			    /
+	//		   / B			   / Z
+
+	for (float x = minX; x < maxX; x += stepSize)
+	{
+		for (float y = minY; y < maxY; y += stepSize)
+		{
+			float height = heightMap.GetLinear(glm::vec2(x, y)).x;
+			glm::vec3 offset = pos - glm::vec3(x, height, y);
+			float rotatedHeight = glm::dot(perp, offset);
+			minHeight = Min(rotatedHeight, minHeight);
+			maxHeight = Max(rotatedHeight, maxHeight);
+		}
+	}
+
+	return glm::vec2(minHeight, maxHeight);
 }
 
-glm::vec3 GetRotation(glm::vec2 pos, float radius, TextureData& heightMap, glm::vec2 heightRange)
+
+glm::vec3 GetRotation(glm::vec2 pos, float radius, TextureData& heightMap)
 {
 	float minX = Max(pos.x - radius, 0);
 	float maxX = Min(pos.x + radius, heightMap.sizeX - 1);
@@ -66,7 +83,6 @@ glm::vec3 GetRotation(glm::vec2 pos, float radius, TextureData& heightMap, glm::
 		for (float y = minY; y < maxY; y += stepSize)
 		{
 			float height = heightMap.GetLinear(glm::vec2(x, y)).x;
-			height = Remap(height, 0, 1, heightRange.x, heightRange.y);
 			points3D.push_back(glm::vec3(x, height, -y));
 			// ^ -y since it's meant to represent the z axis, where forward is negative
 		}
