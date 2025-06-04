@@ -35,6 +35,7 @@ public:
 	int Initialize();
 
 	void AddObject(GameObject* object);
+	void RemoveObject(GameObject* object);
 	Camera* GetCurrentCamera();
 	void SetCurrentCamera(Camera* camera);
 	GLFWwindow* GetWindow();

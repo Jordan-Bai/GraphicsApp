@@ -93,6 +93,26 @@ void Application::AddObject(GameObject* object)
 	}
 }
 
+void Application::RemoveObject(GameObject* object)
+{
+	ShaderProgram * shader = nullptr;
+	if (object->m_mat != nullptr)
+	{
+		shader = object->m_mat->m_shader;
+	}
+
+	std::multimap<ShaderProgram*, GameObject*>::iterator it = m_gameObjects.find(shader);
+	while (it != m_gameObjects.end() && it->first == shader)
+	{
+		if (it->second == object)
+		{
+			m_gameObjects.erase(it);
+			return;
+		}
+		it++;
+	}
+}
+
 Camera* Application::GetCurrentCamera()
 {
 	return m_currentCamera;
@@ -333,7 +353,6 @@ void Application::Update(float delta)
 
 void Application::Draw()
 {
-	glm::mat4 vpMat = GetVPMatrix();
 	std::multimap<ShaderProgram*, GameObject*>::iterator it;
 	ShaderProgram* currentShader = nullptr;
 
@@ -352,6 +371,7 @@ void Application::Draw()
 	}
 
 	// ImGui
+	ImGui::Render();
 	ImDrawData* drawData = ImGui::GetDrawData();
 	if (drawData != nullptr)
 	{

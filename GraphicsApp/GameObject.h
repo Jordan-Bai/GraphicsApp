@@ -14,6 +14,7 @@ public:
 
 	GameObject();
 	GameObject(Mesh* mesh, Material* material);
+	~GameObject();
 
 	glm::mat4 GetRotation();
 	glm::mat4 GetObjectSpace();
