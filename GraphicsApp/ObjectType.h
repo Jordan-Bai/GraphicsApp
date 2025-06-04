@@ -32,7 +32,8 @@ public:
 
 	ObjectType();
 
-	float GetBestHeight(glm::vec2 pos, TextureData& heightMap);
+	float GetBaseHeight(glm::vec2 pos, TextureData& heightMap);
+	glm::vec3 GetHeightOffset(glm::vec3 pos, TextureData& heightMap);
 	bool CanSpawn(glm::vec2 pos, TextureData& heightMap);
 	//bool CanSpawn(glm::vec2 pos, TextureData& heightMap, glm::vec2 heightRange);
 

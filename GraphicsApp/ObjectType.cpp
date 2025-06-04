@@ -19,27 +19,45 @@ ObjectType::ObjectType()
 }
 
 
-float ObjectType::GetBestHeight(glm::vec2 pos, TextureData& heightMap)
+float ObjectType::GetBaseHeight(glm::vec2 pos, TextureData& heightMap)
 {
 	if (rotate)
 	{
 		// Return the average y
-		//return heightMap.GetAverage(pos, rad).x - minOverlap;
+		return heightMap.GetAverage(pos, rad).x - minOverlap;
 
 		float avgY = heightMap.GetAverage(pos, rad).x;
 		glm::vec3 rot = GetRotation(pos, rad, heightMap);
-		//aif (rot.x > 0.1 || rot.z > 0.1)
-		//a{
-		//a	avgY = avgY;
-		//a}
-		glm::vec2 heightRange = HeightRange(glm::vec3(pos.x, avgY, pos.y), rad, rot, heightMap);
+		glm::vec2 heightRange = HeightRangeRot(glm::vec3(pos.x, avgY, pos.y), rad, rot, heightMap);
 		return avgY + heightRange.x - minOverlap;
 	}
 
 	glm::vec2 heightRange = HeightRange(glm::vec2(pos.x, pos.y), rad, heightMap);
 	//std::cout << heightRange.x - minOverlap << '\n';
 
-	return heightRange.x - minOverlap;
+	//return heightRange.x - minOverlap;
+	return heightRange.x;
+}
+
+glm::vec3 ObjectType::GetHeightOffset(glm::vec3 pos, TextureData& heightMap)
+{
+	if (rotate)
+	{
+		//float avgY = heightMap.GetAverage(pos, rad).x;
+		glm::vec3 rot = GetRotation(glm::vec2(pos.x, pos.z), rad, heightMap);
+		glm::vec3 xAxis(cos(rot.z), sin(rot.z), 0);
+		glm::vec3 zAxis(0, sin(rot.x), cos(rot.x));
+		glm::vec3 perp = glm::cross(zAxis, xAxis);
+		//		     | C		  | Y
+		//		A    |			  |      X
+		//		_____|			  |_______
+		//		    /			 /
+		//		   / B			/ Z
+
+		glm::vec2 heightRange = HeightRange(pos, rad, perp, heightMap);
+		return perp * heightRange.x * 0.95f;
+	}
+	return glm::vec3(0, -minOverlap, 0);
 }
 
 bool ObjectType::CanSpawn(glm::vec2 pos, TextureData& heightMap)
@@ -132,6 +150,7 @@ GameObject* ObjectType::GenerateObject(glm::vec3 pos, TextureData& heightMap, st
 	GameObject* obj = new GameObject(variant->mesh, variant->mat);
 	obj->m_scale = scale;
 	obj->m_pos = pos;
+	obj->m_pos += GetHeightOffset(pos, heightMap);
 	if (rotate)
 	{
 		obj->m_rot = GetRotation(glm::vec2(pos.x, pos.z), rad, heightMap);

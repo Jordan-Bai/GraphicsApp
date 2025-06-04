@@ -23,7 +23,7 @@ std::vector<GameObject*> PopulateMap(ObjectType object, Texture& heightMap, int 
 
 	float x = randomX(twister);
 	float z = randomY(twister);
-	float y = object.GetBestHeight(glm::vec2(x, z), mapData);
+	float y = object.GetBaseHeight(glm::vec2(x, z), mapData);
 	glm::vec3 firstPos(x, y, z);
 
 	int i = 0;
@@ -37,7 +37,7 @@ std::vector<GameObject*> PopulateMap(ObjectType object, Texture& heightMap, int 
 		}
 		x = randomX(twister);
 		z = randomY(twister);
-		y = object.GetBestHeight(glm::vec2(x, z), mapData);
+		y = object.GetBaseHeight(glm::vec2(x, z), mapData);
 		firstPos = {x, y, z};
 		i++;
 	}
@@ -58,8 +58,9 @@ std::vector<GameObject*> PopulateMap(ObjectType object, Texture& heightMap, int 
 			{
 				continue;
 			}
-			y = object.GetBestHeight(glm::vec2(nextPos.x, nextPos.z), mapData);
-			nextPos.y = y;
+			nextPos.y = object.GetBaseHeight(glm::vec2(nextPos.x, nextPos.z), mapData);
+			//nextPos.y = y;
+			//nextPos += object.GetHeightOffset(nextPos, mapData);
 
 			if (CanSpawn(nextPos, object, posList, mapData))
 			{
@@ -71,6 +72,8 @@ std::vector<GameObject*> PopulateMap(ObjectType object, Texture& heightMap, int 
 	std::vector<GameObject*> objects;
 	for (glm::vec3 pos : posList)
 	{
+		//glm::vec3 posMoved = pos;
+		//posMoved += object.GetHeightOffset(pos, mapData);
 		GameObject* obj = object.GenerateObject(pos, mapData, twister);
 
 		objects.push_back(obj);
@@ -116,6 +119,7 @@ bool CanSpawn(glm::vec3 pos, ObjectType object, std::vector<glm::vec3>& posList,
 	for (glm::vec3 v : posList)
 	{
 		glm::vec3 offset = v - pos;
+		//glm::vec2 testOffset = glm::vec2(v.x - pos.x, v.z - pos.z);
 		if (glm::length(offset) < object.exclusionRad)
 		{
 			return false;

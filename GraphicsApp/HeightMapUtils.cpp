@@ -28,7 +28,7 @@ glm::vec2 HeightRange(glm::vec2 pos, float radius, TextureData& heightMap)
 	return glm::vec2(minHeight, maxHeight);
 }
 
-glm::vec2 HeightRange(glm::vec3 pos, float radius, glm::vec3 rot, TextureData& heightMap)
+glm::vec2 HeightRangeRot(glm::vec3 pos, float radius, glm::vec3 rot, TextureData& heightMap)
 {
 	float minX = Max(pos.x - radius, 0);
 	float maxX = Min(pos.x + radius, heightMap.sizeX - 1);
@@ -38,25 +38,53 @@ glm::vec2 HeightRange(glm::vec3 pos, float radius, glm::vec3 rot, TextureData& h
 	int iterationsSqrt = 10;
 	float stepSize = 2 * radius / (float)iterationsSqrt;
 
-	float minHeight = 1;
-	float maxHeight = -1;
+	float minHeight = FLT_MAX;
+	float maxHeight = -FLT_MAX;
 
 	glm::vec3 xAxis(cos(rot.z), sin(rot.z), 0);
 	glm::vec3 zAxis(0, sin(rot.x), cos(rot.x));
-	glm::vec3 perp = glm::cross(xAxis, zAxis);
-	//		     | C		     | Y
-	//		A    |			X    |
-	//		_____|			_____|
-	//		    /			    /
-	//		   / B			   / Z
+	glm::vec3 perp = glm::cross(zAxis, xAxis);
+	//		     | C		  | Y
+	//		A    |			  |      X
+	//		_____|			  |_______
+	//		    /			 /
+	//		   / B			/ Z
 
 	for (float x = minX; x < maxX; x += stepSize)
 	{
 		for (float y = minY; y < maxY; y += stepSize)
 		{
 			float height = heightMap.GetLinear(glm::vec2(x, y)).x;
-			glm::vec3 offset = pos - glm::vec3(x, height, y);
+			glm::vec3 offset = glm::vec3(x, height, y) - pos;
 			float rotatedHeight = glm::dot(perp, offset);
+			minHeight = Min(rotatedHeight, minHeight);
+			maxHeight = Max(rotatedHeight, maxHeight);
+		}
+	}
+
+	return glm::vec2(minHeight, maxHeight);
+}
+
+glm::vec2 HeightRange(glm::vec3 pos, float radius, glm::vec3 normal, TextureData& heightMap)
+{
+	float minX = Max(pos.x - radius, 0);
+	float maxX = Min(pos.x + radius, heightMap.sizeX - 1);
+	float minY = Max(pos.z - radius, 0);
+	float maxY = Min(pos.z + radius, heightMap.sizeY - 1);
+
+	int iterationsSqrt = 10;
+	float stepSize = 2 * radius / (float)iterationsSqrt;
+
+	float minHeight = FLT_MAX;
+	float maxHeight = -FLT_MAX;
+
+	for (float x = minX; x < maxX; x += stepSize)
+	{
+		for (float y = minY; y < maxY; y += stepSize)
+		{
+			float height = heightMap.GetLinear(glm::vec2(x, y)).x;
+			glm::vec3 offset = glm::vec3(x, height, y) - pos;
+			float rotatedHeight = glm::dot(normal, offset);
 			minHeight = Min(rotatedHeight, minHeight);
 			maxHeight = Max(rotatedHeight, maxHeight);
 		}

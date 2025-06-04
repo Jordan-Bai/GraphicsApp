@@ -132,6 +132,11 @@ void Mesh::CreateCubeMesh()
 		m_verts.push_back({ { offsets[i].x, -1, offsets[i].y }, { 0, -1, 0 }, { -1, 0, 0 }, UVs[i] });
 	}
 
+	for (int i = 0; i < m_verts.size(); i++) // FOR TESTING
+	{
+		m_verts[i].pos.y += 1;
+	}
+
 	for (int i = 0; i < 24; i += 4)
 	{
 		m_indicies.push_back(i);

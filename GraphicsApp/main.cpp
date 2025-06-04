@@ -54,6 +54,7 @@ int main()
 	const int seedMax = 100000;
 	int heightSeed = time(0) % seedMax;
 	int populateSeed = time(0) % seedMax;
+	// FOR TESTING
 	heightSeed = 1;
 	populateSeed = 1;
 
@@ -96,9 +97,9 @@ int main()
 	//==========================================================================
 	GameObject terrain(&terrainMesh, &walkMat);
 
-	Variant* treeVar1 = new Variant(&treeMesh1, &defaultMat);
-	Variant* treeVar2 = new Variant(&treeMesh2, &blueMat);
-	Variant* treeVar3 = new Variant(&treeMesh2, &redMat);
+	Variant* treeVar1 = new Variant(&cubeMesh, &defaultMat);
+	Variant* treeVar2 = new Variant(&cubeMesh, &blueMat);
+	Variant* treeVar3 = new Variant(&cubeMesh, &redMat);
 
 	Variant* selectedVar = treeVar1;
 
@@ -174,7 +175,7 @@ int main()
 	std::vector<Material*> availableMats = {&defaultMat, &blueMat, &redMat};
 
 	bool overrideHeightSeed = false;
-	bool overridePopSeed = false;
+	bool overridePopSeed = true;
 
 	int blurSize = 1;
 	float blurAmount = 0;
@@ -238,8 +239,10 @@ int main()
 			minOverlapPreview.m_mat->m_shader->BindUniform("cameraPos", previewCam.GetPos());
 			minOverlapPreview.m_mat->m_shader->BindUniform("vpMat", app->GetProjectionMatrix() * previewCam.GetViewMatrix());
 
-			minOverlapPreview.m_scale = trees.scale + glm::vec3(0.75f);
-			maxOverlapPreview.m_scale = trees.scale + glm::vec3(0.75f);
+			//minOverlapPreview.m_scale = trees.scale + glm::vec3(0.75f);
+			//maxOverlapPreview.m_scale = trees.scale + glm::vec3(0.75f);
+			minOverlapPreview.m_scale = glm::vec3(trees.rad + 0.05f);
+			maxOverlapPreview.m_scale = glm::vec3(trees.rad + 0.05f);
 			minOverlapPreview.Draw();
 			maxOverlapPreview.Draw();
 
