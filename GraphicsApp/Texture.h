@@ -1,6 +1,7 @@
 #pragma once
 #include "GraphicsHeaders.h"
 #include "glm.hpp"
+#include "HeightMap.h"
 #include <string>
 
 struct Texture
@@ -9,5 +10,6 @@ struct Texture
 
 	Texture(std::string fileName);
 	Texture(glm::vec3 colour);
+	Texture(HeightMap& map);
 	~Texture();
 };

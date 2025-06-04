@@ -2,6 +2,8 @@
 #include "GraphicsHeaders.h"
 #include "glm.hpp"
 #include "Utilities.h"
+#include "HeightMap.h"
+
 #include <vector>
 
 class Mesh
@@ -19,6 +21,7 @@ public:
 
 	void CreatePlaneMesh();
 	void CreateCubeMesh();
+	void CreateFromHeightMap(HeightMap& map);
 	void LoadFromFile(std::string fileName);
 	virtual void InitObject(std::vector<Vertex>& verts, std::vector<int>& indicies);
 

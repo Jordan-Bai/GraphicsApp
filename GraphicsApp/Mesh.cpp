@@ -142,6 +142,59 @@ void Mesh::CreateCubeMesh()
 	InitObject(verts, indicies);
 }
 
+void Mesh::CreateFromHeightMap(HeightMap& map)
+{
+	std::vector<Vertex> verts;
+	std::vector<int> indicies;
+
+	// Force it to round up
+	//int scaledX = (map.sizeX + vertsPerPixel - 1) / vertsPerPixel;
+	//int scaledZ = (sizeZ + vertsPerPixel - 1) / vertsPerPixel;
+
+	for (int z = 0; z < map.sizeY; z += 1)
+	{
+		for (int x = 0; x < map.sizeX; x += 1)
+		{
+			Vertex newVertex;
+			float y = map.mapData[x + (z * map.sizeX)];
+			//y = Remap(y, 0, 1, -1, 2);
+			newVertex.pos = glm::vec3(x, y, z);
+			newVertex.normal = glm::vec3(0, 1, 0);
+			newVertex.tangent = glm::vec3(1, 0, 0);
+			newVertex.UVcoord = glm::vec2((float)x / (float)map.sizeX, (float)z / (float)map.sizeY);
+			verts.push_back(newVertex);
+
+			//   (x,z)   (x+1,z)
+			//      0-----1
+			//      |     |
+			//      |     |
+			//      2-----4
+			// (x,z+1)   (x+1,z+1)
+
+
+			if (x < map.sizeX - 1 && z < map.sizeY - 1)
+			{
+				//	0--1
+				//	| /|
+				//	|/ |
+				//	2---
+				indicies.push_back(x + (z * map.sizeX));
+				indicies.push_back(x + 1 + (z * map.sizeX));
+				indicies.push_back(x + ((z + 1) * map.sizeX));
+				//	---1
+				//	| /|
+				//	|/ |
+				//	2--3
+				indicies.push_back(x + 1 + (z * map.sizeX));
+				indicies.push_back(x + ((z + 1) * map.sizeX));
+				indicies.push_back(x + 1 + ((z + 1) * map.sizeX));
+			}
+		}
+	}
+
+	InitObject(verts, indicies);
+}
+
 void Mesh::LoadFromFile(std::string fileName)
 {
 	Assimp::Importer importer;

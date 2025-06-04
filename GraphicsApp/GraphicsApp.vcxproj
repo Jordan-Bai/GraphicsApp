@@ -71,12 +71,12 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)assimp\include</IncludePath>
-    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64)</LibraryPath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)assimp\include;$(SolutionDir)..\ProcGen\ProcGen</IncludePath>
+    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(SolutionDir)..\ProcGen\x64\Debug</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)assimp\include;</IncludePath>
-    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64)</LibraryPath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)assimp\include;$(SolutionDir)..\ProcGen\ProcGen</IncludePath>
+    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(SolutionDir)..\ProcGen\x64\Debug</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -118,7 +118,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)GLFW</AdditionalLibraryDirectories>
-      <AdditionalDependencies>$(SolutionDir)GLFW/glfw3.lib;$(SolutionDir)AssImp/lib/assimp-vc143-mtd.lib;%(AdditionalDependencies);$(SolutionDir)AssImp/lib/zlibstaticd.lib</AdditionalDependencies>
+      <AdditionalDependencies>$(SolutionDir)GLFW/glfw3.lib;$(SolutionDir)AssImp/lib/assimp-vc143-mtd.lib;%(AdditionalDependencies);$(SolutionDir)AssImp/lib/zlibstaticd.lib;$(SolutionDir)..\ProcGen\x64\Debug\ProcGen.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -137,7 +137,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)GLFW</AdditionalLibraryDirectories>
-      <AdditionalDependencies>$(SolutionDir)GLFW/glfw3.lib;$(SolutionDir)AssImp/lib/assimp-vc143-mt.lib;%(AdditionalDependencies);$(SolutionDir)AssImp/lib/zlibstatic.lib</AdditionalDependencies>
+      <AdditionalDependencies>$(SolutionDir)GLFW/glfw3.lib;$(SolutionDir)AssImp/lib/assimp-vc143-mt.lib;%(AdditionalDependencies);$(SolutionDir)AssImp/lib/zlibstatic.lib;$(SolutionDir)..\ProcGen\x64\Debug\ProcGen.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
